@@ -66,5 +66,6 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
+        <CheckBox Content="Case-insensitive regex" IsChecked="{Binding Settings.IgnoreCase}"/>
     </StackPanel>
 </UserControl>

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -44,11 +45,16 @@ namespace SideLauncher
         {
             foreach (var group in settings.Settings.LaunchGroups)
             {
-
+                RegexOptions regexOptions = RegexOptions.Compiled;
+                if (settings.Settings.IgnoreCase)
+                {
+                    regexOptions |= RegexOptions.IgnoreCase;
+                }
                 switch (group.FilterType)
                 {
                     case FilterTypes.Source:
-
+                        string pattern = $@"{group.Filter}";
+                        Regex rgx = new Regex(pattern, regexOptions);
                         break;
                     default:
                         break;

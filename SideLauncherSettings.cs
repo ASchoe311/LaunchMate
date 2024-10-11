@@ -55,6 +55,7 @@ namespace SideLauncher
 
     public class SideLauncherSettings : ObservableObject
     {
+        public bool IgnoreCase { get; set; } = true;
         public ObservableCollection<LaunchGroup> LaunchGroups { get; set; } = new ObservableCollection<LaunchGroup>();
     }
 
