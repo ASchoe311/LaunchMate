@@ -1,0 +1,7 @@
+﻿Id: SideLauncher_61d7fcec-322d-4eb6-b981-1c8f8122ddc8
+Name: Side Launcher
+Author: Adam Schoenfeld
+Version: 1.0
+Module: SideLauncher.dll
+Type: GenericPlugin
+Icon: icon.png

@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="SideLauncher.SideLauncherSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sidelauncher="clr-namespace:SideLauncher"
+             d:DataContext="{d:DesignInstance Type=sidelauncher:SideLauncherSettingsViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="600">
+    <StackPanel>
+        <DockPanel Margin="10">
+            <TextBlock DockPanel.Dock="Top" Text="Add Launch Groups" TextWrapping="Wrap" Margin="0,0,0,5"/>
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
+                <Button Content="Add" Margin="0,10,0,0" DockPanel.Dock="Left" Command="{Binding AddLaunchGroupCmd}" />
+                <Button Content="Remove" Margin="10,10,0,0" DockPanel.Dock="Left" Command="{Binding RemoveLaunchGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridLaunchGroups}"/>
+            </DockPanel>
+            <DataGrid Name="GridLaunchGroups" ItemsSource="{Binding Settings.LaunchGroups}" DockPanel.Dock="Top"
+              CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Enabled" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" 
+                                  HorizontalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Auto-Close" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}" 
+                                  HorizontalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Executable Path" MaxWidth="250">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding AppExePath, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Executable Arguments" MaxWidth="250">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding AppExeArgs, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Filter By" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
+                                          SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" 
+                                          ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Filter" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="WrapWithOverflow" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </StackPanel>
+</UserControl>
