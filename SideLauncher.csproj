@@ -53,11 +53,16 @@
   <ItemGroup>
     <Compile Include="Enums\JoinType.cs" />
     <Compile Include="Enums\FilterTypes.cs" />
+    <Compile Include="Models\ConditionGroup.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\LaunchGroup.cs" />
     <Compile Include="Models\LaunchCondition.cs" />
     <Compile Include="SideLauncher.cs" />
     <Compile Include="Utilities\RegexExtensions.cs" />
+    <Compile Include="ViewModels\ConditionGroupEditorViewModel.cs" />
+    <Compile Include="Views\ConditionGroupEditorView.xaml.cs">
+      <DependentUpon>ConditionGroupEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
@@ -85,6 +90,10 @@
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ConditionGroupEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SettingsView.xaml">
       <SubType>Designer</SubType>

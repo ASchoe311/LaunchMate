@@ -1,0 +1,78 @@
+﻿<UserControl x:Class="SideLauncher.Views.ConditionGroupEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sideLauncher="clr-namespace:SideLauncher"
+             xmlns:viewModels="clr-namespace:SideLauncher.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:ConditionGroupEditorViewModel}"
+             xmlns:local="clr-namespace:SideLauncher.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="800">
+    <UserControl.Resources>        
+        <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <DockPanel LastChildFill="False">
+        <GroupBox DockPanel.Dock="Top"  Header="Conditions:" Margin="0,25,0,0">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+                    <Button Content="Add" Command="{Binding AddConditionCmd}" Margin="5"/>
+                    <Button Content="Remove" Command="{Binding RemoveConditionCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditions}" Margin="5"/>
+                </StackPanel>
+                <DataGrid Name="GridConditions" DockPanel.Dock="Top"
+              ItemsSource="{Binding Group.Conditions}"
+              CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single" Width="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Not" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Not, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Filter Type" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
+                                SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" 
+                                ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Filter" Width="*" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Fuzzy Match" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding FuzzyMatch, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Operator With Next" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Name="JoinTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
+                                      SelectedValue="{Binding Joiner, UpdateSourceTrigger=PropertyChanged}" 
+                                      ItemsSource="{Binding DataContext.JoinMethodsDict, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock DockPanel.Dock="Bottom" Text="*Filters support regex!" Margin="100,5,0,0"/>
+            </DockPanel>
+        </GroupBox>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,15,15">
+            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"
+    CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" IsDefault="True" />
+            <Button Content="Cancel" IsCancel="True" Margin="5"/>
+        </StackPanel>
+    </DockPanel>
+</UserControl>

@@ -10,6 +10,7 @@ using SideLauncher.Views;
 using SideLauncher.Utilities;
 using System.Security.Principal;
 using System.Windows;
+using Playnite.SDK.Data;
 
 namespace SideLauncher.ViewModels
 {
@@ -27,6 +28,13 @@ namespace SideLauncher.ViewModels
 
         public LaunchGroup Group { get => _group; set => SetValue(ref _group, value); }
 
+        public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
+        {
+            { "AND", JoinType.And },
+            { "OR", JoinType.Or },
+            { "XOR", JoinType.Xor }
+        };
+
         public RelayCommand SelectAppCmd
         {
             get => new RelayCommand(() =>
@@ -42,47 +50,65 @@ namespace SideLauncher.ViewModels
             });
         }
 
-        public RelayCommand AddConditionCmd
+        public RelayCommand AddConditionGroupCmd
         {
             get => new RelayCommand(() =>
             {
-                Group.Conditions.Add(new LaunchCondition());
-            });
-        }
+                var conditionGroup = new ConditionGroup();
 
-        public RelayCommand<LaunchCondition> RemoveConditionCmd
-        {
-            get => new RelayCommand<LaunchCondition>((c) =>
-            {
-                if (c != null)
+                var window = ConditionGroupEditorViewModel.GetWindow(_settings, conditionGroup);
+
+                if (window == null)
                 {
-                    Group.Conditions.Remove(c);
+                    return;
                 }
+
+                if (!(window.ShowDialog() ?? false))
+                {
+                    return;
+                }
+
+                Group.ConditionGroups.Add(conditionGroup);
             });
         }
 
-        public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
+        public RelayCommand<object> EditConditionGroupCmd
         {
-            { "Execute if all conditions are met (AND)", JoinType.And },
-            { "Execute if any condition is met (OR)", JoinType.Or },
-            { "Execute if only one condition is met (XOR)", JoinType.Xor }
-        };
+            get => new RelayCommand<object>((grp) =>
+            {
+                if (grp == null)
+                {
+                    return;
+                }
+                var grpOriginal = (ConditionGroup)grp;
+                var toEdit = Serialization.GetClone(grpOriginal);
 
-        public static Dictionary<string, FilterTypes> FilterTypesDict { get; } = new Dictionary<string, FilterTypes>
+                var window = ConditionGroupEditorViewModel.GetWindow(_settings, toEdit);
+
+                if (window == null)
+                {
+                    return;
+                }
+
+                if (!(window.ShowDialog() ?? false))
+                {
+                    return;
+                }
+
+                Group.ConditionGroups.Remove(grpOriginal);
+                Group.ConditionGroups.Add(toEdit);
+
+            });
+        }
+
+        public RelayCommand<ConditionGroup> RemoveConditionGroupCmd
         {
-            { "All Games", FilterTypes.All },
-            { "Name", FilterTypes.Name },
-            { "Source", FilterTypes.Source },
-            { "Developer", FilterTypes.Developers },
-            { "Publisher", FilterTypes.Publishers },
-            { "Category", FilterTypes.Categories },
-            { "Genre", FilterTypes.Genres },
-            { "Game ID", FilterTypes.Gameid },
-            { "Feature", FilterTypes.Features },
-            { "Tag", FilterTypes.Tags },
-            { "Platform", FilterTypes.Platforms },
-            { "Series", FilterTypes.Series }
-        };
+            get => new RelayCommand<ConditionGroup>((a) =>
+            {
+                if (a == null) { return; }
+                Group.ConditionGroups.Remove(a);
+            });
+        }
 
         public static Window GetWindow(Settings settings, LaunchGroup launchGroup)
         {
@@ -116,7 +142,7 @@ namespace SideLauncher.ViewModels
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                if (Group.Enabled && Group.Conditions.Count == 0)
+                if (Group.Enabled && Group.ConditionGroups.Count == 0)
                 {
                     if (API.Instance.Dialogs.ShowMessage(
                         "No conditions were set. This will result in the application launching alongside all games. Continue?",

@@ -17,6 +17,7 @@ using SideLauncher.Models;
 using SideLauncher.Enums;
 using SideLauncher.Views;
 using SideLauncher.ViewModels;
+using System.Windows;
 
 namespace SideLauncher
 {
@@ -62,34 +63,13 @@ namespace SideLauncher
         private void HandleLaunchGroup(OnGameStartingEventArgs args, LaunchGroup group)
         {
 
-            List<bool> matches = new List<bool>();
-            int numMet = 0;
-
-            foreach (var condition in group.Conditions)
+            logger.Debug($"Checking launch conditions for group with app {Path.GetFileName(group.AppExePath)}");
+            
+            if (group.ShouldLaunchApp(args.Game))
             {
-                bool condMet = condition.IsMet(args.Game);
-                numMet += condMet ? 1 : 0;
-                matches.Add(condMet);
-            }
-
-            bool execute = false;
-
-            switch (group.JoinMethod)
-            {
-                case JoinType.And:
-                    execute = numMet == matches.Count;
-                    break;
-                case JoinType.Or:
-                    execute = numMet >= 1;
-                    break;
-                case JoinType.Xor:
-                    execute = numMet == 1;
-                    break;
-            }
-
-            if (execute)
-            {
+                logger.Debug($"Waiting {group.LaunchDelay} ms to launch {group.AppExePath}");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
+                logger.Debug($"Launching {group.AppExePath} with arguments {group.AppExeArgs}");
                 Process.Start(group.AppExePath, group.AppExeArgs);
                 launchedGroups.Add(group);
             }

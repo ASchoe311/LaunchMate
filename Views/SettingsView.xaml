@@ -35,17 +35,17 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Executable Path" MaxWidth="250">
+                    <DataGridTemplateColumn Header="Application" Width="Auto" MaxWidth="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding AppExePath, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding AppDisplayName, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Conditions" Width="Auto">
+                    <DataGridTemplateColumn Header="Conditions" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding ConditionCount}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding ToFilterString}" TextWrapping="Wrap" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
