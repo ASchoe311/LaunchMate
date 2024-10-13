@@ -12,12 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SideLauncher.Models;
+using SideLauncher.ViewModels;
 
 namespace SideLauncher
 {
-    public partial class SideLauncherSettingsView : UserControl
+    public partial class SettingsView : UserControl
     {
-        public SideLauncherSettingsView()
+        public SettingsView()
         {
             InitializeComponent();
         }
