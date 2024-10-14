@@ -10,17 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Shell32;
 using System.IO;
-using SideLauncher.Enums;
-using SideLauncher.Utilities;
+using LaunchMate.Enums;
+using LaunchMate.Utilities;
 using System.Text.RegularExpressions;
 
-namespace SideLauncher.Models
+namespace LaunchMate.Models
 {
     public class LaunchCondition : ObservableObject
     {
         private FilterTypes _filterType = FilterTypes.All;
         private string _condition = string.Empty;
-        private bool _fuzzyMatch = true;
+        private bool _fuzzyMatch = false;
         private JoinType _joiner = JoinType.And;
         private bool _not = false;
 
@@ -38,7 +38,7 @@ namespace SideLauncher.Models
         {
             FilterType = FilterTypes.All;
             Filter = string.Empty;
-            FuzzyMatch = true;
+            FuzzyMatch = false;
         }
 
         [DontSerialize]

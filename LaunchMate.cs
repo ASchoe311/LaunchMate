@@ -13,15 +13,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using SideLauncher.Models;
-using SideLauncher.Enums;
-using SideLauncher.Views;
-using SideLauncher.ViewModels;
+using LaunchMate.Models;
+using LaunchMate.Enums;
+using LaunchMate.Views;
+using LaunchMate.ViewModels;
 using System.Windows;
 
-namespace SideLauncher
+namespace LaunchMate
 {
-    public class SideLauncher : GenericPlugin
+    public class LaunchMate : GenericPlugin
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
@@ -29,7 +29,7 @@ namespace SideLauncher
 
         public override Guid Id { get; } = Guid.Parse("61d7fcec-322d-4eb6-b981-1c8f8122ddc8");
 
-        public SideLauncher(IPlayniteAPI api) : base(api)
+        public LaunchMate(IPlayniteAPI api) : base(api)
         {
             settings = new SettingsViewModel(this);
             Properties = new GenericPluginProperties
@@ -51,11 +51,11 @@ namespace SideLauncher
                 {
                     continue;
                 }
-                AsyncLaunchGroups(args, group);
+                LaunchGroupDispatcher(args, group);
             }
         }
 
-        private async void AsyncLaunchGroups(OnGameStartingEventArgs args, LaunchGroup group)
+        private async void LaunchGroupDispatcher(OnGameStartingEventArgs args, LaunchGroup group)
         {
             await Task.Run(() => HandleLaunchGroup(args, group));
         }
@@ -67,9 +67,9 @@ namespace SideLauncher
             
             if (group.ShouldLaunchApp(args.Game))
             {
-                logger.Debug($"Waiting {group.LaunchDelay} ms to launch {group.AppExePath}");
+                logger.Debug($"Waiting {group.LaunchDelay} ms to launch \"{group.AppExePath}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
-                logger.Debug($"Launching {group.AppExePath} with arguments {group.AppExeArgs}");
+                logger.Debug($"Launching \"{group.AppExePath}\" with arguments \"{group.AppExeArgs}\"");
                 Process.Start(group.AppExePath, group.AppExeArgs);
                 launchedGroups.Add(group);
             }
@@ -98,6 +98,7 @@ namespace SideLauncher
                     {
                         if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(group.AppExePath)) && group.AutoClose)
                         {
+                            logger.Debug($"Stopping launched application: \"{group.AppExePath}\"");
                             item.Process.Kill();
                         }
                     }

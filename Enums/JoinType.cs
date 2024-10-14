@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SideLauncher.Enums
+namespace LaunchMate.Enums
 {
     public enum JoinType
     {

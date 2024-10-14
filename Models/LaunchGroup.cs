@@ -1,7 +1,7 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Data;
 using Playnite.SDK.Models;
-using SideLauncher.Enums;
+using LaunchMate.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SideLauncher.Models
+namespace LaunchMate.Models
 {
     public class LaunchGroup : ObservableObject
     {
@@ -34,6 +34,21 @@ namespace SideLauncher.Models
         public int LaunchDelay { get => _delay; set => SetValue(ref _delay, value); }
         public bool MakeGameActions { get => _makeActions; set => SetValue(ref _makeActions, value); }
         public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
+
+        [DontSerialize]
+        public ObservableCollection<Game> MatchedGames { get
+            {
+                var matches = new ObservableCollection<Game>();
+                foreach (var game in API.Instance.Database.Games)
+                {
+                    if (ShouldLaunchApp(game))
+                    {
+                        matches.Add(game);
+                    }
+                }
+                return matches;
+            }
+        } 
 
         [DontSerialize]
         private readonly ILogger logger = LogManager.GetLogger();
@@ -78,7 +93,7 @@ namespace SideLauncher.Models
         [DontSerialize]
         public string ToFilterString { get
             {
-                string filterStr = "Conditions: ";
+                string filterStr = string.Empty;
 
                 for (int i = 0; i < ConditionGroups.Count; i++)
                 {
@@ -91,7 +106,7 @@ namespace SideLauncher.Models
                     {
                         var condition = ConditionGroups[i].Conditions[j];
                         filterStr += "(";
-                        filterStr += $"\"{condition.FilterType}\" {(condition.Not ? "NOT" : "->")} \"{condition.Filter}\"";
+                        filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? "NOT~" : "NOT") : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
                         filterStr += ")";
                         if (j < ConditionGroups[i].Conditions.Count - 1)
                         {
@@ -131,6 +146,20 @@ namespace SideLauncher.Models
 
         [DontSerialize]
         public string AppDisplayName => LnkName != null ? LnkName : Path.GetFileName(AppExePath);
+
+        [DontSerialize]
+        public ObservableCollection<Game> GetMatchedGames()
+        {
+            var matches = new ObservableCollection<Game>();
+            foreach (var game in API.Instance.Database.Games)
+            {
+                if (ShouldLaunchApp(game))
+                {
+                    matches.Add(game);
+                }
+            }
+            return matches;
+        }
 
     }
 }

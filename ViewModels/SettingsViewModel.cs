@@ -11,15 +11,16 @@ using System.Threading.Tasks;
 using Shell32;
 using System.IO;
 using System.Reflection;
-using SideLauncher.Models;
-using SideLauncher.Enums;
+using LaunchMate.Models;
+using LaunchMate.Enums;
+using System.Runtime;
 
-namespace SideLauncher.ViewModels
+namespace LaunchMate.ViewModels
 {
 
     public class SettingsViewModel : ObservableObject, ISettings
     {
-        private readonly SideLauncher plugin;
+        private readonly LaunchMate plugin;
         private Settings editingClone { get; set; }
 
         private Settings settings;
@@ -94,7 +95,29 @@ namespace SideLauncher.ViewModels
             });
         }
 
-        public SettingsViewModel(SideLauncher plugin)
+        public RelayCommand<LaunchGroup> ShowMatchesCmd
+        {
+            get => new RelayCommand<LaunchGroup>((grp) =>
+            {
+
+                if (grp == null)
+                {
+                    return;
+                }
+                var window = MatchedGamesViewModel.GetWindow(Settings, grp);
+                if (window == null)
+                {
+                    return;
+                }
+                if (!(window.ShowDialog() ?? false))
+                {
+                    return;
+                }
+
+            });
+        }
+
+        public SettingsViewModel(LaunchMate plugin)
         {
             // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
             this.plugin = plugin;

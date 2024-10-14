@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SideLauncher.Enums;
+using LaunchMate.Enums;
 using Playnite.SDK;
-using SideLauncher.Models;
-using SideLauncher.Views;
-using SideLauncher.Utilities;
+using LaunchMate.Models;
+using LaunchMate.Views;
+using LaunchMate.Utilities;
 using System.Security.Principal;
 using System.Windows;
 
-namespace SideLauncher.ViewModels
+namespace LaunchMate.ViewModels
 {
     public class ConditionGroupEditorViewModel : ObservableObject
     {
@@ -74,7 +74,7 @@ namespace SideLauncher.ViewModels
             try
             {
                 var viewModel = new ConditionGroupEditorViewModel(settings, conditionGroup);
-                var conditionGroupEditorView = new ConditionGroupEditorView();
+                var conditionGroupEditorView = new ConditionGroupEditorView(conditionGroup.Conditions);
                 var window = WindowHelper.CreateSizedWindow
                 (
                     "Condition Group Editor", 800, 400

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SideLauncher.Enums;
+using LaunchMate.Enums;
 using Playnite.SDK;
-using SideLauncher.Models;
-using SideLauncher.Views;
-using SideLauncher.Utilities;
+using LaunchMate.Models;
+using LaunchMate.Views;
+using LaunchMate.Utilities;
 using System.Security.Principal;
 using System.Windows;
 using Playnite.SDK.Data;
 
-namespace SideLauncher.ViewModels
+namespace LaunchMate.ViewModels
 {
     public class LaunchGroupEditorViewModel : ObservableObject
     {
@@ -110,12 +110,34 @@ namespace SideLauncher.ViewModels
             });
         }
 
+        public RelayCommand<LaunchGroup> ShowMatchesCmd
+        {
+            get => new RelayCommand<LaunchGroup>((grp) =>
+            {
+
+                if (grp == null)
+                {
+                    return;
+                }
+                var window = MatchedGamesViewModel.GetWindow(_settings, grp);
+                if (window == null)
+                {
+                    return;
+                }
+                if (!(window.ShowDialog() ?? false))
+                {
+                    return;
+                }
+
+            });
+        }
+
         public static Window GetWindow(Settings settings, LaunchGroup launchGroup)
         {
             try
             {
                 var viewModel = new LaunchGroupEditorViewModel(settings, launchGroup);
-                var launchGroupEditorView = new LaunchGroupEditorView();
+                var launchGroupEditorView = new LaunchGroupEditorView(launchGroup.ConditionGroups);
                 var window = WindowHelper.CreateSizedWindow
                 (
                     "Launch Group Editor", 800, 600

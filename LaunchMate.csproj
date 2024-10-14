@@ -7,8 +7,8 @@
     <ProjectGuid>{4FDF1E89-5BC3-4C72-8FDA-0D580E7A5D5F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SideLauncher</RootNamespace>
-    <AssemblyName>SideLauncher</AssemblyName>
+    <RootNamespace>LaunchMate</RootNamespace>
+    <AssemblyName>LaunchMate</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,11 +57,15 @@
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\LaunchGroup.cs" />
     <Compile Include="Models\LaunchCondition.cs" />
-    <Compile Include="SideLauncher.cs" />
+    <Compile Include="LaunchMate.cs" />
     <Compile Include="Utilities\RegexExtensions.cs" />
     <Compile Include="ViewModels\ConditionGroupEditorViewModel.cs" />
+    <Compile Include="ViewModels\MatchedGamesViewModel.cs" />
     <Compile Include="Views\ConditionGroupEditorView.xaml.cs">
       <DependentUpon>ConditionGroupEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MatchedGamesView.xaml.cs">
+      <DependentUpon>MatchedGamesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
@@ -92,6 +96,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ConditionGroupEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MatchedGamesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

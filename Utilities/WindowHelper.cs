@@ -4,18 +4,10 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media;
 
-namespace SideLauncher.Utilities
+namespace LaunchMate.Utilities
 {
     public static class WindowHelper
     {
-        public static Window CreateFixedDialog(string title)
-        {
-            var window = CreateSizeToContentWindow(title, 300, 50);
-            window.ResizeMode = ResizeMode.NoResize;
-
-            return window;
-        }
-
         public static Window CreateSizedWindow(string title, int width, int height, bool widthToMax = false, bool heightToMax = false)
         {
             var window = CreateWindow(title);
@@ -52,26 +44,6 @@ namespace SideLauncher.Utilities
                 window.Width = width;
                 window.Height = height;
             }
-
-            PositionWindow(window);
-
-            return window;
-        }
-
-        public static Window CreateSizeToContentWindow(string title, int minWidth = 500, int minHeight = 500)
-        {
-            var window = CreateWindow(title);
-
-            var ioHelper = new WindowInteropHelper(window.Owner);
-            var hWnd = ioHelper.Handle;
-            var screen = Screen.FromHandle(hWnd);
-            var dpi = VisualTreeHelper.GetDpi(window);
-
-            window.SizeToContent = SizeToContent.WidthAndHeight;
-            window.MinHeight = minHeight;
-            window.MaxHeight = screen.WorkingArea.Height * 0.96D / dpi.DpiScaleY;
-            window.MinWidth = minWidth;
-            window.MaxWidth = screen.WorkingArea.Width * 0.96D / dpi.DpiScaleY;
 
             PositionWindow(window);
 

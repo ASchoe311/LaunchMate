@@ -1,7 +1,7 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Data;
 using Playnite.SDK.Models;
-using SideLauncher.Enums;
+using LaunchMate.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SideLauncher.Models
+namespace LaunchMate.Models
 {
     public class ConditionGroup : ObservableObject
     {
@@ -29,12 +29,12 @@ namespace SideLauncher.Models
         {
             get
             {
-                string filterStr = "Conditions: ";
+                string filterStr = string.Empty;
                 for (int j = 0; j < Conditions.Count; j++)
                 {
                     var condition = Conditions[j];
                     filterStr += "(";
-                    filterStr += $"\"{condition.FilterType}\" {(condition.Not ? "NOT" : "->")} \"{condition.Filter}\"";
+                    filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? "NOT~" : "NOT") : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
                     filterStr += ")";
                     if (j < Conditions.Count - 1)
                     {

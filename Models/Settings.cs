@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SideLauncher.Models
+namespace LaunchMate.Models
 {
     public class Settings : ObservableObject
     {

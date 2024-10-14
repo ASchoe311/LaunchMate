@@ -12,14 +12,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LaunchMate.Models;
-using LaunchMate.ViewModels;
 
-namespace LaunchMate
+namespace LaunchMate.Views
 {
-    public partial class SettingsView : UserControl
+    /// <summary>
+    /// Interaction logic for MatchedGamesView.xaml
+    /// </summary>
+    public partial class MatchedGamesView : UserControl
     {
-        public SettingsView()
+        public MatchedGamesView()
         {
             InitializeComponent();
         }
