@@ -17,17 +17,18 @@ namespace LaunchMate.ViewModels
     public class LaunchGroupEditorViewModel : ObservableObject
     {
         private static readonly ILogger logger = LogManager.GetLogger();
-        private readonly Settings _settings;
         private LaunchGroup _group;
 
-        public LaunchGroupEditorViewModel(Settings settings, LaunchGroup group)
+        public LaunchGroupEditorViewModel(LaunchGroup group)
         {
-            _settings = settings;
             _group = group;
         }
 
         public LaunchGroup Group { get => _group; set => SetValue(ref _group, value); }
 
+        /// <summary>
+        /// Dictionary to convert frontend logic types to <see cref="JoinType"/> enums
+        /// </summary>
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
         {
             { "AND", JoinType.And },
@@ -35,6 +36,9 @@ namespace LaunchMate.ViewModels
             { "XOR", JoinType.Xor }
         };
 
+        /// <summary>
+        /// Command to select an executable for the <see cref="LaunchGroup"/> using a file picker dialog
+        /// </summary>
         public RelayCommand SelectAppCmd
         {
             get => new RelayCommand(() =>
@@ -50,13 +54,17 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to create a new <see cref="ConditionGroup"/> within the current <see cref="LaunchGroup"/>
+        /// and open a window to edit it
+        /// </summary>
         public RelayCommand AddConditionGroupCmd
         {
             get => new RelayCommand(() =>
             {
                 var conditionGroup = new ConditionGroup();
 
-                var window = ConditionGroupEditorViewModel.GetWindow(_settings, conditionGroup);
+                var window = ConditionGroupEditorViewModel.GetWindow(conditionGroup);
 
                 if (window == null)
                 {
@@ -72,6 +80,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to open the editing window for the selected <see cref="ConditionGroup"/>
+        /// </summary>
         public RelayCommand<object> EditConditionGroupCmd
         {
             get => new RelayCommand<object>((grp) =>
@@ -83,7 +94,7 @@ namespace LaunchMate.ViewModels
                 var grpOriginal = (ConditionGroup)grp;
                 var toEdit = Serialization.GetClone(grpOriginal);
 
-                var window = ConditionGroupEditorViewModel.GetWindow(_settings, toEdit);
+                var window = ConditionGroupEditorViewModel.GetWindow(toEdit);
 
                 if (window == null)
                 {
@@ -101,6 +112,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to remove the selected <see cref="ConditionGroup"/> from the current <see cref="LaunchGroup"/>
+        /// </summary>
         public RelayCommand<ConditionGroup> RemoveConditionGroupCmd
         {
             get => new RelayCommand<ConditionGroup>((a) =>
@@ -110,6 +124,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to launch a window to show the list of games matched by the current <see cref="LaunchGroup"/>
+        /// </summary>
         public RelayCommand<LaunchGroup> ShowMatchesCmd
         {
             get => new RelayCommand<LaunchGroup>((grp) =>
@@ -119,7 +136,7 @@ namespace LaunchMate.ViewModels
                 {
                     return;
                 }
-                var window = MatchedGamesViewModel.GetWindow(_settings, grp);
+                var window = MatchedGamesViewModel.GetWindow(grp);
                 if (window == null)
                 {
                     return;
@@ -132,11 +149,17 @@ namespace LaunchMate.ViewModels
             });
         }
 
-        public static Window GetWindow(Settings settings, LaunchGroup launchGroup)
+        /// <summary>
+        /// Creates the window for displaying the launch group editor
+        /// </summary>
+        /// <param name="launchGroup"><see cref="LaunchGroup"/> to edit</param>
+        /// <returns>A <see cref="Window"/> with Content=<see cref="LaunchGroupEditorView"/>(<paramref name="launchGroup"/>) 
+        /// and DataContext=<see cref="LaunchGroupEditorViewModel"/>(<paramref name="launchGroup"/>)</returns>
+        public static Window GetWindow(LaunchGroup launchGroup)
         {
             try
             {
-                var viewModel = new LaunchGroupEditorViewModel(settings, launchGroup);
+                var viewModel = new LaunchGroupEditorViewModel(launchGroup);
                 var launchGroupEditorView = new LaunchGroupEditorView(launchGroup.ConditionGroups);
                 var window = WindowHelper.CreateSizedWindow
                 (
@@ -153,6 +176,9 @@ namespace LaunchMate.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the edited <see cref="LaunchGroup"/> and closes the window
+        /// </summary>
         public RelayCommand<Window> SaveCommand
         {
             get => new RelayCommand<Window>((w) =>

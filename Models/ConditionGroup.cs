@@ -24,6 +24,10 @@ namespace LaunchMate.Models
         [DontSerialize]
         private readonly ILogger logger = LogManager.GetLogger();
 
+
+        /// <summary>
+        /// Returns a string representation of the conditions within the condition group
+        /// </summary>
         [DontSerialize]
         public string ToFilterString
         {
@@ -56,6 +60,11 @@ namespace LaunchMate.Models
             }
         }
 
+        /// <summary>
+        /// Checks if <see cref="LaunchCondition.IsMet(Game)"/> is true for all conditions within the <see cref="ConditionGroup"/> for the given <see cref="Game"/>
+        /// </summary>
+        /// <param name="game"><see cref="Game"/> object to check against the conditions within the <see cref="ConditionGroup"/></param>
+        /// <returns>True if all conditions are met, false otherwise</returns>
         public bool IsMet(Game game)
         {
             List<bool> matches = new List<bool>();

@@ -21,27 +21,29 @@ namespace LaunchMate.ViewModels
     public class SettingsViewModel : ObservableObject, ISettings
     {
         private readonly LaunchMate plugin;
-        private Settings editingClone { get; set; }
+        private Settings EditingClone { get; set; }
 
-        private Settings settings;
+        private Settings _settings;
         public Settings Settings
         {
-            get => settings;
+            get => _settings;
             set
             {
-                settings = value;
+                _settings = value;
                 OnPropertyChanged();
             }
         }
 
-
+        /// <summary>
+        /// Command to create a new <see cref="LaunchGroup"/> and open a window to edit it
+        /// </summary>
         public RelayCommand AddLaunchGroupCmd
         {
             get => new RelayCommand(() =>
             {
                 var launchGroup = new LaunchGroup();
 
-                var window = LaunchGroupEditorViewModel.GetWindow(Settings, launchGroup);
+                var window = LaunchGroupEditorViewModel.GetWindow(launchGroup);
 
                 if (window == null)
                 {
@@ -57,6 +59,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to open the editing window for the selected <see cref="LaunchGroup"/>
+        /// </summary>
         public RelayCommand<object> EditLaunchGroupCmd
         {
             get => new RelayCommand<object>((grp) =>
@@ -68,7 +73,7 @@ namespace LaunchMate.ViewModels
                 var grpOriginal = (LaunchGroup)grp;
                 var toEdit = Serialization.GetClone(grpOriginal);
 
-                var window = LaunchGroupEditorViewModel.GetWindow(Settings, toEdit);
+                var window = LaunchGroupEditorViewModel.GetWindow(toEdit);
 
                 if (window == null)
                 {
@@ -86,6 +91,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to remove the selected <see cref="LaunchGroup"/>
+        /// </summary>
         public RelayCommand<LaunchGroup> RemoveLaunchGroupCmd
         {
             get => new RelayCommand<LaunchGroup>((a) =>
@@ -95,6 +103,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Command to launch a window to show the list of games matched by the selected <see cref="LaunchGroup"/>
+        /// </summary>
         public RelayCommand<LaunchGroup> ShowMatchesCmd
         {
             get => new RelayCommand<LaunchGroup>((grp) =>
@@ -104,7 +115,7 @@ namespace LaunchMate.ViewModels
                 {
                     return;
                 }
-                var window = MatchedGamesViewModel.GetWindow(Settings, grp);
+                var window = MatchedGamesViewModel.GetWindow(grp);
                 if (window == null)
                 {
                     return;
@@ -139,22 +150,19 @@ namespace LaunchMate.ViewModels
         public void BeginEdit()
         {
             // Code executed when settings view is opened and user starts editing values.
-            editingClone = Serialization.GetClone(Settings);
+            EditingClone = Serialization.GetClone(Settings);
         }
 
         public void CancelEdit()
         {
             // Code executed when user decides to cancel any changes made since BeginEdit was called.
-            // This method should revert any changes made to Option1 and Option2.
-            Settings = editingClone;
+            Settings = EditingClone;
         }
 
         public void EndEdit()
         {
             // Code executed when user decides to confirm changes made since BeginEdit was called.
-            // This method should save settings made to Option1 and Option2.
             plugin.SavePluginSettings(Settings);
-            //plugin.UpdateGameActions();
         }
 
         public bool VerifySettings(out List<string> errors)

@@ -41,6 +41,11 @@ namespace LaunchMate.Models
             FuzzyMatch = false;
         }
 
+        /// <summary>
+        /// Checks if the <see cref="LaunchCondition"/> is true for a given <see cref="Game"/>
+        /// </summary>
+        /// <param name="game"><see cref="Game"/> object to check against the <see cref="LaunchCondition"/></param>
+        /// <returns>True if the <see cref="Game"/> matches the <see cref="LaunchCondition"/>, false otherwise</returns>
         [DontSerialize]
         public bool IsMet(Game game)
         {

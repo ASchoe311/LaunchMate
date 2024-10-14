@@ -11,6 +11,15 @@ namespace LaunchMate.Utilities
 {
     public class AppSelector
     {
+        /// <summary>
+        /// Opens a file dialog to select an executable file (or lnk)
+        /// </summary>
+        /// <returns>A <see cref="Tuple{string, string, string}"/> of three strings, where
+        /// <list type="bullet">
+        /// <item><c>Item1</c> is the path to the executable file</item>
+        /// <item><c>Item2</c> is the executable's launch arguments (<see cref="string.Empty"/> if the selected file is not an lnk)</item>
+        /// <item><c>Item3</c> is the file name of the selected lnk (<see cref="null"/> if the selected file is not an lnk)</item>
+        /// </list></returns>
         public static Tuple<string, string, string> SelectApp()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -41,7 +50,7 @@ namespace LaunchMate.Utilities
                     if (folderItem != null)
                     {
                         Shell32.ShellLinkObject link = (Shell32.ShellLinkObject)folderItem.GetLink;
-                        targetname = link.Target.Path;  // <-- main difference
+                        targetname = link.Target.Path;
                         args = link.Arguments;
                         if (targetname.StartsWith("{"))
                         { // it is prefixed with {54A35DE2-guid-for-program-files-x86-QZ32BP4}
@@ -51,7 +60,6 @@ namespace LaunchMate.Utilities
                                 targetname = "C:\\program files (x86)" + targetname.Substring(endguid + 1);
                             }
                         }
-                        //string file = LnkToFile(openFileDialog.FileName);
                     }
                 }
                 return new Tuple<string, string, string>(targetname, args, lnkName);

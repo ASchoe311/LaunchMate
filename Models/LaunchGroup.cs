@@ -35,6 +35,10 @@ namespace LaunchMate.Models
         public bool MakeGameActions { get => _makeActions; set => SetValue(ref _makeActions, value); }
         public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
 
+
+        /// <summary>
+        /// Returns a collection of games for which this launch group is a match
+        /// </summary>
         [DontSerialize]
         public ObservableCollection<Game> MatchedGames { get
             {
@@ -53,6 +57,12 @@ namespace LaunchMate.Models
         [DontSerialize]
         private readonly ILogger logger = LogManager.GetLogger();
 
+        /// <summary>
+        /// Determines whether or not the executable in the <see cref="LaunchGroup"/> should launch for the given <see cref="Game"/>
+        /// by checking <see cref="ConditionGroup.IsMet(Game)"/> for each <see cref="ConditionGroup"/> in the <see cref="LaunchGroup"/>
+        /// </summary>
+        /// <param name="game"><see cref="Game"/> object to check against</param>
+        /// <returns>True if launch conditions evaluate to true, false otherwise</returns>
         [DontSerialize]
         public bool ShouldLaunchApp(Game game)
         {
@@ -90,6 +100,9 @@ namespace LaunchMate.Models
             return execute;
         }
 
+        /// <summary>
+        /// Returns a string representation of the conditions within the launch group
+        /// </summary>
         [DontSerialize]
         public string ToFilterString { get
             {
@@ -146,20 +159,5 @@ namespace LaunchMate.Models
 
         [DontSerialize]
         public string AppDisplayName => LnkName != null ? LnkName : Path.GetFileName(AppExePath);
-
-        [DontSerialize]
-        public ObservableCollection<Game> GetMatchedGames()
-        {
-            var matches = new ObservableCollection<Game>();
-            foreach (var game in API.Instance.Database.Games)
-            {
-                if (ShouldLaunchApp(game))
-                {
-                    matches.Add(game);
-                }
-            }
-            return matches;
-        }
-
     }
 }

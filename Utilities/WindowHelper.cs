@@ -8,6 +8,15 @@ namespace LaunchMate.Utilities
 {
     public static class WindowHelper
     {
+        /// <summary>
+        /// Creates a <see cref="Window"/> with the given title, width, and height
+        /// </summary>
+        /// <param name="title">Title to give the window</param>
+        /// <param name="width">Width of the new window</param>
+        /// <param name="height">Height of the new window</param>
+        /// <param name="widthToMax">Bool to set width to max screen width</param>
+        /// <param name="heightToMax">Bool to set height to max screen height</param>
+        /// <returns>A <see cref="Window"/> with the given attributes</returns>
         public static Window CreateSizedWindow(string title, int width, int height, bool widthToMax = false, bool heightToMax = false)
         {
             var window = CreateWindow(title);

@@ -16,17 +16,18 @@ namespace LaunchMate.ViewModels
     public class ConditionGroupEditorViewModel : ObservableObject
     {
         private static readonly ILogger logger = LogManager.GetLogger();
-        private readonly Settings _settings;
         private ConditionGroup _group;
 
-        public ConditionGroupEditorViewModel(Settings settings, ConditionGroup group)
+        public ConditionGroupEditorViewModel(ConditionGroup group)
         {
-            _settings = settings;
             _group = group;
         }
 
         public ConditionGroup Group { get => _group; set => SetValue(ref _group, value); }
 
+        /// <summary>
+        /// Adds a <see cref="LaunchCondition"/> to the current <see cref="ConditionGroup"/> 
+        /// </summary>
         public RelayCommand AddConditionCmd
         {
             get => new RelayCommand(() =>
@@ -35,6 +36,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Removes the selected <see cref="LaunchCondition"/> from the current <see cref="ConditionGroup"/> 
+        /// </summary>
         public RelayCommand<LaunchCondition> RemoveConditionCmd
         {
             get => new RelayCommand<LaunchCondition>((c) =>
@@ -46,6 +50,9 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        /// <summary>
+        /// Dictionary to convert frontend logic types string representation to <see cref="JoinType"/> enums
+        /// </summary>
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
         {
             { "AND", JoinType.And },
@@ -53,6 +60,9 @@ namespace LaunchMate.ViewModels
             { "XOR", JoinType.Xor }
         };
 
+        /// <summary>
+        /// Dictionary to convert frontend filter types string representation to <see cref="FilterTypes"/> enums
+        /// </summary>
         public static Dictionary<string, FilterTypes> FilterTypesDict { get; } = new Dictionary<string, FilterTypes>
         {
             { "All Games", FilterTypes.All },
@@ -69,11 +79,17 @@ namespace LaunchMate.ViewModels
             { "Series", FilterTypes.Series }
         };
 
-        public static Window GetWindow(Settings settings, ConditionGroup conditionGroup)
+        /// <summary>
+        /// Creates the window for displaying the condition group editor
+        /// </summary>
+        /// <param name="conditionGroup"><see cref="ConditionGroup"/> to edit</param>
+        /// <returns>A <see cref="Window"/> with Content=<see cref="ConditionGroupEditorView"/>(<paramref name="conditionGroup"/>) 
+        /// and DataContext=<see cref="ConditionGroupEditorViewModel"/>(<paramref name="conditionGroup"/>)</returns>
+        public static Window GetWindow(ConditionGroup conditionGroup)
         {
             try
             {
-                var viewModel = new ConditionGroupEditorViewModel(settings, conditionGroup);
+                var viewModel = new ConditionGroupEditorViewModel(conditionGroup);
                 var conditionGroupEditorView = new ConditionGroupEditorView(conditionGroup.Conditions);
                 var window = WindowHelper.CreateSizedWindow
                 (
@@ -90,6 +106,9 @@ namespace LaunchMate.ViewModels
             }
         }
 
+        /// <summary>
+        /// Saves the edited <see cref="ConditionGroup"/> and closes the window
+        /// </summary>
         public RelayCommand<Window> SaveCommand
         {
             get => new RelayCommand<Window>((w) =>

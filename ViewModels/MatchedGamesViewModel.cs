@@ -14,22 +14,25 @@ namespace LaunchMate.ViewModels
     public class MatchedGamesViewModel : ObservableObject
     {
         private static readonly ILogger logger = LogManager.GetLogger();
-        private readonly Settings _settings;
         private LaunchGroup _group;
 
-        public MatchedGamesViewModel(Settings settings, LaunchGroup group)
+        public MatchedGamesViewModel(LaunchGroup group)
         {
-            _settings = settings;
             _group = group;
         }
 
         public LaunchGroup Group { get => _group; }
 
-        public static Window GetWindow(Settings settings, LaunchGroup launchGroup)
+        /// <summary>
+        /// Creates a window to present the list of matched games
+        /// </summary>
+        /// <param name="launchGroup"><see cref="LaunchGroup"/> for which to see matches</param>
+        /// <returns>A <see cref="Window"/> with Content=<see cref="MatchedGamesView"/> and DataContext=<see cref="MatchedGamesViewModel"/></returns>
+        public static Window GetWindow(LaunchGroup launchGroup)
         {
             try
             {
-                var viewModel = new MatchedGamesViewModel(settings, launchGroup);
+                var viewModel = new MatchedGamesViewModel(launchGroup);
                 var matchedGamesView = new MatchedGamesView();
                 var window = WindowHelper.CreateSizedWindow
                 (
