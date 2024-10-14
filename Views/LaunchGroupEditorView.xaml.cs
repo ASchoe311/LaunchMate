@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace LaunchMate.Views
 {
@@ -24,18 +25,52 @@ namespace LaunchMate.Views
     {
         private DataGridCell _previousLastCell = null;
         private ObservableCollection<ConditionGroup> _conditionGroups;
+        private int _previousItemCount;
+        private DispatcherTimer _debounceTimer;
         public LaunchGroupEditorView(ObservableCollection<ConditionGroup> conditionGroups)
         {
             InitializeComponent();
             _conditionGroups = conditionGroups;
             _conditionGroups.CollectionChanged += Items_CollectionChanged;
+            _previousItemCount = _conditionGroups.Count;
 
+            // Use debounce timer to check if number of items in collection has changed after 100 ms
+            // Do this because otherwise and edit event would trigger UpdateLastRowCellVisibility()
+            _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _debounceTimer.Tick += DebounceTimer_Tick;
         }
+
+        /// <summary>
+        /// <see cref="System.Collections.Specialized.NotifyCollectionChangedEventHandler"/>
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e"><see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/></param>
         private void Items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            UpdateLastRowCellVisibility();
+            _debounceTimer.Stop();
+            _debounceTimer.Start();
         }
 
+        /// <summary>
+        /// On tick, check if number of ConditionGroups in the LaunchGroup has changed
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e"><see cref="EventArgs"/></param>
+        public void DebounceTimer_Tick(object sender, EventArgs e)
+        {
+            _debounceTimer.Stop();
+
+            if (_previousItemCount != _conditionGroups.Count)
+            {
+                UpdateLastRowCellVisibility();
+                _previousItemCount = _conditionGroups.Count;
+            }
+        }
+
+        /// <summary>
+        /// When a row is added or removed from the DataGrid, ensure that the last column of the last row is made invisible
+        /// This provides visual clarity to the purpose of the "Next Logical Operator" column
+        /// </summary>
         private void UpdateLastRowCellVisibility()
         {
             var lastRow = GridConditionGroups.Items.Count - 1;
@@ -66,6 +101,12 @@ namespace LaunchMate.Views
             }
         }
 
+        /// <summary>
+        /// When the DataGrid is first loaded, ensure that the last column of the last row is made invisible
+        /// This provides visual clarity to the purpose of the "Next Logical Operator" column
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e"><see cref="DataGridRowEventArgs"/></param>
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             var dataGrid = sender as System.Windows.Controls.DataGrid;
