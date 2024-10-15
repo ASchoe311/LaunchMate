@@ -12,7 +12,7 @@ You can have it check games for many different aspects like title, developers, g
 
 ## Installation
 - Method 1: Install directly from within Playnite in the Addon Browser
-- Method 2: Click the download link on Playnite's addon page [here](https://playnite.link/)
+- Method 2: Click the download link on Playnite's addon page [here]([https://playnite.link/](https://playnite.link/addons.html#LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8))
 - Method 3: Download the latest .pext file from releases and open it using Playnite
 
 ## Usage
