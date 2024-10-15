@@ -24,7 +24,6 @@ namespace LaunchMate.Models
         private bool _ignoreCase = false;
         private int _delay = 0;
         private bool _makeActions = false;
-        private JoinType _joinType = JoinType.And;
 
         public string AppExePath { get => _exePath; set => SetValue(ref _exePath, value); }
         public string AppExeArgs { get => _exeArgs; set => SetValue(ref _exeArgs, value); }
