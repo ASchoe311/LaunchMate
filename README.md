@@ -9,7 +9,7 @@ You can have it check games for many different aspects like title, developers, g
 ### Please contribute translations on [Crowdin](https://crowdin.com/project/launchmate)!
 
 ## Installation
-- Method 1: Install directly from within Playnite
+- Method 1: Install directly from within Playnite in the Addon Browser
 - Method 2: Click the download link on Playnite's addon page [here](https://playnite.link/)
 - Method 3: Download the latest .pext file from releases and open it using Playnite
 
@@ -20,7 +20,10 @@ Once installed, LaunchMate's settings can be found within the "Generic" section 
 The main settings page displays a table of all Launch Groups you've added. To create a new one, click "Add".
 
 This will open the Launch Group Editor window for a new Launch Group. In this window you can select the application the group will launch, set the delay timer for application launch, and select the conditions a game must meet to launch the application.
-[See "How to use the conditions section"](#how-to-use-the-conditions-section) for more information on conditions
+
+See ["How to use the conditions section"](#how-to-use-the-conditions-section) for more information on conditions.
+
+The Launch Group Editor window has a button at the bottom to preview matched games. This button can also be found for each Launch Group on the main settings window.
 
 
 ### How to use the conditions section
@@ -45,3 +48,19 @@ This will open a new window with a table of conditions for that group. Once agai
 | | ~> means "fuzzy matches" | |
 | | NOT means "does not match" | |
 | | NOT~ means "does not fuzzy match" | |
+
+#### Example usage
+
+To launch the application blitz.gg with any game made by Riot Games except for Legends of Runeterra, you have a few options. Two of them would be:
+
+1. Set up two condition groups, the first checks that "Source" matches "Riot Games" and the second checks that "Name" does not match "Runeterra". Check "Not" on the second group and set the "Next Logical Operator" of the first group to "AND".
+
+    ![Image showing a condition group setup](https://i.imgur.com/HvROKwx.png)
+
+2. Set up one condition group containing both a check that "Source" matches "Riot Games" and a check that "Name" does not match "Runeterra". Set the "Next Logical Operator" of the first group to "AND".
+
+    ![Image showing a condition group setup](https://i.imgur.com/BzMBR14.png)
+
+Either of these methods results in the following matches:
+    
+![Image showing a condition group setup](https://i.imgur.com/2xVxs6f.png)
