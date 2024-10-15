@@ -8,7 +8,7 @@
              d:DataContext="{d:DesignInstance Type=viewModels:ConditionGroupEditorViewModel}"
              xmlns:local="clr-namespace:LaunchMate.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="800">
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -72,7 +72,7 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <TextBlock DockPanel.Dock="Bottom" Text="*Filters support regex!" Margin="100,5,0,0"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="*Filters support regex!" HorizontalAlignment="Center" Margin="0,5,0,0"/>
             </DockPanel>
         </GroupBox>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,15,15">

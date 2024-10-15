@@ -93,7 +93,7 @@ namespace LaunchMate.ViewModels
                 var conditionGroupEditorView = new ConditionGroupEditorView(conditionGroup.Conditions);
                 var window = WindowHelper.CreateSizedWindow
                 (
-                    "Condition Group Editor", 800, 400
+                    "Condition Group Editor", 800, 500
                 );
                 window.Content = conditionGroupEditorView;
                 window.DataContext = viewModel;
