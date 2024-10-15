@@ -80,9 +80,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="AddonManifest.yaml" />
     <None Include="extension.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="InstallerManifest.yaml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
