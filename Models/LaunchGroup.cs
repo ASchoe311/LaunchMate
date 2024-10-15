@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using LaunchMate.Utilities;
 
 namespace LaunchMate.Models
 {
@@ -36,26 +37,43 @@ namespace LaunchMate.Models
         public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
 
 
+        [DontSerialize]
+        private readonly ILogger logger = LogManager.GetLogger();
+
         /// <summary>
         /// Returns a collection of games for which this launch group is a match
+        /// Shows a progress bar while scanning and allows cancellation
         /// </summary>
         [DontSerialize]
         public ObservableCollection<Game> MatchedGames { get
             {
                 var matches = new ObservableCollection<Game>();
-                foreach (var game in API.Instance.Database.Games)
+                int numGames = API.Instance.Database.Games.Count;
+                var gpo = new GlobalProgressOptions("Checking Games", true);
+                gpo.IsIndeterminate = false;
+                bool cancelled = false;
+                API.Instance.Dialogs.ActivateGlobalProgress((activateGlobalProgress) =>
                 {
-                    if (ShouldLaunchApp(game))
+                    activateGlobalProgress.ProgressMaxValue = numGames;
+                    activateGlobalProgress.CurrentProgressValue = -1;
+                    foreach (var game in API.Instance.Database.Games)
                     {
-                        matches.Add(game);
+                        if (activateGlobalProgress.CancelToken.IsCancellationRequested)
+                        {
+                            cancelled = true;
+                            break;
+                        }
+                        activateGlobalProgress.CurrentProgressValue += 1;
+                        if (ShouldLaunchApp(game))
+                        {
+                            matches.Add(game);
+                        }
                     }
-                }
-                return matches;
+                }, gpo);
+
+                return cancelled ? null : matches;
             }
         } 
-
-        [DontSerialize]
-        private readonly ILogger logger = LogManager.GetLogger();
 
         /// <summary>
         /// Determines whether or not the executable in the <see cref="LaunchGroup"/> should launch for the given <see cref="Game"/>
