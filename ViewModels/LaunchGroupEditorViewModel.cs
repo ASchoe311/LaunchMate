@@ -31,9 +31,9 @@ namespace LaunchMate.ViewModels
         /// </summary>
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
         {
-            { "AND", JoinType.And },
-            { "OR", JoinType.Or },
-            { "XOR", JoinType.Xor }
+            { ResourceProvider.GetString("LOCLaunchMateAnd"), JoinType.And },
+            { ResourceProvider.GetString("LOCLaunchMateOr"), JoinType.Or },
+            { ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
         };
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace LaunchMate.ViewModels
                 var launchGroupEditorView = new LaunchGroupEditorView(launchGroup.ConditionGroups);
                 var window = WindowHelper.CreateSizedWindow
                 (
-                    "Launch Group Editor", 800, 600
+                    ResourceProvider.GetString("LOCLaunchMateLaunchGroupEditorTitle"), 800, 650
                 );
                 window.Content = launchGroupEditorView;
                 window.DataContext = viewModel;
@@ -186,14 +186,14 @@ namespace LaunchMate.ViewModels
                 if (Group.AppExePath == string.Empty)
                 {
                     API.Instance.Dialogs.ShowMessage(
-                        "Application executable path cannot be empty", string.Empty,
+                        ResourceProvider.GetString("LOCLaunchMateNoExe"), string.Empty,
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 if (Group.Enabled && Group.ConditionGroups.Count == 0)
                 {
                     if (API.Instance.Dialogs.ShowMessage(
-                        "No conditions were set. This will result in the application launching alongside all games. Continue?",
+                        ResourceProvider.GetString("LOCLaunchMateNoConditions"),
                         string.Empty, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                     {
                         return;

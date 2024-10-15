@@ -121,7 +121,7 @@ namespace LaunchMate.Models
                         return true;
                     }
                     break;
-                case FilterTypes.Gameid:
+                case FilterTypes.GameId:
                     rgxMatch = rgx.IsMatch(game.GameId);
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - N/A  |  Regex Match - {rgxMatch}");
                     if (rgxMatch)

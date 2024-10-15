@@ -49,7 +49,7 @@ namespace LaunchMate.Models
             {
                 var matches = new ObservableCollection<Game>();
                 int numGames = API.Instance.Database.Games.Count;
-                var gpo = new GlobalProgressOptions("Checking Games", true);
+                var gpo = new GlobalProgressOptions(ResourceProvider.GetString("LOCLaunchMateCheckingGames"), true);
                 gpo.IsIndeterminate = false;
                 bool cancelled = false;
                 API.Instance.Dialogs.ActivateGlobalProgress((activateGlobalProgress) =>
@@ -130,44 +130,23 @@ namespace LaunchMate.Models
                 {
                     if (ConditionGroups[i].Not)
                     {
-                        filterStr += "NOT ";
+                        filterStr += ResourceProvider.GetString("LOCLaunchMateNot") + " ";
                     }
                     filterStr += "(";
-                    for (int j = 0; j < ConditionGroups[i].Conditions.Count; j++)
-                    {
-                        var condition = ConditionGroups[i].Conditions[j];
-                        filterStr += "(";
-                        filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? "NOT~" : "NOT") : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
-                        filterStr += ")";
-                        if (j < ConditionGroups[i].Conditions.Count - 1)
-                        {
-                            switch (condition.Joiner)
-                            {
-                                case JoinType.And:
-                                    filterStr += " AND ";
-                                    break;
-                                case JoinType.Or:
-                                    filterStr += " OR ";
-                                    break;
-                                case JoinType.Xor:
-                                    filterStr += " XOR ";
-                                    break;
-                            }
-                        }
-                    }
+                    filterStr += ConditionGroups[i].ToFilterString;
                     filterStr += ")";
                     if (i < ConditionGroups.Count - 1)
                     {
                         switch (ConditionGroups[i].Joiner)
                         {
                             case JoinType.And:
-                                filterStr += " AND ";
+                                filterStr += " " + ResourceProvider.GetString("LOCLaunchMateAnd") + " ";
                                 break;
                             case JoinType.Or:
-                                filterStr += " OR ";
+                                filterStr += " " + ResourceProvider.GetString("LOCLaunchMateOr") + " ";
                                 break;
                             case JoinType.Xor:
-                                filterStr += " XOR ";
+                                filterStr += " " + ResourceProvider.GetString("LOCLaunchMateXor") + " ";
                                 break;
                         }
                     }

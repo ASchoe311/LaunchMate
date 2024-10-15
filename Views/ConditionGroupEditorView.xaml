@@ -15,24 +15,24 @@
         </Style>
     </UserControl.Resources>
     <DockPanel LastChildFill="False">
-        <GroupBox DockPanel.Dock="Top"  Header="Conditions:" Margin="0,25,0,0">
+        <GroupBox DockPanel.Dock="Top"  Header="{DynamicResource LOCLaunchMateGroupBoxTitle}" Margin="0,25,0,0">
             <DockPanel LastChildFill="False">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-                    <Button Content="Add" Command="{Binding AddConditionCmd}" Margin="5"/>
-                    <Button Content="Remove" Command="{Binding RemoveConditionCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditions}" Margin="5"/>
+                    <Button Content="{DynamicResource LOCAddTitle}" Command="{Binding AddConditionCmd}" Margin="5"/>
+                    <Button Content="{DynamicResource LOCRemoveGame}" Command="{Binding RemoveConditionCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditions}" Margin="5"/>
                 </StackPanel>
                 <DataGrid Name="GridConditions" DockPanel.Dock="Top"
               ItemsSource="{Binding Group.Conditions}" LoadingRow="DataGrid_LoadingRow"
               CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single" Width="Auto">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Not" Width="Auto">
+                        <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateNot}" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox IsChecked="{Binding Not, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Filter Type" Width="Auto">
+                        <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilterType}" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
@@ -41,7 +41,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Filter" Width="*" >
+                        <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
@@ -53,32 +53,32 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Fuzzy Match" Width="Auto">
+                        <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFuzzyMatch}" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox IsChecked="{Binding FuzzyMatch, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Next Logical Operator" Width="Auto">
+                        <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateNextOperator}" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <ComboBox Name="JoinTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
                                       SelectedValue="{Binding Joiner, UpdateSourceTrigger=PropertyChanged}" 
                                       ItemsSource="{Binding DataContext.JoinMethodsDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                      ToolTip="Controls the logical operator used between this condition group and the next&#x0a;&#x0a;E.g. if set to AND, the backend logic will be:&#x0a;    (thisCondition &amp;&amp; nextCondition)"/>
+                                      ToolTip="{DynamicResource LOCLaunchMateConditionOperatorTooltip}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <TextBlock DockPanel.Dock="Bottom" Text="*Filters support regex!" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                <TextBlock DockPanel.Dock="Bottom" Text="{DynamicResource LOCLaunchMateSupportsRegex}" HorizontalAlignment="Center" Margin="0,5,0,0"/>
             </DockPanel>
         </GroupBox>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,15,15">
-            <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"
+            <Button Content="{DynamicResource LOCSaveLabel}" Command="{Binding SaveCommand}" Margin="5"
     CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" IsDefault="True" />
-            <Button Content="Cancel" IsCancel="True" Margin="5"/>
+            <Button Content="{DynamicResource LOCCancelLabel}" IsCancel="True" Margin="5"/>
         </StackPanel>
     </DockPanel>
 </UserControl>

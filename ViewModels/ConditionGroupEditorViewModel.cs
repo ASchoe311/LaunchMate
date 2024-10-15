@@ -55,9 +55,9 @@ namespace LaunchMate.ViewModels
         /// </summary>
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
         {
-            { "AND", JoinType.And },
-            { "OR", JoinType.Or },
-            { "XOR", JoinType.Xor }
+            { ResourceProvider.GetString("LOCLaunchMateAnd"), JoinType.And },
+            { ResourceProvider.GetString("LOCLaunchMateOr"), JoinType.Or },
+            { ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
         };
 
         /// <summary>
@@ -65,18 +65,18 @@ namespace LaunchMate.ViewModels
         /// </summary>
         public static Dictionary<string, FilterTypes> FilterTypesDict { get; } = new Dictionary<string, FilterTypes>
         {
-            { "All Games", FilterTypes.All },
-            { "Name", FilterTypes.Name },
-            { "Source", FilterTypes.Source },
-            { "Developer", FilterTypes.Developers },
-            { "Publisher", FilterTypes.Publishers },
-            { "Category", FilterTypes.Categories },
-            { "Genre", FilterTypes.Genres },
-            { "Game ID", FilterTypes.Gameid },
-            { "Feature", FilterTypes.Features },
-            { "Tag", FilterTypes.Tags },
-            { "Platform", FilterTypes.Platforms },
-            { "Series", FilterTypes.Series }
+            { ResourceProvider.GetString("LOCAllGames"), FilterTypes.All },
+            { ResourceProvider.GetString("LOCNameLabel"), FilterTypes.Name },
+            { ResourceProvider.GetString("LOCSourceLabel"), FilterTypes.Source },
+            { ResourceProvider.GetString("LOCDeveloperLabel"), FilterTypes.Developers },
+            { ResourceProvider.GetString("LOCPublisherLabel"), FilterTypes.Publishers },
+            { ResourceProvider.GetString("LOCCategoryLabel"), FilterTypes.Categories },
+            { ResourceProvider.GetString("LOCGenreLabel"), FilterTypes.Genres },
+            { ResourceProvider.GetString("LOCGameId"), FilterTypes.GameId },
+            { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
+            { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
+            { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
+            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series }
         };
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace LaunchMate.ViewModels
                 var conditionGroupEditorView = new ConditionGroupEditorView(conditionGroup.Conditions);
                 var window = WindowHelper.CreateSizedWindow
                 (
-                    "Condition Group Editor", 800, 500
+                    ResourceProvider.GetString("LOCLaunchMateConditionGroupEditorTitle"), 800, 500
                 );
                 window.Content = conditionGroupEditorView;
                 window.DataContext = viewModel;
@@ -116,7 +116,7 @@ namespace LaunchMate.ViewModels
                 if (Group.Conditions.Count == 0)
                 {
                     API.Instance.Dialogs.ShowMessage(
-                        "Conditions list cannot be empty", string.Empty,
+                        ResourceProvider.GetString("LOCLaunchMateConditionsListEmpty"), string.Empty,
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }

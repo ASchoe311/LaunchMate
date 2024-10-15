@@ -15,7 +15,7 @@ namespace LaunchMate.Enums
         Publishers = 4,
         Categories = 5,
         Genres = 6,
-        Gameid = 7,
+        GameId = 7,
         InstallDirectory = 8,
         Tags = 9,
         Features = 10,

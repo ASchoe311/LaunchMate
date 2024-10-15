@@ -38,20 +38,20 @@ namespace LaunchMate.Models
                 {
                     var condition = Conditions[j];
                     filterStr += "(";
-                    filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? "NOT~" : "NOT") : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
+                    filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? (ResourceProvider.GetString("LOCLaunchMateNot") + "~") : ResourceProvider.GetString("LOCLaunchMateNot")) : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
                     filterStr += ")";
                     if (j < Conditions.Count - 1)
                     {
                         switch (condition.Joiner)
                         {
                             case JoinType.And:
-                                filterStr += " AND ";
+                                filterStr += " " + ResourceProvider.GetString("LOCLaunchMateAnd") + " ";
                                 break;
                             case JoinType.Or:
-                                filterStr += " OR ";
+                                filterStr += " " + ResourceProvider.GetString("LOCLaunchMateOr") + " ";
                                 break;
                             case JoinType.Xor:
-                                filterStr += " XOR ";
+                                filterStr += " " + ResourceProvider.GetString("LOCLaunchMateXor") + " ";
                                 break;
                         }
                     }

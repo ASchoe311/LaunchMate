@@ -47,7 +47,7 @@ namespace LaunchMate.ViewModels
                 var matchedGamesView = new MatchedGamesView();
                 var window = WindowHelper.CreateSizedWindow
                 (
-                    $"Matched Games ({viewModel.Matches.Count})", 350, 500
+                    $"{ResourceProvider.GetString("LOCLaunchMateMatchedGames")} ({viewModel.Matches.Count})", 350, 500
                 );
                 window.Content = matchedGamesView;
                 window.DataContext = viewModel;
