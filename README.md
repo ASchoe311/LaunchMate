@@ -34,13 +34,6 @@ The table within the Launch Group Editor display all **Condition Groups** for th
 
 This will open a new window with a table of conditions for that group. Once again, click "Add" to add a new condition. See ["Condition Table Reference"](#condition-table-reference)
 
-#### Condition Table Reference
-
-|Not|Filter Type|Filter|Fuzzy Match|Next Logical Operator|
-| -------- | ------- | -------- | ------- | ------- |
-| If set, the result of this condition will be negated | The game attribute to check the filter against | The filter with which to check the game attribute | If set, filter matches can be close but not exact | The logical operator placed between a condition and the condition that follows it |
-| E.g. if the condition checks that the game name matches "Stardew" and this is Not is checked, it will be true for any game whose name does not match "Stardew"| If set to "All Games", it will match any game | This filter supports regex or standard strings | | E.g. if set to AND, the conditions are true only if both the condition and the one following it are true |
-
 #### Condition Groups Table Reference
 
 | Not | Conditions | Next Logical Operator |
@@ -51,15 +44,22 @@ This will open a new window with a table of conditions for that group. Once agai
 | | NOT means "does not match" | |
 | | NOT~ means "does not fuzzy match" | |
 
+#### Condition Table Reference
+
+|Not|Filter Type|Filter|Fuzzy Match|Next Logical Operator|
+| -------- | ------- | -------- | ------- | ------- |
+| If set, the result of this condition will be negated | The game attribute to check the filter against | The filter with which to check the game attribute | If set, filter matches can be close but not exact | The logical operator placed between a condition and the condition that follows it |
+| E.g. if the condition checks that the game name matches "Stardew" and this is Not is checked, it will be true for any game whose name does not match "Stardew"| If set to "All Games", it will match any game | This filter supports regex or standard strings | | E.g. if set to AND, the conditions are true only if both the condition and the one following it are true |
+
 #### Example usage
 
 To launch the application blitz.gg with any game made by Riot Games except for Legends of Runeterra, you have a few options. Two of them would be:
 
-1. Set up two condition groups, the first checks that "Source" matches "Riot Games" and the second checks that "Name" does not match "Runeterra". Check "Not" on the second group and set the "Next Logical Operator" of the first group to "AND".
+1. Set up two condition groups, the first checks that "Source" matches "Riot Games" and the second checks that "Name" matches "Runeterra". Check "Not" on the second group and set the "Next Logical Operator" of the first group to "AND".
 
     ![Image showing a condition group setup](https://i.imgur.com/HvROKwx.png)
 
-2. Set up one condition group containing both a check that "Source" matches "Riot Games" and a check that "Name" does not match "Runeterra". Set the "Next Logical Operator" of the first group to "AND".
+2. Set up one condition group containing both a condition that "Source" matches "Riot Games" and a condition that "Name" does not match "Runeterra". Set the "Next Logical Operator" of the first condition to "AND".
 
     ![Image showing a condition group setup](https://i.imgur.com/BzMBR14.png)
 
