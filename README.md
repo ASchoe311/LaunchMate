@@ -1,3 +1,5 @@
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/ASchoe311/LaunchMate/latest/total)
+
 # LaunchMate Plugin for [Playnite](https://playnite.link/)
 
 Have you ever wanted to attach secondary applications to your games that launch and close with them? This is the way to do it! 
