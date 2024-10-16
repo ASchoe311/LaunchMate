@@ -11,8 +11,8 @@
     <sys:String x:Key="LOCLaunchMateLaunchDelay">Launch Delay</sys:String>
     <sys:String x:Key="LOCLaunchMateMS">(ms)</sys:String>
     <sys:String x:Key="LOCLaunchMateGroupEnabled">Launch Group Enabled</sys:String>
-    <sys:String x:Key="LOCLaunchMateAutoCloseExe">Auto-Close Executable</sys:String>
-    <sys:String x:Key="LOCLaunchMateAutoCloseExeTooltip">Automatically close launched application when the matched game is closed</sys:String>
+    <sys:String x:Key="LOCLaunchMateAutoCloseExe">Auto-Close</sys:String>
+    <sys:String x:Key="LOCLaunchMateAutoCloseExeTooltip">Automatically close launched application/web page when the matched game is closed</sys:String>
     <sys:String x:Key="LOCLaunchMateConditionGroups">Condition Groups:</sys:String>
     <sys:String x:Key="LOCLaunchMateGroupOperatorTooltip" xml:space="preserve">Controls the logical operator used between this condition group and the next
 
