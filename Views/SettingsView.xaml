@@ -21,10 +21,10 @@
                 <Button Content="{DynamicResource LOCRemoveGame}" Margin="10,10,0,0" DockPanel.Dock="Left" Command="{Binding RemoveLaunchGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridLaunchGroups}"/>
                 <Button Content="{DynamicResource LOCLaunchMateEdit}" Margin="10,10,0,0" DockPanel.Dock="Left" Command="{Binding EditLaunchGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridLaunchGroups}"/>
             </DockPanel>
-            <DataGrid Name="GridLaunchGroups" ItemsSource="{Binding Settings.Groups}" DockPanel.Dock="Top"
+            <DataGrid Name="GridLaunchGroups" ItemsSource="{Binding Settings.Groups}" DockPanel.Dock="Top" Width="Auto"
               CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCEnabledTitle}" Width="Auto">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCEnabledTitle}" Width="Auto" MinWidth="60">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" 
@@ -32,7 +32,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateAutoClose}" Width="Auto">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateAutoClose}" Width="Auto" MinWidth="77">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}" 
@@ -40,21 +40,21 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateGroupTarget}" Width="Auto" MaxWidth="150">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateGroupTarget}" Width="Auto" MaxWidth="150" MinWidth="98">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding TargetDisplayName, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateConditions}" Width="*">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateConditions}" Width="*" MinWidth="200">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding ToFilterString}" TextWrapping="Wrap" Margin="5,0,5,0" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateLaunchDelayMS}" Width="Auto">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateLaunchDelayMS}" Width="Auto" MinWidth="125">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding LaunchDelay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
@@ -68,7 +68,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateSeeMatched}" Width="Auto">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateSeeMatched}" Width="Auto" MinWidth="135">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Name="SeeMatches" Content="{DynamicResource LOCMenuView}" Command="{Binding DataContext.ShowMatchesCmd, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Path=.}" HorizontalAlignment="Center"/>
@@ -78,7 +78,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
-        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="HelpText">
+        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="HelpText" TextWrapping="Wrap">
             <Run Text="{DynamicResource LOCLaunchMateGuideNeedHelp}"  Style="{StaticResource HelpTextStyle}"/>
             <Hyperlink NavigateUri="https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage" RequestNavigate="Hyperlink_RequestNavigate">
                 <Run Text="{DynamicResource LOCLaunchMateGuideLink}"  Style="{StaticResource HelpTextStyle}"/>
