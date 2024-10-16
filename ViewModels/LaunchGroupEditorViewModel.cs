@@ -48,7 +48,7 @@ namespace LaunchMate.ViewModels
                 {
                     return;
                 }
-                Group.AppExePath = app.Item1;
+                Group.LaunchTargetUri = app.Item1;
                 Group.AppExeArgs = app.Item2;
                 Group.LnkName = app.Item3;
             });
@@ -183,7 +183,7 @@ namespace LaunchMate.ViewModels
         {
             get => new RelayCommand<Window>((w) =>
             {
-                if (Group.AppExePath == string.Empty)
+                if (Group.LaunchTargetUri == string.Empty)
                 {
                     API.Instance.Dialogs.ShowMessage(
                         ResourceProvider.GetString("LOCLaunchMateNoExe"), string.Empty,

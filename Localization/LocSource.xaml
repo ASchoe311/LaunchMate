@@ -4,9 +4,9 @@
 
     <sys:String x:Key="LOCLaunchMateSettingsTitle">Add Launch Groups</sys:String>
     <sys:String x:Key="LOCLaunchMateAutoClose">Auto-Close</sys:String>
-    <sys:String x:Key="LOCLaunchMateApplication">Application</sys:String>
+    <sys:String x:Key="LOCLaunchMateGroupTarget">Launch Target</sys:String>
     <sys:String x:Key="LOCLaunchMateLaunchDelayMS">Launch Delay (ms)</sys:String>
-    <sys:String x:Key="LOCLaunchMateExePath">Executable Path</sys:String>
+    <sys:String x:Key="LOCLaunchMateGroupTargetUri">App Path/Web Url</sys:String>
     <sys:String x:Key="LOCLaunchMateExeArgs">Executable Args</sys:String>
     <sys:String x:Key="LOCLaunchMateLaunchDelay">Launch Delay</sys:String>
     <sys:String x:Key="LOCLaunchMateMS">(ms)</sys:String>
@@ -42,5 +42,7 @@ E.g. if set to AND, the backend logic will be:
     <sys:String x:Key="LOCLaunchMateOr">OR</sys:String>
     <sys:String x:Key="LOCLaunchMateXor">XOR</sys:String>
     <sys:String x:Key="LOCLaunchMateCheckingGames">Checking Games For Matches</sys:String>
-
+    <sys:String x:Key="LOCLaunchMateGuideLink">Click here for a guide on how to use this plugin</sys:String>
+    <sys:String x:Key="LOCLaunchMateGuideNeedHelp">Need help?</sys:String>
+    
 </ResourceDictionary>

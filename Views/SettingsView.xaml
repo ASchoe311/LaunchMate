@@ -8,6 +8,11 @@
              d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="600">
+    <UserControl.Resources>
+        <Style x:Key="HelpTextStyle" TargetType="Run">
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+    </UserControl.Resources>
     <StackPanel>
         <DockPanel Margin="10">
             <TextBlock DockPanel.Dock="Top" Text="{DynamicResource LOCLaunchMateSettingsTitle}" TextWrapping="Wrap" Margin="0,0,0,5"/>
@@ -35,10 +40,10 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateApplication}" Width="Auto" MaxWidth="150">
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateGroupTarget}" Width="Auto" MaxWidth="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding AppDisplayName, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding TargetDisplayName, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -73,5 +78,11 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
+        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="HelpText">
+            <Run Text="{DynamicResource LOCLaunchMateGuideNeedHelp}"  Style="{StaticResource HelpTextStyle}"/>
+            <Hyperlink NavigateUri="https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage" RequestNavigate="Hyperlink_RequestNavigate">
+                <Run Text="{DynamicResource LOCLaunchMateGuideLink}"  Style="{StaticResource HelpTextStyle}"/>
+            </Hyperlink>
+        </TextBlock>
     </StackPanel>
 </UserControl>

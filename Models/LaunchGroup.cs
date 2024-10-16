@@ -16,7 +16,7 @@ namespace LaunchMate.Models
 {
     public class LaunchGroup : ObservableObject
     {
-        private string _exePath = string.Empty;
+        private string _targetUri = string.Empty;
         private string _exeArgs = string.Empty;
         private string _lnkName = null;
         private bool _enabled = true;
@@ -25,7 +25,7 @@ namespace LaunchMate.Models
         private int _delay = 0;
         private bool _makeActions = false;
 
-        public string AppExePath { get => _exePath; set => SetValue(ref _exePath, value); }
+        public string LaunchTargetUri { get => _targetUri; set => SetValue(ref _targetUri, value); }
         public string AppExeArgs { get => _exeArgs; set => SetValue(ref _exeArgs, value); }
         public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
         public bool Enabled { get => _enabled; set => SetValue(ref _enabled, value); }
@@ -34,6 +34,9 @@ namespace LaunchMate.Models
         public int LaunchDelay { get => _delay; set => SetValue(ref _delay, value); }
         public bool MakeGameActions { get => _makeActions; set => SetValue(ref _makeActions, value); }
         public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
+
+        [DontSerialize]
+        public IWebView webView { get; set; } = null;
 
 
         [DontSerialize]
@@ -154,6 +157,6 @@ namespace LaunchMate.Models
             } }
 
         [DontSerialize]
-        public string AppDisplayName => LnkName != null ? LnkName : Path.GetFileName(AppExePath);
+        public string TargetDisplayName => LnkName ?? Path.GetFileName(LaunchTargetUri);
     }
 }

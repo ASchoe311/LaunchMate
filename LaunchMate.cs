@@ -18,6 +18,7 @@ using LaunchMate.Enums;
 using LaunchMate.Views;
 using LaunchMate.ViewModels;
 using System.Windows;
+using LaunchMate.Utilities;
 
 namespace LaunchMate
 {
@@ -75,18 +76,47 @@ namespace LaunchMate
         private void HandleLaunchGroup(OnGameStartingEventArgs args, LaunchGroup group)
         {
 
-            logger.Debug($"Checking launch conditions for group with app {Path.GetFileName(group.AppExePath)}");
+            logger.Debug($"Checking launch conditions for group with app {Path.GetFileName(group.LaunchTargetUri)}");
             
             if (group.ShouldLaunchApp(args.Game))
             {
-                logger.Debug($"Waiting {group.LaunchDelay} ms to launch \"{group.AppExePath}\"");
+                logger.Debug($"Waiting {group.LaunchDelay} ms to launch \"{group.LaunchTargetUri}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
-                logger.Debug($"Launching \"{group.AppExePath}\" with arguments \"{group.AppExeArgs}\"");
-                Process.Start(group.AppExePath, group.AppExeArgs);
+                logger.Debug($"Launching \"{group.LaunchTargetUri}\" with arguments \"{group.AppExeArgs}\"");
+                if (group.LaunchTargetUri.Substring(0, 6).ToLowerInvariant() == "https:")
+                {
+                    // Dispatch to main thread
+                    Application.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        // Create a web view
+                        var windowSize = WindowHelper.GetNearMaxWindow(group.TargetDisplayName);
+                        var webView = PlayniteApi.WebViews.CreateView(windowSize.Item1, windowSize.Item2, System.Windows.Media.Colors.Black);
+                        webView.Navigate(group.LaunchTargetUri);
+                        webView.Open();
+                        // Watch for page loading changed
+                        webView.LoadingChanged += async (s, e) =>
+                        {
+                            var pageSource = await webView.GetPageSourceAsync();
+                            // Get <title> tag of page
+                            var pageTitle = Regex.Match(pageSource, ".*?<title>(.*?)</title>.*").Groups[1].Value;
+                            if (pageTitle != null && pageTitle != string.Empty)
+                            {
+                                // Bring web view to foreground
+                                SetForegroundHelper.SetForeground(pageTitle);
+                            }
+                        };
+                        group.webView = webView;
+                    });
+                }
+                else
+                {
+                    Process.Start(group.LaunchTargetUri, group.AppExeArgs);
+                }
                 launchedGroups.Push(group);
             }
 
         }
+
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
@@ -94,7 +124,15 @@ namespace LaunchMate
             while (launchedGroups.Count > 0)
             {
                 LaunchGroup group = launchedGroups.Pop();
-                
+
+                if (group.webView != null)
+                {
+                    group.webView.Close();
+                    group.webView.Dispose();
+                    group.webView = null;
+                    continue;
+                }
+
                 // Use WMI to get all processes and their executable paths
                 var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
                 using (var searcher = new ManagementObjectSearcher(wmiQueryString))
@@ -112,9 +150,9 @@ namespace LaunchMate
                     foreach (var item in query)
                     {
                         // Check if the executable path of the process is the launched executable and stop the process
-                        if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(group.AppExePath)) && group.AutoClose)
+                        if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(group.LaunchTargetUri)) && group.AutoClose)
                         {
-                            logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {group.AppDisplayName}");
+                            logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {group.TargetDisplayName}");
                             item.Process.Kill();
                         }
                     }
