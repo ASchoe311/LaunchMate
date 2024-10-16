@@ -84,5 +84,7 @@
                 <Run Text="{DynamicResource LOCLaunchMateGuideLink}"  Style="{StaticResource HelpTextStyle}"/>
             </Hyperlink>
         </TextBlock>
+        <CheckBox Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Settings.UsePlayniteWebview}" Margin="10,15,10,10"
+                  ToolTip="If not checked, web pages will open in your default browser and will not auto-close"/>
     </StackPanel>
 </UserControl>

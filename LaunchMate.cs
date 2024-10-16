@@ -85,6 +85,11 @@ namespace LaunchMate
                 logger.Debug($"Launching \"{group.LaunchTargetUri}\" with arguments \"{group.AppExeArgs}\"");
                 if (group.LaunchTargetUri.Substring(0, 6).ToLowerInvariant() == "https:")
                 {
+                    if (!settings.Settings.UsePlayniteWebview)
+                    {
+                        Process.Start(group.LaunchTargetUri);
+                        return;
+                    }
                     // Dispatch to main thread
                     Application.Current.Dispatcher.Invoke((Action)delegate
                     {
