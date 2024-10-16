@@ -1,5 +1,13 @@
 ﻿AddonId: LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8
 Packages:
+  - Version: 1.1
+    RequiredApiVersion: 6.2.0
+    ReleaseDate: 2024-10-16
+    PackageUrl: https://github.com/ASchoe311/LaunchMate/releases/download/v1.1/LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8_1_1.pext
+    Changelog:
+      - Added the ability for Launch Groups to launch web pages
+      - Added a link on the main settings page to a usage guide
+      - Changed a few strings for clarity
   - Version: 1.0
     RequiredApiVersion: 6.2.0
     ReleaseDate: 2024-10-14

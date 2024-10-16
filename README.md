@@ -1,6 +1,6 @@
 # LaunchMate Plugin for [Playnite](https://playnite.link/)
 
-Have you ever wanted to have apps or websites open and close alongside your games? This is the way to do it! 
+Have you ever wanted to have apps or websites open and close automatically alongside your games? This is the way to do it! 
 
 Say goodbye to manually adding launch actions or scripts for each game, because LaunchMate allows you to select an application or website to launch and then set conditions that will make it launch with any game that meets them. It's that simple!
 
@@ -34,16 +34,9 @@ The table within the Launch Group Editor display all **Condition Groups** for th
 
 This will open a new window with a table of conditions for that group. Once again, click "Add" to add a new condition. See ["Condition Table Reference"](#condition-table-reference)
 
-#### Condition Table Reference
+<br><br>
 
-| NOT | Filter Type | Filter | Fuzzy Match | Next Logical Operator |
-| -------- | ------- | -------- | ------- | ------- |
-| If set, the result of this condition will be negated | The game attribute to check the filter against | The filter with which to check the game attribute | If set, filter matches can be close but not exact | The logical operator placed between a condition and the condition that follows it |
-| E.g. if the condition checks that the game name matches "Stardew" and this is Not is checked, it will be true for any game whose name does not match "Stardew"| If set to "All Games", it will match any game | This filter supports regex or standard strings | | E.g. if set to AND, the conditions are true only if both the condition and the one following it are true |
-
-
-
-#### Condition Groups Table Reference
+### Condition Groups Table Reference
 
 | NOT | Conditions | Next Logical Operator |
 | -------- | ------- | -------- |
@@ -53,7 +46,18 @@ This will open a new window with a table of conditions for that group. Once agai
 | | NOT means "does not match" | |
 | | NOT~ means "does not fuzzy match" | |
 
-#### Example usage
+<br><br>
+
+### Condition Table Reference
+
+| NOT | Filter Type | Filter | Fuzzy Match | Next Logical Operator |
+| -------- | ------- | -------- | ------- | ------- |
+| If set, the result of this condition will be negated | The game attribute to check the filter against | The filter with which to check the game attribute | If set, filter matches can be close but not exact | The logical operator placed between a condition and the condition that follows it |
+| E.g. if the condition checks that the game name matches "Stardew" and this is Not is checked, it will be true for any game whose name does not match "Stardew"| If set to "All Games", it will match any game | This filter supports regex or standard strings | | E.g. if set to AND, the conditions are true only if both the condition and the one following it are true |
+
+<br><br>
+
+### Example usage
 
 To launch the application blitz.gg with any game made by Riot Games except for Legends of Runeterra, you have a few options. Two of them would be:
 
