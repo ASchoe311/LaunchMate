@@ -90,6 +90,7 @@ namespace LaunchMate
                     {
                         // Create a web view
                         var windowSize = WindowHelper.GetNearMaxWindow(group.TargetDisplayName);
+                        logger.Debug($"Creating webview to display {group.LaunchTargetUri}");
                         var webView = PlayniteApi.WebViews.CreateView(windowSize.Item1, windowSize.Item2, System.Windows.Media.Colors.Black);
                         webView.Navigate(group.LaunchTargetUri);
                         webView.Open();
@@ -102,6 +103,7 @@ namespace LaunchMate
                             if (pageTitle != null && pageTitle != string.Empty)
                             {
                                 // Bring web view to foreground
+                                logger.Debug("Trying to bring webview into foreground");
                                 SetForegroundHelper.SetForeground(pageTitle);
                             }
                         };
@@ -127,6 +129,7 @@ namespace LaunchMate
 
                 if (group.webView != null)
                 {
+                    logger.Debug($"Closing webview for {group.LaunchTargetUri}");
                     group.webView.Close();
                     group.webView.Dispose();
                     group.webView = null;
