@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:launchMate="clr-namespace:LaunchMate"
+             xmlns:local="clr-namespace:LaunchMate.Views"
              xmlns:viewModels="clr-namespace:LaunchMate.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewModels:LaunchGroupEditorViewModel}"
-             xmlns:local="clr-namespace:LaunchMate.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
@@ -14,8 +14,21 @@
         <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
-        </UserControl.Resources>
+    </UserControl.Resources>
     <DockPanel LastChildFill="False">
+        <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="Group Name: "/>
+                <TextBox Text="{Binding Group.Name}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="Action Type: "/>
+                <ComboBox DockPanel.Dock="Top" Name="ActionTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
+                  SelectedValue="{Binding Group.ActionType, UpdateSourceTrigger=PropertyChanged}" 
+                  ItemsSource="{Binding DataContext.ActionTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  DropDownClosed="ActionTypeSelect_DropDownClosed"/>
+            </StackPanel>
+        </StackPanel>
         <StackPanel DockPanel.Dock="Top" Margin="10">
             <Grid DockPanel.Dock="Top">
                 <Grid.RowDefinitions>
@@ -36,11 +49,12 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="{DynamicResource LOCLaunchMateGroupTargetUri}" Margin="0,5,5,0"/>
-                    <TextBox Grid.Column="1" Text="{Binding Group.LaunchTargetUri, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
-                    <Button Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectAppCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
+                    <TextBlock x:Name="TargetText" Grid.Column="0" Margin="0,5,5,0"/>
+                    <TextBox Grid.Column="1" Text="{Binding Group.Action.TargetUri, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                    <Button Name="AppSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectAppCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
+                    <Button Name="ScriptSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectScriptCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="0" Margin="0,10,0,10">
+                <Grid x:Name="ArgsGrid" Grid.Row="1" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -48,8 +62,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Column="0" Text="{DynamicResource LOCLaunchMateExeArgs}" Margin="0,5,5,0" />
-                    <TextBox Grid.Column="1" Text="{Binding Group.AppExeArgs, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Name="ArgsText" Grid.Column="0" Text="{DynamicResource LOCLaunchMateExeArgs}" Margin="0,5,5,0"/>
+                    <TextBox Name="ArgsBox" Grid.Column="1" Text="{Binding Group.Action.TargetArgs, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
                 <Grid Grid.Row="2" Grid.Column="0" Margin="0,10,0,10">
                     <Grid.ColumnDefinitions>
@@ -68,7 +82,7 @@
                     <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateGroupEnabled}" IsChecked="{Binding Group.Enabled, UpdateSourceTrigger=PropertyChanged}"
                               HorizontalAlignment="Center"/>
                 </Grid>
-                <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,10">
+                <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,10" x:Name="AutoCloseGrid">
                     <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding Group.AutoClose, UpdateSourceTrigger=PropertyChanged}"
                               ToolTip="{DynamicResource LOCLaunchMateAutoCloseExeTooltip}"
                               HorizontalAlignment="Center"/>

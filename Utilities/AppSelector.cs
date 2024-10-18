@@ -25,7 +25,7 @@ namespace LaunchMate.Utilities
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.DereferenceLinks = false;
-            openFileDialog.Filter = "Executable file (.exe)|*.exe";
+            openFileDialog.Filter = "Executable file (.exe)|*.exe|Script file (.bat)|*.bat";
 
 
             Nullable<bool> result = openFileDialog.ShowDialog();

@@ -51,13 +51,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\ActionType.cs" />
     <Compile Include="Enums\JoinType.cs" />
     <Compile Include="Enums\FilterTypes.cs" />
+    <Compile Include="Models\Actions\CloseAction.cs" />
+    <Compile Include="Models\Actions\ScriptAction.cs" />
     <Compile Include="Models\ConditionGroup.cs" />
+    <Compile Include="Models\ICondition.cs" />
+    <Compile Include="Models\Actions\IAction.cs" />
+    <Compile Include="Models\Actions\AppAction.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\LaunchGroup.cs" />
     <Compile Include="Models\LaunchCondition.cs" />
     <Compile Include="LaunchMate.cs" />
+    <Compile Include="Models\Actions\WebAction.cs" />
     <Compile Include="Utilities\RegexExtensions.cs" />
     <Compile Include="ViewModels\ConditionGroupEditorViewModel.cs" />
     <Compile Include="ViewModels\MatchedGamesViewModel.cs" />

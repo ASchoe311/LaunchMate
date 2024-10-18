@@ -41,7 +41,7 @@ namespace LaunchMate
             };
         }
 
-        private Stack<LaunchGroup> launchedGroups = new Stack<LaunchGroup>();
+        private Stack<LaunchGroup> toClose = new Stack<LaunchGroup>();
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
@@ -76,94 +76,39 @@ namespace LaunchMate
         private void HandleLaunchGroup(OnGameStartingEventArgs args, LaunchGroup group)
         {
 
-            logger.Debug($"Checking launch conditions for group with app {Path.GetFileName(group.LaunchTargetUri)}");
+            logger.Debug($"Checking launch group conditions for group names {group.Name}");
             
-            if (group.ShouldLaunchApp(args.Game))
+            if (group.MeetsConditions(args.Game))
             {
-                logger.Debug($"Waiting {group.LaunchDelay} ms to launch \"{group.LaunchTargetUri}\"");
+                logger.Debug($"Conditions passed, waiting {group.LaunchDelay} ms to execute action for group \"{group.Name}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
-                logger.Debug($"Launching \"{group.LaunchTargetUri}\" with arguments \"{group.AppExeArgs}\"");
-                if (group.LaunchTargetUri.Substring(0, 6).ToLowerInvariant() == "https:")
-                {
-                    if (!settings.Settings.UsePlayniteWebview)
-                    {
-                        Process.Start(group.LaunchTargetUri);
-                        return;
-                    }
-                    // Dispatch to main thread
-                    Application.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        // Create a web view
-                        var windowSize = WindowHelper.GetNearMaxWindow(group.TargetDisplayName);
-                        logger.Debug($"Creating webview to display {group.LaunchTargetUri}");
-                        var webView = PlayniteApi.WebViews.CreateView(windowSize.Item1, windowSize.Item2, System.Windows.Media.Colors.Black);
-                        webView.Navigate(group.LaunchTargetUri);
-                        webView.Open();
-                        // Watch for page loading changed
-                        webView.LoadingChanged += async (s, e) =>
-                        {
-                            var pageSource = await webView.GetPageSourceAsync();
-                            // Get <title> tag of page
-                            var pageTitle = Regex.Match(pageSource, ".*?<title>(.*?)</title>.*").Groups[1].Value;
-                            if (pageTitle != null && pageTitle != string.Empty)
-                            {
-                                // Bring web view to foreground
-                                logger.Debug("Trying to bring webview into foreground");
-                                SetForegroundHelper.SetForeground(pageTitle);
-                            }
-                        };
-                        group.webView = webView;
-                    });
+                group.Action.Execute();
+                if (group.AutoClose){
+                    toClose.Push(group);
                 }
-                else
-                {
-                    Process.Start(group.LaunchTargetUri, group.AppExeArgs);
-                }
-                launchedGroups.Push(group);
             }
 
         }
 
-
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
             base.OnGameStopped(args);
-            while (launchedGroups.Count > 0)
+            while (toClose.Count > 0)
             {
-                LaunchGroup group = launchedGroups.Pop();
+                LaunchGroup group = toClose.Pop();
 
-                if (group.webView != null)
+                switch (group.ActionType)
                 {
-                    logger.Debug($"Closing webview for {group.LaunchTargetUri}");
-                    group.webView.Close();
-                    group.webView.Dispose();
-                    group.webView = null;
-                    continue;
-                }
-
-                // Use WMI to get all processes and their executable paths
-                var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                using (var results = searcher.Get())
-                {
-                    var query = from p in Process.GetProcesses()
-                                join mo in results.Cast<ManagementObject>()
-                                on p.Id equals (int)(uint)mo["ProcessId"]
-                                select new
-                                {
-                                    Process = p,
-                                    Path = (string)mo["ExecutablePath"],
-                                    CommandLine = (string)mo["CommandLine"],
-                                };
-                    foreach (var item in query)
-                    {
-                        // Check if the executable path of the process is the launched executable and stop the process
-                        if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(group.LaunchTargetUri)) && group.AutoClose)
-                        {
-                            logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {group.TargetDisplayName}");
-                            item.Process.Kill();
-                        }
-                    }
+                    case ActionType.App:
+                        AppAction appAct = group.Action as AppAction;
+                        appAct.AutoClose();
+                        break;
+                    case ActionType.Web:
+                        WebAction webAct = group.Action as WebAction;
+                        webAct.AutoClose();
+                        break;
+                    default:
+                        break;
                 }
             }
         }

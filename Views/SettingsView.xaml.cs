@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LaunchMate.Models;
 using LaunchMate.ViewModels;
+using Playnite.SDK.Controls;
 
 namespace LaunchMate
 {

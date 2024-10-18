@@ -1,4 +1,9 @@
-﻿using LaunchMate.Models;
+﻿using LaunchMate.Enums;
+using LaunchMate.Models;
+using Playnite.SDK;
+using Playnite;
+using Playnite.SDK.Models;
+using Playnite.SDK.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,20 +29,31 @@ namespace LaunchMate.Views
     public partial class LaunchGroupEditorView : UserControl
     {
         private DataGridCell _previousLastCell = null;
-        private ObservableCollection<ConditionGroup> _conditionGroups;
         private int _previousItemCount;
         private DispatcherTimer _debounceTimer;
-        public LaunchGroupEditorView(ObservableCollection<ConditionGroup> conditionGroups)
+        private LaunchGroup _group;
+        private ActionType _lastActionType;
+
+        public LaunchGroupEditorView(LaunchGroup group)
         {
             InitializeComponent();
-            _conditionGroups = conditionGroups;
-            _conditionGroups.CollectionChanged += Items_CollectionChanged;
-            _previousItemCount = _conditionGroups.Count;
+            _group = group;
+
+            Loaded += MainWindow_Loaded;
+
+            _lastActionType = group.ActionType;
+            _group.ConditionGroups.CollectionChanged += Items_CollectionChanged;
+            _previousItemCount = group.ConditionGroups.Count;
 
             // Use debounce timer to check if number of items in collection has changed after 100 ms
             // Do this because otherwise and edit event would trigger UpdateLastRowCellVisibility()
             _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _debounceTimer.Tick += DebounceTimer_Tick;
+        }
+
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            HandleVisibility();
         }
 
         /// <summary>
@@ -60,10 +76,10 @@ namespace LaunchMate.Views
         {
             _debounceTimer.Stop();
 
-            if (_previousItemCount != _conditionGroups.Count)
+            if (_previousItemCount != _group.ConditionGroups.Count)
             {
                 UpdateLastRowCellVisibility();
-                _previousItemCount = _conditionGroups.Count;
+                _previousItemCount = _group.ConditionGroups.Count;
             }
         }
 
@@ -136,5 +152,85 @@ namespace LaunchMate.Views
             }
         }
 
+        private void ChangeActionType()
+        {
+            switch (ActionTypeSelect.SelectedValue)
+            {
+                case ActionType.App:
+                    _group.Action = new AppAction
+                    {
+                        TargetUri = _group.Action.TargetUri
+                    };
+                    break;
+                case ActionType.Web:
+                    _group.Action = new WebAction
+                    {
+                        TargetUri = _group.Action.TargetUri
+                    };
+                    break;
+                case ActionType.Script:
+                    _group.Action = new ScriptAction
+                    {
+                        TargetUri = _group.Action.TargetUri
+                    };
+                    _group.AutoClose = false;
+                    break;
+                case ActionType.Close:
+                    _group.Action = new CloseAction
+                    {
+                        TargetUri = _group.Action.TargetUri
+                    };
+                    _group.AutoClose = false;
+                    break;
+            }
+        }
+
+        private void HandleVisibility()
+        {
+            switch (ActionTypeSelect.SelectedValue)
+            {
+                case ActionType.App:
+                    AppSelectBtn.Visibility = Visibility.Visible;
+                    ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    TargetText.Text = "Executable Path: ";
+                    ArgsText.Text = "Executable Args: ";
+                    ArgsGrid.Visibility = Visibility.Visible;
+                    AutoCloseGrid.Visibility = Visibility.Visible;
+                    break;
+                case ActionType.Web:
+                    AppSelectBtn.Visibility = Visibility.Hidden;
+                    ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    TargetText.Text = "Web URL:  https://";
+                    ArgsGrid.Visibility = Visibility.Hidden;
+                    AutoCloseGrid.Visibility = Visibility.Visible;
+                    break;
+                case ActionType.Script:
+                    AppSelectBtn.Visibility = Visibility.Hidden;
+                    ScriptSelectBtn.Visibility = Visibility.Visible;
+                    TargetText.Text = "Script Path: ";
+                    ArgsGrid.Visibility = Visibility.Visible;
+                    ArgsText.Text = "Script Args: ";
+                    AutoCloseGrid.Visibility = Visibility.Hidden;
+                    break;
+                case ActionType.Close:
+                    AppSelectBtn.Visibility = Visibility.Hidden;
+                    ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    TargetText.Text = "Program Name:";
+                    ArgsGrid.Visibility = Visibility.Hidden;
+                    AutoCloseGrid.Visibility = Visibility.Hidden;
+                    break;
+            }
+        }
+
+        private void ActionTypeSelect_DropDownClosed(object sender, EventArgs e)
+        {
+            if ((ActionType)ActionTypeSelect.SelectedValue != _lastActionType)
+            {
+                _lastActionType = (ActionType)ActionTypeSelect.SelectedValue;
+                ChangeActionType();
+                HandleVisibility();
+            }
+
+        }
     }
 }

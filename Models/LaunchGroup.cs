@@ -16,18 +16,18 @@ namespace LaunchMate.Models
 {
     public class LaunchGroup : ObservableObject
     {
-        private string _targetUri = string.Empty;
-        private string _exeArgs = string.Empty;
-        private string _lnkName = null;
+        private string _name = string.Empty;
+        private IAction _action = new AppAction();
+        private ActionType _actionType = ActionType.App;
         private bool _enabled = true;
         private bool _autoClose = true;
         private bool _ignoreCase = false;
         private int _delay = 0;
         private bool _makeActions = false;
 
-        public string LaunchTargetUri { get => _targetUri; set => SetValue(ref _targetUri, value); }
-        public string AppExeArgs { get => _exeArgs; set => SetValue(ref _exeArgs, value); }
-        public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
+        public string Name { get => _name; set => SetValue(ref _name, value); }
+        public IAction Action { get => _action; set => SetValue(ref _action, value); }
+        public ActionType ActionType { get => _actionType; set => SetValue(ref _actionType, value); }
         public bool Enabled { get => _enabled; set => SetValue(ref _enabled, value); }
         public bool AutoClose { get => _autoClose; set => SetValue(ref _autoClose, value); }
         public bool IgnoreCase { get => _ignoreCase; set => SetValue(ref _ignoreCase, value); }
@@ -66,7 +66,7 @@ namespace LaunchMate.Models
                             break;
                         }
                         activateGlobalProgress.CurrentProgressValue += 1;
-                        if (ShouldLaunchApp(game))
+                        if (MeetsConditions(game))
                         {
                             matches.Add(game);
                         }
@@ -84,7 +84,7 @@ namespace LaunchMate.Models
         /// <param name="game"><see cref="Game"/> object to check against</param>
         /// <returns>True if launch conditions evaluate to true, false otherwise</returns>
         [DontSerialize]
-        public bool ShouldLaunchApp(Game game)
+        public bool MeetsConditions(Game game)
         {
             List<bool> matches = new List<bool>();
             foreach (var conditionGroup in ConditionGroups)
@@ -157,6 +157,6 @@ namespace LaunchMate.Models
             } }
 
         [DontSerialize]
-        public string TargetDisplayName => LnkName ?? Path.GetFileName(LaunchTargetUri);
+        public string TargetDisplayName => Name;
     }
 }

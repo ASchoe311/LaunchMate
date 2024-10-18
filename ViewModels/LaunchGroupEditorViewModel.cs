@@ -36,6 +36,15 @@ namespace LaunchMate.ViewModels
             { ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
         };
 
+        public Dictionary<string, ActionType> ActionTypesDict { get; } = new Dictionary<string, ActionType>()
+        {
+            { "Launch an App", ActionType.App },
+            { "Open a Webpage", ActionType.Web },
+            { "Run a Script", ActionType.Script },
+            { "Close program", ActionType.Close },
+
+        };
+
         /// <summary>
         /// Command to select an executable for the <see cref="LaunchGroup"/> using a file picker dialog
         /// </summary>
@@ -48,11 +57,30 @@ namespace LaunchMate.ViewModels
                 {
                     return;
                 }
-                Group.LaunchTargetUri = app.Item1;
-                Group.AppExeArgs = app.Item2;
-                Group.LnkName = app.Item3;
+                if (Group.Action is AppAction)
+                {
+                    Group.Action = new AppAction
+                    {
+                        TargetUri = app.Item1,
+                        TargetArgs = app.Item2,
+                        LnkName = app.Item3,
+                    };
+                }
             });
         }
+
+        public RelayCommand SelectScriptCmd
+        {
+            get => new RelayCommand(() =>
+            {
+                string file = API.Instance.Dialogs.SelectFile("Script File|*.bat");
+                if (file != null)
+                {
+                    Group.Action.TargetUri = file;
+                }
+            });
+        }
+
 
         /// <summary>
         /// Command to create a new <see cref="ConditionGroup"/> within the current <see cref="LaunchGroup"/>
@@ -160,7 +188,7 @@ namespace LaunchMate.ViewModels
             try
             {
                 var viewModel = new LaunchGroupEditorViewModel(launchGroup);
-                var launchGroupEditorView = new LaunchGroupEditorView(launchGroup.ConditionGroups);
+                var launchGroupEditorView = new LaunchGroupEditorView(launchGroup);
                 var window = WindowHelper.CreateSizedWindow
                 (
                     ResourceProvider.GetString("LOCLaunchMateLaunchGroupEditorTitle"), 800, 650
@@ -183,7 +211,7 @@ namespace LaunchMate.ViewModels
         {
             get => new RelayCommand<Window>((w) =>
             {
-                if (Group.LaunchTargetUri == string.Empty)
+                if (Group.Action.TargetUri == string.Empty)
                 {
                     API.Instance.Dialogs.ShowMessage(
                         ResourceProvider.GetString("LOCLaunchMateNoExe"), string.Empty,
