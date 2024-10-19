@@ -50,7 +50,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="TargetText" Grid.Column="0" Margin="0,5,5,0"/>
-                    <TextBox Grid.Column="1" Text="{Binding Group.Action.TargetUri, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                    <TextBox Grid.Column="1" Text="{Binding Group.Action.Target, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
                     <Button Name="AppSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectAppCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                     <Button Name="ScriptSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectScriptCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                 </Grid>

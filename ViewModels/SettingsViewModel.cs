@@ -128,6 +128,36 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        private void FixActionTypes()
+        {
+            foreach (var group in Settings.Groups)
+            {
+                switch (group.ActionType)
+                {
+                    case ActionType.Web:
+                        group.Action = new WebAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    case ActionType.Script:
+                        group.Action = new ScriptAction
+                        {
+                            Target = group.Action.Target,
+                            TargetArgs = group.Action.TargetArgs
+                        };
+                        break;
+                    case ActionType.Close:
+                        group.Action = new CloseAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    default: break;
+                }
+            }
+        }
+
         public SettingsViewModel(LaunchMate plugin)
         {
             // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
@@ -140,6 +170,7 @@ namespace LaunchMate.ViewModels
             if (savedSettings != null)
             {
                 Settings = savedSettings;
+                FixActionTypes();
             }
             else
             {
@@ -157,6 +188,7 @@ namespace LaunchMate.ViewModels
         {
             // Code executed when user decides to cancel any changes made since BeginEdit was called.
             Settings = EditingClone;
+            FixActionTypes();
         }
 
         public void EndEdit()

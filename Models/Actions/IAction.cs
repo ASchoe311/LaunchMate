@@ -10,7 +10,8 @@ namespace LaunchMate.Models
 {
     public interface IAction
     {
-        string TargetUri { get; set; }
-        void Execute();
+        string Target { get; set; }
+        string TargetArgs { get; set; }
+        bool Execute();
     }
 }

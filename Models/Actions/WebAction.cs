@@ -1,5 +1,6 @@
 ﻿using LaunchMate.Utilities;
 using Playnite.SDK;
+using Playnite.SDK.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,28 +18,31 @@ namespace LaunchMate.Models
 
         private string _target;
         private bool _useWebView = true;
+        private string _targetArgs = null;
 
-        public string TargetUri { get => _target; set => SetValue(ref _target, value); }
+        public string Target { get => _target; set => SetValue(ref _target, value); }
         public bool UseWebView { get => _useWebView; set => SetValue(ref _useWebView, value); }
+        public string TargetArgs { get => _targetArgs; set => SetValue(ref _targetArgs, value); }
 
+        [DontSerialize]
         public IWebView WebView { get; set; } = null;
 
-        public void Execute()
+        public bool Execute()
         {
-            logger.Debug($"Opening webpage \"{TargetUri}\"");
+            logger.Debug($"Opening webpage \"{Target}\"");
             if (!UseWebView)
             {
-                Process.Start(TargetUri);
-                return;
+                Process.Start(Target);
+                return false;
             }
             // Dispatch to main thread
-            Application.Current.Dispatcher.Invoke((Action)delegate
+            API.Instance.MainView.UIDispatcher.Invoke((Action)delegate
             {
                 // Create a web view
-                var windowSize = WindowHelper.GetNearMaxWindow(TargetUri);
-                logger.Debug($"Creating webview to display {TargetUri}");
+                var windowSize = WindowHelper.GetNearMaxWindow(Target);
+                logger.Debug($"Creating webview to display {Target}");
                 var webView = API.Instance.WebViews.CreateView(windowSize.Item1, windowSize.Item2, System.Windows.Media.Colors.Black);
-                webView.Navigate("https://" + TargetUri);
+                webView.Navigate("https://" + Target);
                 webView.Open();
                 // Watch for page loading changed
                 webView.LoadingChanged += async (s, e) =>
@@ -55,13 +59,13 @@ namespace LaunchMate.Models
                 };
                 WebView = webView;
             });
-            return;
+            return true;
         }
 
 
         public void AutoClose()
         {
-            logger.Debug($"Closing webview for {TargetUri}");
+            logger.Debug($"Closing webview for {Target}");
             WebView.Close();
             WebView.Dispose();
             WebView = null;

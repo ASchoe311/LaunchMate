@@ -82,8 +82,8 @@ namespace LaunchMate
             {
                 logger.Debug($"Conditions passed, waiting {group.LaunchDelay} ms to execute action for group \"{group.Name}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
-                group.Action.Execute();
-                if (group.AutoClose){
+                
+                if (group.Action.Execute() && group.AutoClose){
                     toClose.Push(group);
                 }
             }

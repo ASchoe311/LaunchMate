@@ -19,15 +19,25 @@ namespace LaunchMate.Models
         private string _args;
         private string _lnkName;
 
-        public string TargetUri { get => _target; set => SetValue(ref _target, value); }
+        public string Target { get => _target; set => SetValue(ref _target, value); }
         public string TargetArgs { get => _args; set => SetValue(ref _args, value); }
         public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
 
-        public void Execute()
+        public bool Execute()
         {
-            logger.Debug($"Launching \"{TargetUri}\" with arguments \"{TargetArgs}\"");
-            Process.Start(TargetUri, TargetArgs);
-            return;
+            logger.Debug($"Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
+            try
+            {
+                API.Instance.Notifications.Remove($"Error - {Target}");
+                Process.Start(Target, TargetArgs);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"Something went wrong trying to start application at {Target}");
+                API.Instance.Notifications.Add($"Error - {Target}", $"An error occurred when LaunchMate tried to launch application {Target}, see logs for more info", NotificationType.Error);
+                return false;
+            }
         }
 
         public void AutoClose()
@@ -48,9 +58,9 @@ namespace LaunchMate.Models
                 foreach (var item in query)
                 {
                     // Check if the executable path of the process is the launched executable and stop the process
-                    if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(TargetUri)))
+                    if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(Target)))
                     {
-                        logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {TargetUri}");
+                        logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {Target}");
                         item.Process.Kill();
                     }
                 }

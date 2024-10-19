@@ -61,9 +61,8 @@ namespace LaunchMate.ViewModels
                 {
                     Group.Action = new AppAction
                     {
-                        TargetUri = app.Item1,
-                        TargetArgs = app.Item2,
-                        LnkName = app.Item3,
+                        Target = app.Item1,
+                        TargetArgs = app.Item2
                     };
                 }
             });
@@ -76,7 +75,7 @@ namespace LaunchMate.ViewModels
                 string file = API.Instance.Dialogs.SelectFile("Script File|*.bat");
                 if (file != null)
                 {
-                    Group.Action.TargetUri = file;
+                    Group.Action.Target = file;
                 }
             });
         }
@@ -211,7 +210,7 @@ namespace LaunchMate.ViewModels
         {
             get => new RelayCommand<Window>((w) =>
             {
-                if (Group.Action.TargetUri == string.Empty)
+                if (Group.Action.Target == string.Empty)
                 {
                     API.Instance.Dialogs.ShowMessage(
                         ResourceProvider.GetString("LOCLaunchMateNoExe"), string.Empty,

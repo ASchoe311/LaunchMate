@@ -17,8 +17,8 @@ namespace LaunchMate.Models
     public class LaunchGroup : ObservableObject
     {
         private string _name = string.Empty;
-        private IAction _action = new AppAction();
-        private ActionType _actionType = ActionType.App;
+        private IAction _action;
+        private ActionType _actionType;
         private bool _enabled = true;
         private bool _autoClose = true;
         private bool _ignoreCase = false;
@@ -38,6 +38,12 @@ namespace LaunchMate.Models
         [DontSerialize]
         public IWebView webView { get; set; } = null;
 
+
+        public LaunchGroup()
+        {
+            _action = new AppAction();
+            _actionType = ActionType.App;
+        }
 
         [DontSerialize]
         private readonly ILogger logger = LogManager.GetLogger();

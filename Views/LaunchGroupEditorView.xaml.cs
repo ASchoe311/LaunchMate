@@ -159,26 +159,26 @@ namespace LaunchMate.Views
                 case ActionType.App:
                     _group.Action = new AppAction
                     {
-                        TargetUri = _group.Action.TargetUri
+                        Target = _group.Action.Target
                     };
                     break;
                 case ActionType.Web:
                     _group.Action = new WebAction
                     {
-                        TargetUri = _group.Action.TargetUri
+                        Target = _group.Action.Target
                     };
                     break;
                 case ActionType.Script:
                     _group.Action = new ScriptAction
                     {
-                        TargetUri = _group.Action.TargetUri
+                        Target = _group.Action.Target
                     };
                     _group.AutoClose = false;
                     break;
                 case ActionType.Close:
                     _group.Action = new CloseAction
                     {
-                        TargetUri = _group.Action.TargetUri
+                        Target = _group.Action.Target
                     };
                     _group.AutoClose = false;
                     break;
