@@ -32,15 +32,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateAutoClose}" Width="Auto" MinWidth="77">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}" 
-                                  HorizontalAlignment="Center" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateGroupTarget}" Width="Auto" MaxWidth="150" MinWidth="98">
+                    <DataGridTemplateColumn Header="Launch Group Name" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding TargetDisplayName, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" HorizontalAlignment="Center"/>

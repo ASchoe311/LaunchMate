@@ -91,13 +91,12 @@
             <GroupBox Header="{DynamicResource LOCLaunchMateConditionGroups}" Margin="0,25,0,0">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-                        <Button Content="{DynamicResource LOCAddTitle}" Command="{Binding AddConditionGroupCmd}" Margin="5"/>
-                        <Button Content="{DynamicResource LOCRemoveGame}" Command="{Binding RemoveConditionGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditionGroups}" Margin="5"/>
-                        <Button Content="{DynamicResource LOCLaunchMateEdit}" Command="{Binding EditConditionGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditionGroups}" Margin="5"/>
+                        <Button Content="{DynamicResource LOCAddTitle}" Command="{Binding AddConditionCmd}" Margin="5"/>
+                        <Button Content="{DynamicResource LOCRemoveGame}" Command="{Binding RemoveConditionCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditions}" Margin="5"/>
                     </StackPanel>
-                    <DataGrid Name="GridConditionGroups" DockPanel.Dock="Top" LoadingRow="DataGrid_LoadingRow"
-                          ItemsSource="{Binding Group.ConditionGroups}" Margin="0,5,0,0"
-                          CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single" Height="200" Width="600">
+                    <DataGrid Name="GridConditions" DockPanel.Dock="Top"
+ItemsSource="{Binding Group.Conditions}" LoadingRow="DataGrid_LoadingRow"
+CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single" Width="Auto">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateNot}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -106,10 +105,31 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateConditions}" Width="*">
+                            <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilterType}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding ToFilterString}" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                                        <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
+                  SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" 
+                  ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" >
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding FilterType}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFuzzyMatch}" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding FuzzyMatch, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -117,9 +137,9 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox Name="JoinTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
-                                                  SelectedValue="{Binding Joiner, UpdateSourceTrigger=PropertyChanged}" 
-                                                  ItemsSource="{Binding DataContext.JoinMethodsDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                  ToolTip="{DynamicResource LOCLaunchMateGroupOperatorTooltip}"/>
+                        SelectedValue="{Binding Joiner, UpdateSourceTrigger=PropertyChanged}" 
+                        ItemsSource="{Binding DataContext.JoinMethodsDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        ToolTip="{DynamicResource LOCLaunchMateConditionOperatorTooltip}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

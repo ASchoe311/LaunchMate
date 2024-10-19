@@ -33,7 +33,8 @@ namespace LaunchMate.Models
         public bool IgnoreCase { get => _ignoreCase; set => SetValue(ref _ignoreCase, value); }
         public int LaunchDelay { get => _delay; set => SetValue(ref _delay, value); }
         public bool MakeGameActions { get => _makeActions; set => SetValue(ref _makeActions, value); }
-        public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
+        //public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
+        public ObservableCollection<LaunchCondition> Conditions { get; set; } = new ObservableCollection<LaunchCondition>();
 
         [DontSerialize]
         public IWebView webView { get; set; } = null;
@@ -92,11 +93,16 @@ namespace LaunchMate.Models
         [DontSerialize]
         public bool MeetsConditions(Game game)
         {
-            List<bool> matches = new List<bool>();
-            foreach (var conditionGroup in ConditionGroups)
+            if (Conditions.Count == 0)
             {
-                bool condMet = conditionGroup.IsMet(game);
-                if (conditionGroup.Not)
+                return true;
+            }
+
+            List<bool> matches = new List<bool>();
+            foreach (var condition in Conditions)
+            {
+                bool condMet = condition.IsMet(game);
+                if (condition.Not)
                 {
                     logger.Debug("Not flag set, negating result");
                     condMet = !condMet;
@@ -104,12 +110,12 @@ namespace LaunchMate.Models
                 matches.Add(condMet);
             }
 
-            bool execute = matches.Count == 0 ? true : matches[0];
+            bool execute = matches[0];
 
             for (int i = 0; i < matches.Count - 1; i++)
             {
-                logger.Debug($"App will launch given matches up to condition group number {i + 1}? {execute}");
-                switch (ConditionGroups[i].Joiner)
+                logger.Debug($"App will launch given matches up to condition numer {i + 1}? {execute}");
+                switch (Conditions[i].Joiner)
                 {
                     case JoinType.And:
                         execute &= matches[i + 1];
@@ -122,7 +128,6 @@ namespace LaunchMate.Models
                         break;
                 }
             }
-            logger.Debug($"App will launch given matches up to condition group number {matches.Count}? {execute}");
             return execute;
         }
 
@@ -133,19 +138,15 @@ namespace LaunchMate.Models
         public string ToFilterString { get
             {
                 string filterStr = string.Empty;
-
-                for (int i = 0; i < ConditionGroups.Count; i++)
+                for (int j = 0; j < Conditions.Count; j++)
                 {
-                    if (ConditionGroups[i].Not)
-                    {
-                        filterStr += ResourceProvider.GetString("LOCLaunchMateNot") + " ";
-                    }
+                    var condition = Conditions[j];
                     filterStr += "(";
-                    filterStr += ConditionGroups[i].ToFilterString;
+                    filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? (ResourceProvider.GetString("LOCLaunchMateNot") + "~") : ResourceProvider.GetString("LOCLaunchMateNot")) : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
                     filterStr += ")";
-                    if (i < ConditionGroups.Count - 1)
+                    if (j < Conditions.Count - 1)
                     {
-                        switch (ConditionGroups[i].Joiner)
+                        switch (condition.Joiner)
                         {
                             case JoinType.And:
                                 filterStr += " " + ResourceProvider.GetString("LOCLaunchMateAnd") + " ";

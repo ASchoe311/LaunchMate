@@ -42,8 +42,8 @@ namespace LaunchMate.Views
             Loaded += MainWindow_Loaded;
 
             _lastActionType = group.ActionType;
-            _group.ConditionGroups.CollectionChanged += Items_CollectionChanged;
-            _previousItemCount = group.ConditionGroups.Count;
+            _group.Conditions.CollectionChanged += Items_CollectionChanged;
+            _previousItemCount = group.Conditions.Count;
 
             // Use debounce timer to check if number of items in collection has changed after 100 ms
             // Do this because otherwise and edit event would trigger UpdateLastRowCellVisibility()
@@ -76,10 +76,10 @@ namespace LaunchMate.Views
         {
             _debounceTimer.Stop();
 
-            if (_previousItemCount != _group.ConditionGroups.Count)
+            if (_previousItemCount != _group.Conditions.Count)
             {
                 UpdateLastRowCellVisibility();
-                _previousItemCount = _group.ConditionGroups.Count;
+                _previousItemCount = _group.Conditions.Count;
             }
         }
 
@@ -89,8 +89,8 @@ namespace LaunchMate.Views
         /// </summary>
         private void UpdateLastRowCellVisibility()
         {
-            var lastRow = GridConditionGroups.Items.Count - 1;
-            var lastColumnIndex = GridConditionGroups.Columns.Count - 1;
+            var lastRow = GridConditions.Items.Count - 1;
+            var lastColumnIndex = GridConditions.Columns.Count - 1;
 
             // Make the old last cell visible again if it exists
             if (_previousLastCell != null)
@@ -102,11 +102,11 @@ namespace LaunchMate.Views
             {
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    var lastRowItem = GridConditionGroups.Items[lastRow];
-                    var lastRowElement = GridConditionGroups.ItemContainerGenerator.ContainerFromItem(lastRowItem) as DataGridRow;
+                    var lastRowItem = GridConditions.Items[lastRow];
+                    var lastRowElement = GridConditions.ItemContainerGenerator.ContainerFromItem(lastRowItem) as DataGridRow;
                     if (lastRowElement != null)
                     {
-                        var cell = GridConditionGroups.Columns[lastColumnIndex].GetCellContent(lastRowElement)?.Parent as System.Windows.Controls.DataGridCell;
+                        var cell = GridConditions.Columns[lastColumnIndex].GetCellContent(lastRowElement)?.Parent as System.Windows.Controls.DataGridCell;
                         if (cell != null)
                         {
                             cell.Visibility = Visibility.Hidden;

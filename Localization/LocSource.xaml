@@ -5,10 +5,10 @@
     <sys:String x:Key="LOCLaunchMateSettingsTitle">Add Launch Groups</sys:String>
     <sys:String x:Key="LOCLaunchMateAutoClose">Auto-Close</sys:String>
     <sys:String x:Key="LOCLaunchMateGroupTarget">Launch Target</sys:String>
-    <sys:String x:Key="LOCLaunchMateLaunchDelayMS">Launch Delay (ms)</sys:String>
+    <sys:String x:Key="LOCLaunchMateLaunchDelayMS">Delay (ms)</sys:String>
     <sys:String x:Key="LOCLaunchMateGroupTargetUri">App Path/Web Url</sys:String>
     <sys:String x:Key="LOCLaunchMateExeArgs">Executable Args</sys:String>
-    <sys:String x:Key="LOCLaunchMateLaunchDelay">Launch Delay</sys:String>
+    <sys:String x:Key="LOCLaunchMateLaunchDelay">Delay</sys:String>
     <sys:String x:Key="LOCLaunchMateMS">(ms)</sys:String>
     <sys:String x:Key="LOCLaunchMateGroupEnabled">Launch Group Enabled</sys:String>
     <sys:String x:Key="LOCLaunchMateAutoCloseExe">Auto-Close</sys:String>
@@ -20,7 +20,7 @@ E.g. if set to AND, the backend logic will be:
 	(thisConditionGroup &amp;&amp; nextConditionGroup)</sys:String>
     <sys:String x:Key="LOCLaunchMateLaunchGroupEditorTitle">Launch Group Editor</sys:String>
     <sys:String x:Key="LOCLaunchMateNoExe">Application executable path cannot be empty</sys:String>
-    <sys:String x:Key="LOCLaunchMateNoConditions">No conditions were set. This will result in the application launching alongside all games. Continue?</sys:String>
+    <sys:String x:Key="LOCLaunchMateNoConditions">No conditions were set. This will result in the set action executing alongside all games. Continue?</sys:String>
     <sys:String x:Key="LOCLaunchMateGroupBoxTitle">Conditions:</sys:String>
     <sys:String x:Key="LOCLaunchMateFilterType">Filter Type</sys:String>
     <sys:String x:Key="LOCLaunchMateFilter">Filter</sys:String>
@@ -35,11 +35,11 @@ E.g. if set to AND, the backend logic will be:
     <sys:String x:Key="LOCLaunchMateMatchedGames">Matched Games</sys:String>
     <sys:String x:Key="LOCLaunchMateEdit">Edit</sys:String>
     <sys:String x:Key="LOCLaunchMateConditions">Conditions</sys:String>
-    <sys:String x:Key="LOCLaunchMateNot">NOT</sys:String>
+    <sys:String x:Key="LOCLaunchMateNot">Invert Filter</sys:String>
     <sys:String x:Key="LOCLaunchMateNextOperator">Next Logical Operator</sys:String>
     <sys:String x:Key="LOCLaunchMateSeeMatched">See Matched Games</sys:String>
-    <sys:String x:Key="LOCLaunchMateAnd">AND</sys:String>
-    <sys:String x:Key="LOCLaunchMateOr">OR</sys:String>
+    <sys:String x:Key="LOCLaunchMateAnd">And</sys:String>
+    <sys:String x:Key="LOCLaunchMateOr">Or</sys:String>
     <sys:String x:Key="LOCLaunchMateXor">XOR</sys:String>
     <sys:String x:Key="LOCLaunchMateCheckingGames">Checking Games For Matches</sys:String>
     <sys:String x:Key="LOCLaunchMateGuideLink">Click here for a guide on how to use this plugin</sys:String>

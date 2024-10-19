@@ -29,11 +29,33 @@ namespace LaunchMate.ViewModels
         /// <summary>
         /// Dictionary to convert frontend logic types to <see cref="JoinType"/> enums
         /// </summary>
+        /// <summary>
+        /// Dictionary to convert frontend logic types string representation to <see cref="JoinType"/> enums
+        /// </summary>
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
         {
             { ResourceProvider.GetString("LOCLaunchMateAnd"), JoinType.And },
             { ResourceProvider.GetString("LOCLaunchMateOr"), JoinType.Or },
-            { ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
+            //{ ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
+        };
+
+        /// <summary>
+        /// Dictionary to convert frontend filter types string representation to <see cref="FilterTypes"/> enums
+        /// </summary>
+        public static Dictionary<string, FilterTypes> FilterTypesDict { get; } = new Dictionary<string, FilterTypes>
+        {
+            { ResourceProvider.GetString("LOCAllGames"), FilterTypes.All },
+            { ResourceProvider.GetString("LOCNameLabel"), FilterTypes.Name },
+            { ResourceProvider.GetString("LOCSourceLabel"), FilterTypes.Source },
+            { ResourceProvider.GetString("LOCDeveloperLabel"), FilterTypes.Developers },
+            { ResourceProvider.GetString("LOCPublisherLabel"), FilterTypes.Publishers },
+            { ResourceProvider.GetString("LOCCategoryLabel"), FilterTypes.Categories },
+            { ResourceProvider.GetString("LOCGenreLabel"), FilterTypes.Genres },
+            { ResourceProvider.GetString("LOCGameId"), FilterTypes.GameId },
+            { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
+            { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
+            { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
+            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series }
         };
 
         public Dictionary<string, ActionType> ActionTypesDict { get; } = new Dictionary<string, ActionType>()
@@ -85,69 +107,23 @@ namespace LaunchMate.ViewModels
         /// Command to create a new <see cref="ConditionGroup"/> within the current <see cref="LaunchGroup"/>
         /// and open a window to edit it
         /// </summary>
-        public RelayCommand AddConditionGroupCmd
+        public RelayCommand AddConditionCmd
         {
             get => new RelayCommand(() =>
             {
-                var conditionGroup = new ConditionGroup();
-
-                var window = ConditionGroupEditorViewModel.GetWindow(conditionGroup);
-
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Group.ConditionGroups.Add(conditionGroup);
-            });
-        }
-
-        /// <summary>
-        /// Command to open the editing window for the selected <see cref="ConditionGroup"/>
-        /// </summary>
-        public RelayCommand<object> EditConditionGroupCmd
-        {
-            get => new RelayCommand<object>((grp) =>
-            {
-                if (grp == null)
-                {
-                    return;
-                }
-                var grpOriginal = (ConditionGroup)grp;
-                var toEdit = Serialization.GetClone(grpOriginal);
-
-                var window = ConditionGroupEditorViewModel.GetWindow(toEdit);
-
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Group.ConditionGroups.Remove(grpOriginal);
-                Group.ConditionGroups.Add(toEdit);
-
+                Group.Conditions.Add(new LaunchCondition());
             });
         }
 
         /// <summary>
         /// Command to remove the selected <see cref="ConditionGroup"/> from the current <see cref="LaunchGroup"/>
         /// </summary>
-        public RelayCommand<ConditionGroup> RemoveConditionGroupCmd
+        public RelayCommand<LaunchCondition> RemoveConditionCmd
         {
-            get => new RelayCommand<ConditionGroup>((a) =>
+            get => new RelayCommand<LaunchCondition>((a) =>
             {
                 if (a == null) { return; }
-                Group.ConditionGroups.Remove(a);
+                Group.Conditions.Remove(a);
             });
         }
 
@@ -217,7 +193,7 @@ namespace LaunchMate.ViewModels
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                if (Group.Enabled && Group.ConditionGroups.Count == 0)
+                if (Group.Enabled && Group.Conditions.Count == 0)
                 {
                     if (API.Instance.Dialogs.ShowMessage(
                         ResourceProvider.GetString("LOCLaunchMateNoConditions"),
