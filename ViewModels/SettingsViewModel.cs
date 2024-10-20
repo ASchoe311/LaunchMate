@@ -128,6 +128,15 @@ namespace LaunchMate.ViewModels
             });
         }
 
+        public RelayCommand SaveCmd
+        {
+            get => new RelayCommand(() =>
+            {
+                plugin.Settings.Groups = Settings.Groups;
+                plugin.SavePluginSettings(Settings);
+            });
+        }
+
         private void FixActionTypes()
         {
             foreach (var group in Settings.Groups)

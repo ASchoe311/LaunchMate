@@ -11,6 +11,7 @@ using LaunchMate.Utilities;
 using System.Security.Principal;
 using System.Windows;
 using Playnite.SDK.Data;
+using System.Runtime;
 
 namespace LaunchMate.ViewModels
 {
@@ -29,7 +30,17 @@ namespace LaunchMate.ViewModels
             _group = group;
         }
 
-        public LaunchGroup Group { get => _group; set => SetValue(ref _group, value); }
+
+        public LaunchGroup Group
+        {
+            get => _group;
+            set
+            {
+                _group = value;
+                OnPropertyChanged();
+            }
+        }
+        //public LaunchGroup Group { get => _group; set => SetValue(ref _group, value); }
 
         /// <summary>
         /// Dictionary to convert frontend logic types to <see cref="JoinType"/> enums

@@ -39,26 +39,29 @@ namespace LaunchMate.Views
         public LaunchGroupEditorView()
         {
             InitializeComponent();
+            DataContextChanged += LaunchGroupEditorView_DataContextChanged;
         }
+
         public LaunchGroupEditorView(LaunchGroup group) : this()
         {
             DataContext = new LaunchGroupEditorViewModel(group);
-
-            _group = group;
-
-            Loaded += MainWindow_Loaded;
-
-            _lastActionType = group.ActionType;
-            _group.Conditions.CollectionChanged += Items_CollectionChanged;
-            _previousItemCount = group.Conditions.Count;
-
-            // Use debounce timer to check if number of items in collection has changed after 100 ms
-            // Do this because otherwise and edit event would trigger UpdateLastRowCellVisibility()
-            _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-            _debounceTimer.Tick += DebounceTimer_Tick;
         }
 
-        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private void LaunchGroupEditorView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is LaunchGroupEditorViewModel viewModel)
+            {
+                _group = viewModel.Group;
+                _lastActionType = _group.ActionType;
+                _group.Conditions.CollectionChanged += Items_CollectionChanged;
+                _previousItemCount = _group.Conditions.Count;
+
+                _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+                _debounceTimer.Tick += DebounceTimer_Tick;
+            }
+        }
+
+            void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             HandleVisibility();
         }

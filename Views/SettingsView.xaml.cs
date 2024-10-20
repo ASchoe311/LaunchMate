@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace LaunchMate
 {
     public partial class SettingsView : UserControl
     {
+        private SettingsViewModel _viewModel;
         public SettingsView(LaunchMate plugin)
         {
             InitializeComponent();
@@ -28,6 +30,7 @@ namespace LaunchMate
             DataContext = new SettingsViewModel(plugin);
 
             var viewModel = DataContext as SettingsViewModel;
+            _viewModel = viewModel;
             if (viewModel != null)
             {
                 foreach (var launchGroup in viewModel.Settings.Groups)
@@ -42,13 +45,9 @@ namespace LaunchMate
                 }
 
             }
-        }
 
-            private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
-            e.Handled = true;
         }
 
     }
+
 }

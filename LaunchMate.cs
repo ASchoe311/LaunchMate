@@ -28,17 +28,49 @@ namespace LaunchMate
 
         private SettingsViewModel settings { get; set; }
 
+        internal Settings Settings { get; set; }
+
         public override Guid Id { get; } = Guid.Parse("61d7fcec-322d-4eb6-b981-1c8f8122ddc8");
 
         private readonly int vNum = 1;
 
+        public static LaunchMate Instance { get; set; }
+
+        public SettingsView LaunchGroupsManager { get; set; }
+        private readonly SidebarItem launchGroupsSidebarItem;
+
         public LaunchMate(IPlayniteAPI api) : base(api)
         {
             settings = new SettingsViewModel(this);
+            Settings = settings.Settings;
             Properties = new GenericPluginProperties
             {
                 HasSettings = true
             };
+            Instance = this;
+            launchGroupsSidebarItem = new SidebarItem
+            {
+                Title = "LaunchMate",
+                Icon = Path.Combine(Path.GetDirectoryName(typeof(LaunchMate).Assembly.Location), "icon.png"),
+                Type = SiderbarItemType.View,
+                Opened = () => GetLaunchMateManager(),
+                ProgressValue = 0,
+                ProgressMaximum = 100
+            };
+        }
+
+        public static SettingsView GetLaunchMateManager()
+        {
+            if (Instance.LaunchGroupsManager == null)
+            {
+                Instance.LaunchGroupsManager = new SettingsView(Instance);
+            }
+            return Instance.LaunchGroupsManager;
+        }
+
+        public override IEnumerable<SidebarItem> GetSidebarItems()
+        {
+            yield return Instance.launchGroupsSidebarItem;
         }
 
         private Stack<LaunchGroup> toClose = new Stack<LaunchGroup>();
@@ -48,7 +80,7 @@ namespace LaunchMate
             base.OnGameStarting(args);
 
             // Dispatch group handling to async function
-            foreach (var group in settings.Settings.Groups)
+            foreach (var group in Settings.Groups)
             {
                 if (!group.Enabled)
                 {

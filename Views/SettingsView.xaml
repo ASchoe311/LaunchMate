@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:launchMate="clr-namespace:LaunchMate"
              xmlns:viewModels="clr-namespace:LaunchMate.ViewModels"
-             xmlns:local="clr-namespace:LaunchMate.Views"
+             xmlns:local="clr-namespace:LaunchMate.Views" d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
@@ -13,13 +13,9 @@
             <Setter Property="FontSize" Value="20"/>
         </Style>
     </UserControl.Resources>
-    <Grid>
-        <TabControl x:Name="tabControl" TabStripPlacement="Left">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
+    <StackPanel>
+        <TabControl x:Name="tabControl" TabStripPlacement="Left" Margin="0, 25,0,0">
         </TabControl>
-    </Grid>
+        <Button Content="Save" Width="75" Height="30" Command="{Binding SaveCmd}" HorizontalAlignment="Center"/>
+    </StackPanel>
 </UserControl>
