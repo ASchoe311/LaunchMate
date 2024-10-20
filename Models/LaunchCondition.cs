@@ -109,7 +109,7 @@ namespace LaunchMate.Models
                     if (pnMatch || rgxMatch)
                     {
                         return true;
-                    }
+                    } 
                     break;
                 case FilterTypes.Genres:
                     filterSettings.Genre = new IdItemFilterItemProperties(Filter);

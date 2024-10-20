@@ -83,7 +83,28 @@ namespace LaunchMate
                 logger.Debug($"Waiting {group.LaunchDelay} ms to launch \"{group.LaunchTargetUri}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
                 logger.Debug($"Launching \"{group.LaunchTargetUri}\" with arguments \"{group.AppExeArgs}\"");
-                if (group.LaunchTargetUri.Substring(0, 6).ToLowerInvariant() == "https:")
+                if (Path.GetExtension(group.LaunchTargetUri) == ".bat")
+                {
+                    logger.Debug("It's a script!");
+                    ProcessStartInfo processStartInfo = new ProcessStartInfo("cmd.exe", "/c " + group.LaunchTargetUri + " " + group.AppExeArgs)
+                    {
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+                    Process p = new Process
+                    {
+                        StartInfo = processStartInfo
+                    };
+                    p.OutputDataReceived += (sender, pArgs) =>
+                    {
+                        logger.Info($"Standard output from {group.LaunchTargetUri}: {pArgs.Data}");
+                    };
+                    p.Start();
+                    p.BeginOutputReadLine();
+                    return;
+                }
+                else if (group.LaunchTargetUri.Substring(0, 6).ToLowerInvariant() == "https:")
                 {
                     // Dispatch to main thread
                     Application.Current.Dispatcher.Invoke((Action)delegate

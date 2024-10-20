@@ -19,6 +19,7 @@ namespace LaunchMate.Utilities
         /// <returns>True if <paramref name="rgx"/> matches any string in <paramref name="strings"/>, false otherwise</returns>
         public static bool IsMatchList<T>(this Regex rgx, List<T> strings) where T : DatabaseObject
         {
+            if (strings == null) return false;
             foreach (var item in strings)
             {
                 if (rgx.IsMatch(item.Name))
