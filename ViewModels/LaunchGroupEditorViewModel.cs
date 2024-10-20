@@ -19,6 +19,11 @@ namespace LaunchMate.ViewModels
         private static readonly ILogger logger = LogManager.GetLogger();
         private LaunchGroup _group;
 
+        public LaunchGroupEditorViewModel()
+        {
+            _group = new LaunchGroup();
+        }
+
         public LaunchGroupEditorViewModel(LaunchGroup group)
         {
             _group = group;

@@ -14,21 +14,41 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LaunchMate.Models;
 using LaunchMate.ViewModels;
+using LaunchMate.Views;
 using Playnite.SDK.Controls;
 
 namespace LaunchMate
 {
     public partial class SettingsView : UserControl
     {
-        public SettingsView()
+        public SettingsView(LaunchMate plugin)
         {
             InitializeComponent();
+
+            DataContext = new SettingsViewModel(plugin);
+
+            var viewModel = DataContext as SettingsViewModel;
+            if (viewModel != null)
+            {
+                foreach (var launchGroup in viewModel.Settings.Groups)
+                {
+                    var tabItem = new TabItem
+                    {
+                        Header = launchGroup.Name,
+                        Content = new LaunchGroupEditorView(launchGroup)
+                    };
+
+                    tabControl.Items.Add(tabItem);
+                }
+
+            }
         }
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+            private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
             e.Handled = true;
         }
+
     }
 }

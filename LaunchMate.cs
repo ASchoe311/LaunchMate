@@ -120,7 +120,7 @@ namespace LaunchMate
 
         public override UserControl GetSettingsView(bool firstRunSettings)
         {
-            return new SettingsView();
+            return new SettingsView(this);
         }
     }
 }

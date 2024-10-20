@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using LaunchMate.ViewModels;
 
 namespace LaunchMate.Views
 {
@@ -34,9 +35,15 @@ namespace LaunchMate.Views
         private LaunchGroup _group;
         private ActionType _lastActionType;
 
-        public LaunchGroupEditorView(LaunchGroup group)
+
+        public LaunchGroupEditorView()
         {
             InitializeComponent();
+        }
+        public LaunchGroupEditorView(LaunchGroup group) : this()
+        {
+            DataContext = new LaunchGroupEditorViewModel(group);
+
             _group = group;
 
             Loaded += MainWindow_Loaded;
@@ -159,26 +166,26 @@ namespace LaunchMate.Views
                 case ActionType.App:
                     _group.Action = new AppAction
                     {
-                        Target = _group.Action.Target
+                        Target = _group.Action.Target ?? string.Empty
                     };
                     break;
                 case ActionType.Web:
                     _group.Action = new WebAction
                     {
-                        Target = _group.Action.Target
+                        Target = _group.Action.Target ?? string.Empty
                     };
                     break;
                 case ActionType.Script:
                     _group.Action = new ScriptAction
                     {
-                        Target = _group.Action.Target
+                        Target = _group.Action.Target ?? string.Empty
                     };
                     _group.AutoClose = false;
                     break;
                 case ActionType.Close:
                     _group.Action = new CloseAction
                     {
-                        Target = _group.Action.Target
+                        Target = _group.Action.Target ?? string.Empty
                     };
                     _group.AutoClose = false;
                     break;

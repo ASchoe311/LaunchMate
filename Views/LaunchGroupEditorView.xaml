@@ -6,7 +6,6 @@
              xmlns:launchMate="clr-namespace:LaunchMate"
              xmlns:local="clr-namespace:LaunchMate.Views"
              xmlns:viewModels="clr-namespace:LaunchMate.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewModels:LaunchGroupEditorViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
