@@ -12,23 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using LaunchMate.Models;
-using LaunchMate.ViewModels;
-using Playnite.SDK.Controls;
 
-namespace LaunchMate
+namespace LaunchMate.Views
 {
-    public partial class SettingsView : UserControl
+    /// <summary>
+    /// Interaction logic for LaunchMatePanel.xaml
+    /// </summary>
+    public partial class LaunchMatePanelView : UserControl
     {
-        public SettingsView()
+        public LaunchMatePanelView()
         {
             InitializeComponent();
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
-            e.Handled = true;
         }
     }
 }

@@ -63,7 +63,7 @@ namespace LaunchMate
         {
             if (Instance.LaunchGroupsManager == null)
             {
-                Instance.LaunchGroupsManager = new SettingsView(Instance);
+                Instance.LaunchGroupsManager = new SettingsView();
             }
             return Instance.LaunchGroupsManager;
         }
@@ -115,7 +115,7 @@ namespace LaunchMate
                 logger.Debug($"Conditions passed, waiting {group.LaunchDelay} ms to execute action for group \"{group.Name}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
                 
-                if (group.Action.Execute() && group.AutoClose){
+                if (group.Action.Execute(group.Name) && group.AutoClose){
                     toClose.Push(group);
                 }
             }
@@ -129,19 +129,10 @@ namespace LaunchMate
             {
                 LaunchGroup group = toClose.Pop();
 
-                switch (group.ActionType)
-                {
-                    case ActionType.App:
-                        AppAction appAct = group.Action as AppAction;
-                        appAct.AutoClose();
-                        break;
-                    case ActionType.Web:
-                        WebAction webAct = group.Action as WebAction;
-                        webAct.AutoClose();
-                        break;
-                    default:
-                        break;
-                }
+                logger.Debug($"{group.Name} - Trying to close {group.Action.Target}");
+
+                group.Action.AutoClose(group.Name);
+
             }
         }
 
@@ -152,7 +143,7 @@ namespace LaunchMate
 
         public override UserControl GetSettingsView(bool firstRunSettings)
         {
-            return new SettingsView(this);
+            return new SettingsView();
         }
     }
 }

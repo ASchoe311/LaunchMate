@@ -20,7 +20,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using LaunchMate.ViewModels;
 
 namespace LaunchMate.Views
 {
@@ -35,33 +34,24 @@ namespace LaunchMate.Views
         private LaunchGroup _group;
         private ActionType _lastActionType;
 
-
-        public LaunchGroupEditorView()
+        public LaunchGroupEditorView(LaunchGroup group)
         {
             InitializeComponent();
-            DataContextChanged += LaunchGroupEditorView_DataContextChanged;
+            _group = group;
+
+            Loaded += MainWindow_Loaded;
+
+            _lastActionType = group.ActionType;
+            _group.Conditions.CollectionChanged += Items_CollectionChanged;
+            _previousItemCount = group.Conditions.Count;
+
+            // Use debounce timer to check if number of items in collection has changed after 100 ms
+            // Do this because otherwise and edit event would trigger UpdateLastRowCellVisibility()
+            _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            _debounceTimer.Tick += DebounceTimer_Tick;
         }
 
-        public LaunchGroupEditorView(LaunchGroup group) : this()
-        {
-            DataContext = new LaunchGroupEditorViewModel(group);
-        }
-
-        private void LaunchGroupEditorView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (DataContext is LaunchGroupEditorViewModel viewModel)
-            {
-                _group = viewModel.Group;
-                _lastActionType = _group.ActionType;
-                _group.Conditions.CollectionChanged += Items_CollectionChanged;
-                _previousItemCount = _group.Conditions.Count;
-
-                _debounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-                _debounceTimer.Tick += DebounceTimer_Tick;
-            }
-        }
-
-            void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             HandleVisibility();
         }
@@ -169,28 +159,30 @@ namespace LaunchMate.Views
                 case ActionType.App:
                     _group.Action = new AppAction
                     {
-                        Target = _group.Action.Target ?? string.Empty
+                        Target = _group.Action.Target ?? string.Empty,
+                        TargetArgs = _group.Action.TargetArgs ?? string.Empty,
                     };
                     break;
                 case ActionType.Web:
                     _group.Action = new WebAction
                     {
-                        Target = _group.Action.Target ?? string.Empty
+                        Target = _group.Action.Target ?? string.Empty,
+                        TargetArgs = _group.Action.TargetArgs ?? string.Empty,
                     };
                     break;
                 case ActionType.Script:
                     _group.Action = new ScriptAction
                     {
-                        Target = _group.Action.Target ?? string.Empty
+                        Target = _group.Action.Target ?? string.Empty,
+                        TargetArgs = _group.Action.TargetArgs ?? string.Empty,
                     };
-                    _group.AutoClose = false;
                     break;
                 case ActionType.Close:
                     _group.Action = new CloseAction
                     {
-                        Target = _group.Action.Target ?? string.Empty
+                        Target = _group.Action.Target ?? string.Empty,
+                        TargetArgs = _group.Action.TargetArgs ?? string.Empty,
                     };
-                    _group.AutoClose = false;
                     break;
             }
         }

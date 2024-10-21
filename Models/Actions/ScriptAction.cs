@@ -8,21 +8,16 @@ using System.Threading.Tasks;
 
 namespace LaunchMate.Models
 {
-    public class ScriptAction : ObservableObject, IAction
+    public class ScriptAction : ActionBase
     {
         private readonly ILogger logger = LogManager.GetLogger();
-        private string _target;
-        private string _targetArgs;
 
-        public string Target { get => _target; set => SetValue(ref _target, value); }
-        public string TargetArgs { get => _targetArgs; set => SetValue(ref _targetArgs, value); }
-
-        public bool Execute()
+        public override bool Execute(string groupName)
         {
-            logger.Debug($"Launching script \"{Target}\" with arguments \"{TargetArgs}\"");
+            logger.Debug($"{groupName} - Launching script \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {
-                API.Instance.Notifications.Remove($"Error - {Target}");
+                API.Instance.Notifications.Remove($"{groupName}  - Error: {Target}");
                 ProcessStartInfo info = new ProcessStartInfo("cmd.exe", "/c " + Target + " " + TargetArgs)
                 {
                     CreateNoWindow = true,
@@ -34,7 +29,7 @@ namespace LaunchMate.Models
             catch (Exception ex)
             {
                 logger.Error(ex, $"Something went wrong trying to run script {Target}");
-                API.Instance.Notifications.Add($"Error - {Target}", $"An error occurred when LaunchMate tried to run script {Target}, see logs for more info", NotificationType.Error);
+                API.Instance.Notifications.Add($"{groupName}  - Error: {Target}", $"An error occurred when LaunchMate tried to run script {Target} from group {groupName}, see logs for more info", NotificationType.Error);
                 return false;
             }
         }

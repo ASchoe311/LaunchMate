@@ -9,26 +9,29 @@ using System.Threading.Tasks;
 
 namespace LaunchMate.Models
 {
-    public class CloseAction : ObservableObject, IAction
+    public class CloseAction : ActionBase
     {
-        private string _target;
-        private string _targetArgs = null;
-
-        public string Target { get => _target; set => SetValue(ref _target, value); }
-        public string TargetArgs { get => _targetArgs; set => SetValue(ref _targetArgs, value); }
-
-        public bool Execute()
+        public override bool Execute(string groupName)
         {
             ILogger logger = LogManager.GetLogger();
-            string targName = Target.Replace(".exe", "");
-            logger.Debug($"Trying to close any running process by name {targName}");
-            var procs = Process.GetProcessesByName(targName);
-            foreach (var proc in procs)
+            try
             {
-                logger.Debug($"Killing process {proc.ProcessName} - {proc.Id}");
-                proc.Kill();
+                string targName = Target.Replace(".exe", "");
+                logger.Debug($"{groupName} - Trying to close any running process by name {targName}");
+                var procs = Process.GetProcessesByName(targName);
+                foreach (var proc in procs)
+                {
+                    logger.Debug($"{groupName} - Killing process {proc.ProcessName}|{proc.Id}");
+                    proc.Kill();
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"{groupName} - Something went wrong trying to close applications with name {Target}");
+                API.Instance.Notifications.Add($"{groupName} - Error: {Target}", $"An error occurred when LaunchMate tried to close applications with name {Target} from group {groupName}, see logs for more info", NotificationType.Error);
+                return false;
+            }
         }
     }
 }

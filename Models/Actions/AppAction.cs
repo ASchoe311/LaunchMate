@@ -11,36 +11,32 @@ using System.Threading.Tasks;
 
 namespace LaunchMate.Models
 {
-    public class AppAction : ObservableObject, IAction
+    public class AppAction : ActionBase
     {
         private readonly ILogger logger = LogManager.GetLogger();
 
-        private string _target;
-        private string _args;
         private string _lnkName;
 
-        public string Target { get => _target; set => SetValue(ref _target, value); }
-        public string TargetArgs { get => _args; set => SetValue(ref _args, value); }
         public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
 
-        public bool Execute()
+        public override bool Execute(string groupName)
         {
-            logger.Debug($"Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
+            logger.Debug($"{groupName} - Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {
-                API.Instance.Notifications.Remove($"Error - {Target}");
+                API.Instance.Notifications.Remove($"{groupName} - Error: {Target}");
                 Process.Start(Target, TargetArgs);
                 return true;
             }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Something went wrong trying to start application at {Target}");
-                API.Instance.Notifications.Add($"Error - {Target}", $"An error occurred when LaunchMate tried to launch application {Target}, see logs for more info", NotificationType.Error);
+                logger.Error(ex, $"{groupName} - Something went wrong trying to start application at {Target}");
+                API.Instance.Notifications.Add($"{groupName} - Error: {Target}", $"An error occurred when LaunchMate tried to launch application {Target} from group {groupName}, see logs for more info", NotificationType.Error);
                 return false;
             }
         }
 
-        public void AutoClose()
+        public override void AutoClose(string groupName)
         {
             var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
             using (var searcher = new ManagementObjectSearcher(wmiQueryString))
@@ -60,7 +56,7 @@ namespace LaunchMate.Models
                     // Check if the executable path of the process is the launched executable and stop the process
                     if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(Target)))
                     {
-                        logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {Target}");
+                        logger.Debug($"{groupName} - Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {Target}");
                         item.Process.Kill();
                     }
                 }

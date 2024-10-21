@@ -12,6 +12,8 @@ namespace LaunchMate.Models
     {
         string Target { get; set; }
         string TargetArgs { get; set; }
-        bool Execute();
+        bool Execute(string groupName);
+        void AutoClose(string groupName);
+
     }
 }

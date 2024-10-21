@@ -17,7 +17,7 @@ namespace LaunchMate.Models
     public class LaunchGroup : ObservableObject
     {
         private string _name = string.Empty;
-        private IAction _action;
+        private ActionBase _action;
         private ActionType _actionType;
         private bool _enabled = true;
         private bool _autoClose = true;
@@ -26,7 +26,7 @@ namespace LaunchMate.Models
         private bool _makeActions = false;
 
         public string Name { get => _name; set => SetValue(ref _name, value); }
-        public IAction Action { get => _action; set => SetValue(ref _action, value); }
+        public ActionBase Action { get => _action; set => SetValue(ref _action, value); }
         public ActionType ActionType { get => _actionType; set => SetValue(ref _actionType, value); }
         public bool Enabled { get => _enabled; set => SetValue(ref _enabled, value); }
         public bool AutoClose { get => _autoClose; set => SetValue(ref _autoClose, value); }

@@ -66,6 +66,7 @@
     <Compile Include="Enums\ActionType.cs" />
     <Compile Include="Enums\JoinType.cs" />
     <Compile Include="Enums\FilterTypes.cs" />
+    <Compile Include="Models\Actions\ActionBase.cs" />
     <Compile Include="Models\Actions\CloseAction.cs" />
     <Compile Include="Models\Actions\ScriptAction.cs" />
     <Compile Include="Models\ConditionGroup.cs" />
@@ -79,9 +80,13 @@
     <Compile Include="Models\Actions\WebAction.cs" />
     <Compile Include="Utilities\RegexExtensions.cs" />
     <Compile Include="ViewModels\ConditionGroupEditorViewModel.cs" />
+    <Compile Include="ViewModels\LaunchMatePanelViewModel.cs" />
     <Compile Include="ViewModels\MatchedGamesViewModel.cs" />
     <Compile Include="Views\ConditionGroupEditorView.xaml.cs">
       <DependentUpon>ConditionGroupEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LaunchMatePanelView.xaml.cs">
+      <DependentUpon>LaunchMatePanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MatchedGamesView.xaml.cs">
       <DependentUpon>MatchedGamesView.xaml</DependentUpon>
@@ -117,6 +122,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ConditionGroupEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LaunchMatePanelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

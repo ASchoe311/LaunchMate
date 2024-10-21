@@ -6,6 +6,7 @@
              xmlns:launchMate="clr-namespace:LaunchMate"
              xmlns:local="clr-namespace:LaunchMate.Views"
              xmlns:viewModels="clr-namespace:LaunchMate.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewModels:LaunchGroupEditorViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
@@ -18,12 +19,12 @@
         <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Group Name: "/>
-                <TextBox Text="{Binding Group.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding Group.Name}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Action Type: "/>
                 <ComboBox DockPanel.Dock="Top" Name="ActionTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
-                  SelectedValue="{Binding Group.ActionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                  SelectedValue="{Binding Group.ActionType, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding DataContext.ActionTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   DropDownClosed="ActionTypeSelect_DropDownClosed"/>
             </StackPanel>
@@ -49,7 +50,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="TargetText" Grid.Column="0" Margin="0,5,5,0"/>
-                    <TextBox Grid.Column="1" Text="{Binding Group.Action.Target, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                    <TextBox Grid.Column="1" Text="{Binding Group.Action.Target, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
                     <Button Name="AppSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectAppCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                     <Button Name="ScriptSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectScriptCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                 </Grid>
@@ -62,7 +63,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <TextBlock Name="ArgsText" Grid.Column="0" Text="{DynamicResource LOCLaunchMateExeArgs}" Margin="0,5,5,0"/>
-                    <TextBox Name="ArgsBox" Grid.Column="1" Text="{Binding Group.Action.TargetArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Name="ArgsBox" Grid.Column="1" Text="{Binding Group.Action.TargetArgs, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
                 <Grid Grid.Row="2" Grid.Column="0" Margin="0,10,0,10">
                     <Grid.ColumnDefinitions>
@@ -74,15 +75,15 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Column="0" Text="{DynamicResource LOCLaunchMateLaunchDelay}" Margin="0,5,20,0" />
-                    <TextBox Grid.Column="1" Text="{Binding Group.LaunchDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
+                    <TextBox Grid.Column="1" Text="{Binding Group.LaunchDelay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
                     <TextBlock Grid.Column="2" Text="{DynamicResource LOCLaunchMateMS}" Margin="5,0,0,0"/>
                 </Grid>
                 <Grid Grid.Row="0" Grid.Column="1" Margin="0,10,0,10">
-                    <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateGroupEnabled}" IsChecked="{Binding Group.Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateGroupEnabled}" IsChecked="{Binding Group.Enabled, UpdateSourceTrigger=PropertyChanged}"
                               HorizontalAlignment="Center"/>
                 </Grid>
                 <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,10" x:Name="AutoCloseGrid">
-                    <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding Group.AutoClose, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding Group.AutoClose, UpdateSourceTrigger=PropertyChanged}"
                               ToolTip="{DynamicResource LOCLaunchMateAutoCloseExeTooltip}"
                               HorizontalAlignment="Center"/>
                 </Grid>
@@ -100,7 +101,7 @@ CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Gri
                             <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateNot}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding Not, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                        <CheckBox IsChecked="{Binding Not, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -108,7 +109,7 @@ CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Gri
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
-                  SelectedValue="{Binding FilterType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                  SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" 
                   ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -116,7 +117,7 @@ CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Gri
                             <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" >
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                                        <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
                                         <DataTemplate.Triggers>
                                             <DataTrigger Binding="{Binding FilterType}" Value="0">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -128,7 +129,7 @@ CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Gri
                             <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFuzzyMatch}" Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding FuzzyMatch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                        <CheckBox IsChecked="{Binding FuzzyMatch, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -136,7 +137,7 @@ CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Gri
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox Name="JoinTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
-                        SelectedValue="{Binding Joiner, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                        SelectedValue="{Binding Joiner, UpdateSourceTrigger=PropertyChanged}" 
                         ItemsSource="{Binding DataContext.JoinMethodsDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         ToolTip="{DynamicResource LOCLaunchMateConditionOperatorTooltip}"/>
                                     </DataTemplate>
@@ -147,6 +148,11 @@ CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" Gri
                 </DockPanel>
             </GroupBox>
             <Button Content="{DynamicResource LOCLaunchMateSeeMatched}" Name="SeeMatches" Command="{Binding ShowMatchesCmd}" CommandParameter="{Binding Group}" Margin="200,10,200,0"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,15,15">
+            <Button Content="{DynamicResource LOCSaveLabel}" Command="{Binding SaveCommand}" Margin="5"
+            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" IsDefault="True" />
+            <Button Content="{DynamicResource LOCCancelLabel}" IsCancel="True" Margin="5"/>
         </StackPanel>
     </DockPanel>
 </UserControl>

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:launchMate="clr-namespace:LaunchMate"
              xmlns:viewModels="clr-namespace:LaunchMate.ViewModels"
-             xmlns:local="clr-namespace:LaunchMate.Views" d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
@@ -14,8 +14,69 @@
         </Style>
     </UserControl.Resources>
     <StackPanel>
-        <TabControl x:Name="tabControl" TabStripPlacement="Left" Margin="0, 25,0,0">
-        </TabControl>
-        <Button Content="Save" Width="75" Height="30" Command="{Binding SaveCmd}" HorizontalAlignment="Center"/>
+        <DockPanel Margin="10">
+            <TextBlock DockPanel.Dock="Top" Text="{DynamicResource LOCLaunchMateSettingsTitle}" TextWrapping="Wrap" Margin="0,0,0,5"/>
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
+                <Button Content="{DynamicResource LOCAddTitle}" Margin="0,10,0,0" DockPanel.Dock="Left" Command="{Binding AddLaunchGroupCmd}" />
+                <Button Content="{DynamicResource LOCRemoveGame}" Margin="10,10,0,0" DockPanel.Dock="Left" Command="{Binding RemoveLaunchGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridLaunchGroups}"/>
+                <Button Content="{DynamicResource LOCLaunchMateEdit}" Margin="10,10,0,0" DockPanel.Dock="Left" Command="{Binding EditLaunchGroupCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridLaunchGroups}"/>
+            </DockPanel>
+            <DataGrid Name="GridLaunchGroups" ItemsSource="{Binding Settings.Groups}" DockPanel.Dock="Top" Width="Auto"
+              CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="{DynamicResource LOCEnabledTitle}" Width="Auto" MinWidth="60">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" 
+                                  HorizontalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Launch Group Name" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TargetDisplayName, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateConditions}" Width="*" MinWidth="200">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ToFilterString}" TextWrapping="Wrap" Margin="5,0,5,0" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateLaunchDelayMS}" Width="Auto" MinWidth="125">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding LaunchDelay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Make Game Actions" Width="Auto" Visibility="Hidden">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding MakeGameActions, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateSeeMatched}" Width="Auto" MinWidth="135">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Name="SeeMatches" Content="{DynamicResource LOCMenuView}" Command="{Binding DataContext.ShowMatchesCmd, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding Path=.}" HorizontalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+        <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" x:Name="HelpText" TextWrapping="Wrap">
+            <Run Text="{DynamicResource LOCLaunchMateGuideNeedHelp}"  Style="{StaticResource HelpTextStyle}"/>
+            <Hyperlink NavigateUri="https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage" RequestNavigate="Hyperlink_RequestNavigate">
+                <Run Text="{DynamicResource LOCLaunchMateGuideLink}"  Style="{StaticResource HelpTextStyle}"/>
+            </Hyperlink>
+        </TextBlock>
+        <CheckBox Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Settings.UsePlayniteWebview}" Margin="10,15,10,10"
+                  ToolTip="If not checked, web pages will open in your default browser and will not auto-close"/>
     </StackPanel>
 </UserControl>
