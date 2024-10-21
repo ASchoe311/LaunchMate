@@ -1,19 +1,9 @@
-﻿using Microsoft.Win32;
-using Playnite.SDK;
+﻿using Playnite.SDK;
 using Playnite.SDK.Data;
-using Playnite.SDK.Models;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shell32;
-using System.IO;
-using System.Reflection;
 using LaunchMate.Models;
 using LaunchMate.Enums;
-using System.Runtime;
+using System;
 
 namespace LaunchMate.ViewModels
 {
@@ -34,108 +24,55 @@ namespace LaunchMate.ViewModels
             }
         }
 
-        /// <summary>
-        /// Command to create a new <see cref="LaunchGroup"/> and open a window to edit it
-        /// </summary>
-        public RelayCommand AddLaunchGroupCmd
+        public event EventHandler SettingsUpdated;
+
+        public SettingsViewModel(LaunchMate plugin)
         {
-            get => new RelayCommand(() =>
-            {
-                var launchGroup = new LaunchGroup();
+            // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
+            this.plugin = plugin;
 
-                var window = LaunchGroupEditorViewModel.GetWindow(launchGroup);
+            // Load saved settings.
+            var savedSettings = plugin.LoadPluginSettings<Settings>();
 
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Settings.Groups.Add(launchGroup);
-            });
+            // LoadPluginSettings returns null if no saved data is available.
+            Settings = savedSettings ?? new Settings();
+            FixActionTypes();
         }
+
+        public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
+        {
+            { ResourceProvider.GetString("LOCLaunchMateAnd"), JoinType.And },
+            { ResourceProvider.GetString("LOCLaunchMateOr"), JoinType.Or },
+            //{ ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
+        };
 
         /// <summary>
-        /// Command to open the editing window for the selected <see cref="LaunchGroup"/>
+        /// Dictionary to convert frontend filter types string representation to <see cref="FilterTypes"/> enums
         /// </summary>
-        public RelayCommand<object> EditLaunchGroupCmd
+        public static Dictionary<string, FilterTypes> FilterTypesDict { get; } = new Dictionary<string, FilterTypes>
         {
-            get => new RelayCommand<object>((grp) =>
-            {
-                if (grp == null)
-                {
-                    return;
-                }
-                var grpOriginal = (LaunchGroup)grp;
-                var toEdit = Serialization.GetClone(grpOriginal);
+            { ResourceProvider.GetString("LOCAllGames"), FilterTypes.All },
+            { ResourceProvider.GetString("LOCNameLabel"), FilterTypes.Name },
+            { ResourceProvider.GetString("LOCSourceLabel"), FilterTypes.Source },
+            { ResourceProvider.GetString("LOCDeveloperLabel"), FilterTypes.Developers },
+            { ResourceProvider.GetString("LOCPublisherLabel"), FilterTypes.Publishers },
+            { ResourceProvider.GetString("LOCCategoryLabel"), FilterTypes.Categories },
+            { ResourceProvider.GetString("LOCGenreLabel"), FilterTypes.Genres },
+            { ResourceProvider.GetString("LOCGameId"), FilterTypes.GameId },
+            { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
+            { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
+            { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
+            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series }
+        };
 
-                var window = LaunchGroupEditorViewModel.GetWindow(toEdit);
-
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Settings.Groups.Remove(grpOriginal);
-                Settings.Groups.Add(toEdit);
-
-            });
-        }
-
-        /// <summary>
-        /// Command to remove the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<LaunchGroup> RemoveLaunchGroupCmd
+        public Dictionary<string, ActionType> ActionTypesDict { get; } = new Dictionary<string, ActionType>()
         {
-            get => new RelayCommand<LaunchGroup>((a) =>
-            {
-                if (a == null) {  return; }
-                Settings.Groups.Remove(a);
-            });
-        }
+            { "Launch an App", ActionType.App },
+            { "Open a Webpage", ActionType.Web },
+            { "Run a Script", ActionType.Script },
+            { "Close program", ActionType.Close },
 
-        /// <summary>
-        /// Command to launch a window to show the list of games matched by the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<LaunchGroup> ShowMatchesCmd
-        {
-            get => new RelayCommand<LaunchGroup>((grp) =>
-            {
-
-                if (grp == null)
-                {
-                    return;
-                }
-                var window = MatchedGamesViewModel.GetWindow(grp);
-                if (window == null)
-                {
-                    return;
-                }
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-            });
-        }
-
-        public RelayCommand SaveCmd
-        {
-            get => new RelayCommand(() =>
-            {
-                plugin.Settings.Groups = Settings.Groups;
-                plugin.SavePluginSettings(Settings);
-            });
-        }
+        };
 
         private void FixActionTypes()
         {
@@ -143,6 +80,13 @@ namespace LaunchMate.ViewModels
             {
                 switch (group.ActionType)
                 {
+                    case ActionType.App:
+                        group.Action = new AppAction
+                        {
+                            Target = group.Action.Target,
+                            TargetArgs = group.Action.TargetArgs
+                        };
+                        break;
                     case ActionType.Web:
                         group.Action = new WebAction
                         {
@@ -168,26 +112,6 @@ namespace LaunchMate.ViewModels
             }
         }
 
-        public SettingsViewModel(LaunchMate plugin)
-        {
-            // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
-            this.plugin = plugin;
-
-            // Load saved settings.
-            var savedSettings = plugin.LoadPluginSettings<Settings>();
-
-            // LoadPluginSettings returns null if no saved data is available.
-            if (savedSettings != null)
-            {
-                Settings = savedSettings;
-                FixActionTypes();
-            }
-            else
-            {
-                Settings = new Settings();
-            }
-        }
-
         public void BeginEdit()
         {
             // Code executed when settings view is opened and user starts editing values.
@@ -206,6 +130,7 @@ namespace LaunchMate.ViewModels
             // Code executed when user decides to confirm changes made since BeginEdit was called.
             plugin.SavePluginSettings(Settings);
             FixActionTypes();
+            SettingsUpdated?.Invoke(this, EventArgs.Empty); // Notify that settings are updated
         }
 
         public bool VerifySettings(out List<string> errors)

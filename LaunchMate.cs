@@ -1,24 +1,14 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Events;
-using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Management;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using LaunchMate.Models;
-using LaunchMate.Enums;
 using LaunchMate.Views;
 using LaunchMate.ViewModels;
-using System.Windows;
-using LaunchMate.Utilities;
 
 namespace LaunchMate
 {
@@ -44,6 +34,7 @@ namespace LaunchMate
         {
             settings = new SettingsViewModel(this);
             Settings = settings.Settings;
+            settings.SettingsUpdated += OnSettingsUpdated;
             launchMatePanelModel = new LaunchMatePanelViewModel(this);
             Properties = new GenericPluginProperties
             {
@@ -59,6 +50,11 @@ namespace LaunchMate
                 ProgressValue = 0,
                 ProgressMaximum = 100
             };
+        }
+
+        private void OnSettingsUpdated(object sender, EventArgs e)
+        {
+            Settings = settings.Settings;
         }
 
         public static LaunchMatePanelView GetLaunchMateManager()

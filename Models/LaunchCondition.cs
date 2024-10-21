@@ -1,15 +1,8 @@
-﻿using Microsoft.Win32;
-using Playnite.SDK;
+﻿using Playnite.SDK;
 using Playnite.SDK.Data;
 using Playnite.SDK.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shell32;
-using System.IO;
 using LaunchMate.Enums;
 using LaunchMate.Utilities;
 using System.Text.RegularExpressions;
