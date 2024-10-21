@@ -4,16 +4,162 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LaunchMate.Views"
+             xmlns:viewModels="clr-namespace:LaunchMate.ViewModels"
              xmlns:models="clr-namespace:LaunchMate.Models"
+             d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TabControl TabStripPlacement="Left" Margin="0,15,0,0">
-            <TabItem Header="Test">
-                <Grid>
-                    
+    <DockPanel Margin="25">
+        <ListBox DockPanel.Dock="Left" x:Name="nameList" ItemsSource="{Binding Settings.Groups}" SelectionChanged="NameList_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <DockPanel x:Name="groupView" DockPanel.Dock="Right"  LastChildFill="False">
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Group Name: "/>
+                    <TextBox Text="{Binding Name}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Action Type: "/>
+                    <ComboBox DockPanel.Dock="Top" Name="ActionTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
+                SelectedValue="{Binding ActionType, UpdateSourceTrigger=PropertyChanged}" DropDownClosed="ActionTypeSelect_DropDownClosed"
+                ItemsSource="{Binding DataContext.ActionTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Top" Margin="10">
+                <Grid DockPanel.Dock="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" MaxWidth="300"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="0" Grid.Column="0" Margin="0,10,0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="TargetText" Grid.Column="0" Margin="0,5,5,0"/>
+                        <TextBox Grid.Column="1" Text="{Binding Action.Target, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                        <Button Name="AppSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectAppCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
+                        <Button Name="ScriptSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectScriptCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
+                    </Grid>
+                    <Grid x:Name="r0c1Args" Grid.Row="1" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Name="ArgsText" Grid.Column="0" Text="{DynamicResource LOCLaunchMateExeArgs}" Margin="0,5,5,0"/>
+                        <TextBox Name="ArgsBox" Grid.Column="1" Text="{Binding Group.Action.TargetArgs, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                    <Grid x:Name="r0c1Web" Grid.Row="1" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <CheckBox x:Name="webViewCheck" Grid.Column="1" Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Group.Action.UseWebView, UpdateSourceTrigger=PropertyChanged}"/>
+                    </Grid>
+                    <Grid Grid.Row="2" Grid.Column="0" Margin="0,10,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Text="{DynamicResource LOCLaunchMateLaunchDelay}" Margin="0,5,20,0" />
+                        <TextBox Grid.Column="1" Text="{Binding LaunchDelay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100"/>
+                        <TextBlock Grid.Column="2" Text="{DynamicResource LOCLaunchMateMS}" Margin="5,0,0,0"/>
+                    </Grid>
+                    <Grid Grid.Row="0" Grid.Column="1" Margin="0,10,0,10">
+                        <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateGroupEnabled}" IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}"
+                            HorizontalAlignment="Center"/>
+                    </Grid>
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,10" x:Name="AutoCloseGrid">
+                        <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="{DynamicResource LOCLaunchMateAutoCloseExeTooltip}"
+                            HorizontalAlignment="Center"/>
+                    </Grid>
                 </Grid>
-            </TabItem>
-        </TabControl>
-    </Grid>
+                <GroupBox Header="{DynamicResource LOCLaunchMateConditionGroups}" Margin="0,25,0,0">
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+                            <Button Content="{DynamicResource LOCAddTitle}" Command="{Binding AddConditionCmd}" Margin="5"/>
+                            <Button Content="{DynamicResource LOCRemoveGame}" Command="{Binding RemoveConditionCmd}" CommandParameter="{Binding SelectedItem, ElementName=GridConditions}" Margin="5"/>
+                        </StackPanel>
+                        <DataGrid Name="GridConditions" DockPanel.Dock="Top"
+ItemsSource="{Binding Conditions}"
+CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single" Width="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateNot}" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Not, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilterType}" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
+                SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" 
+                ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" >
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding FilterType}" Value="0">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFuzzyMatch}" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding FuzzyMatch, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateNextOperator}" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox Name="JoinTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value" 
+                    SelectedValue="{Binding Joiner, UpdateSourceTrigger=PropertyChanged}" 
+                    ItemsSource="{Binding DataContext.JoinMethodsDict, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    ToolTip="{DynamicResource LOCLaunchMateConditionOperatorTooltip}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </GroupBox>
+                <Button Content="{DynamicResource LOCLaunchMateSeeMatched}" Name="SeeMatches" Command="{Binding ShowMatchesCmd}" CommandParameter="{Binding Group}" Margin="200,10,200,0"/>
+            </StackPanel>
+        </DockPanel>
+    </DockPanel>
 </UserControl>

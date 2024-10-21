@@ -146,7 +146,8 @@ namespace LaunchMate.ViewModels
                     case ActionType.Web:
                         group.Action = new WebAction
                         {
-                            Target = group.Action.Target
+                            Target = group.Action.Target,
+                            UseWebView = group.Action.UseWebView,
                         };
                         break;
                     case ActionType.Script:
@@ -204,6 +205,7 @@ namespace LaunchMate.ViewModels
         {
             // Code executed when user decides to confirm changes made since BeginEdit was called.
             plugin.SavePluginSettings(Settings);
+            FixActionTypes();
         }
 
         public bool VerifySettings(out List<string> errors)

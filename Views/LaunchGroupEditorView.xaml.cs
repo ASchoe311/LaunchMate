@@ -196,29 +196,33 @@ namespace LaunchMate.Views
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
                     TargetText.Text = "Executable Path: ";
                     ArgsText.Text = "Executable Args: ";
-                    ArgsGrid.Visibility = Visibility.Visible;
+                    r0c1Args.Visibility = Visibility.Visible;
+                    r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Visible;
                     break;
                 case ActionType.Web:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
-                    TargetText.Text = "Web URL:  https://";
-                    ArgsGrid.Visibility = Visibility.Hidden;
+                    TargetText.Text = "Web URL: ";
+                    r0c1Args.Visibility = Visibility.Hidden;
+                    r0c1Web.Visibility = Visibility.Visible;
                     AutoCloseGrid.Visibility = Visibility.Visible;
                     break;
                 case ActionType.Script:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Visible;
                     TargetText.Text = "Script Path: ";
-                    ArgsGrid.Visibility = Visibility.Visible;
+                    r0c1Args.Visibility = Visibility.Visible;
                     ArgsText.Text = "Script Args: ";
+                    r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Hidden;
                     break;
                 case ActionType.Close:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
                     TargetText.Text = "Program Name:";
-                    ArgsGrid.Visibility = Visibility.Hidden;
+                    r0c1Args.Visibility = Visibility.Hidden;
+                    r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Hidden;
                     break;
             }

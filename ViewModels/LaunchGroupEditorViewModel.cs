@@ -79,7 +79,7 @@ namespace LaunchMate.ViewModels
             { "Launch an App", ActionType.App },
             { "Open a Webpage", ActionType.Web },
             { "Run a Script", ActionType.Script },
-            { "Close program", ActionType.Close },
+            { "Close a Program", ActionType.Close },
 
         };
 
@@ -215,6 +215,24 @@ namespace LaunchMate.ViewModels
                         ResourceProvider.GetString("LOCLaunchMateNoConditions"),
                         string.Empty, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
                     {
+                        return;
+                    }
+                }
+                // Web action specific checks
+                if (Group.ActionType == ActionType.Web)
+                {
+                    if (Group.Action.Target.Substring(0, 8) != "https://" && Group.Action.Target.Substring(0, 8) != "http://")
+                    {
+                        Group.Action.Target = "https://" + Group.Action.Target;
+                    }
+                    Uri uriResult;
+                    bool result = Uri.TryCreate(Group.Action.Target, UriKind.Absolute, out uriResult)
+                        && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                    if (!result || !Group.Action.Target.Contains("."))
+                    {
+                        API.Instance.Dialogs.ShowMessage(
+                        "Provided web URL is not valid, please check it", string.Empty,
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                 }

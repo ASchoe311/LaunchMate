@@ -54,7 +54,7 @@
                     <Button Name="AppSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectAppCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                     <Button Name="ScriptSelectBtn" Grid.Column="2" Content="&#xec5b;" Command="{Binding SelectScriptCmd}" Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}"/>
                 </Grid>
-                <Grid x:Name="ArgsGrid" Grid.Row="1" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
+                <Grid x:Name="r0c1Args" Grid.Row="1" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -64,6 +64,16 @@
                     </Grid.RowDefinitions>
                     <TextBlock Name="ArgsText" Grid.Column="0" Text="{DynamicResource LOCLaunchMateExeArgs}" Margin="0,5,5,0"/>
                     <TextBox Name="ArgsBox" Grid.Column="1" Text="{Binding Group.Action.TargetArgs, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+                <Grid x:Name="r0c1Web" Grid.Row="1" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <CheckBox x:Name="webViewCheck" Grid.Column="1" Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Group.Action.UseWebView, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
                 <Grid Grid.Row="2" Grid.Column="0" Margin="0,10,0,10">
                     <Grid.ColumnDefinitions>

@@ -27,6 +27,7 @@ namespace LaunchMate
         private static readonly ILogger logger = LogManager.GetLogger();
 
         private SettingsViewModel settings { get; set; }
+        private LaunchMatePanelViewModel launchMatePanelModel { get; set; }
 
         internal Settings Settings { get; set; }
 
@@ -36,13 +37,14 @@ namespace LaunchMate
 
         public static LaunchMate Instance { get; set; }
 
-        public SettingsView LaunchGroupsManager { get; set; }
+        public LaunchMatePanelView LaunchGroupsManager { get; set; }
         private readonly SidebarItem launchGroupsSidebarItem;
 
         public LaunchMate(IPlayniteAPI api) : base(api)
         {
             settings = new SettingsViewModel(this);
             Settings = settings.Settings;
+            launchMatePanelModel = new LaunchMatePanelViewModel(this);
             Properties = new GenericPluginProperties
             {
                 HasSettings = true
@@ -59,11 +61,11 @@ namespace LaunchMate
             };
         }
 
-        public static SettingsView GetLaunchMateManager()
+        public static LaunchMatePanelView GetLaunchMateManager()
         {
             if (Instance.LaunchGroupsManager == null)
             {
-                Instance.LaunchGroupsManager = new SettingsView();
+                Instance.LaunchGroupsManager = new LaunchMatePanelView(Instance.launchMatePanelModel);
             }
             return Instance.LaunchGroupsManager;
         }

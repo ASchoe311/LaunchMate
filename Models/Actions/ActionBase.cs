@@ -12,8 +12,12 @@ namespace LaunchMate.Models
         private readonly ILogger logger = LogManager.GetLogger();
         private string _target;
         private string _args;
+        private bool _useWebView;
+
         public string Target { get => _target; set => SetValue(ref _target, value); }
         public string TargetArgs { get => _args; set => SetValue(ref _args, value); }
+        public bool UseWebView { get => _useWebView; set => SetValue(ref _useWebView, value); }
+
 
         public abstract bool Execute(string groupName);
 

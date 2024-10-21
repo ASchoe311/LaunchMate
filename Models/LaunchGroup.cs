@@ -138,6 +138,10 @@ namespace LaunchMate.Models
         public string ToFilterString { get
             {
                 string filterStr = string.Empty;
+                if (Conditions.Count == 0)
+                {
+                    return "No Conditions";
+                }
                 for (int j = 0; j < Conditions.Count; j++)
                 {
                     var condition = Conditions[j];
