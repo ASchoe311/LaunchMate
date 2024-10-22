@@ -106,7 +106,7 @@ namespace LaunchMate
         private void HandleLaunchGroup(OnGameStartingEventArgs args, LaunchGroup group)
         {
 
-            logger.Debug($"Checking launch group conditions for group names {group.Name}");
+            logger.Debug($"Checking launch group conditions for group named {group.Name}");
             
             if (group.MeetsConditions(args.Game))
             {

@@ -6,6 +6,9 @@ using LaunchMate.Enums;
 using System.Windows.Threading;
 using LaunchMate.Models;
 using LaunchMate.ViewModels;
+using LaunchMate.Utilities;
+using Playnite.SDK;
+using System.Windows.Navigation;
 
 namespace LaunchMate.Views
 {
@@ -37,8 +40,13 @@ namespace LaunchMate.Views
                 groupView.DataContext = selectedGroup;
                 _group = selectedGroup;
                 GroupChanged();
+                HandleVisibility();
             }
-            HandleVisibility();
+            if (nameList.Items.Count == 0)
+            {
+                groupView.Visibility = Visibility.Collapsed;
+                noGroupsView.Visibility = Visibility.Visible;
+            }
         }
         
         /// <summary>
@@ -162,8 +170,8 @@ namespace LaunchMate.Views
                 case ActionType.App:
                     AppSelectBtn.Visibility = Visibility.Visible;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
-                    TargetText.Text = "Executable Path: ";
-                    ArgsText.Text = "Executable Args: ";
+                    TargetText.Text = "App Path: ";
+                    ArgsText.Text = "App Parameters: ";
                     r0c1Args.Visibility = Visibility.Visible;
                     r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Visible;
@@ -179,16 +187,16 @@ namespace LaunchMate.Views
                 case ActionType.Script:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Visible;
-                    TargetText.Text = "Script Path: ";
+                    TargetText.Text = "Script: ";
                     r0c1Args.Visibility = Visibility.Visible;
-                    ArgsText.Text = "Script Args: ";
+                    ArgsText.Text = "Script Arguments: ";
                     r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Hidden;
                     break;
                 case ActionType.Close:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
-                    TargetText.Text = "Program Name:";
+                    TargetText.Text = "Program Name: ";
                     r0c1Args.Visibility = Visibility.Hidden;
                     r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Hidden;
@@ -303,5 +311,85 @@ namespace LaunchMate.Views
             }
         }
 
+        private void AddGroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            var set = DataContext as SettingsViewModel;
+            var groups = set.Settings.Groups;
+            groups.Add(new LaunchGroup()
+            {
+                Name = $"Unnamed Group ({groups.Count})"
+            });
+            if (nameList.Items.Count != 0)
+            {
+                groupView.Visibility = Visibility.Visible;
+                noGroupsView.Visibility = Visibility.Collapsed;
+            }
+            nameList.SelectedIndex = nameList.Items.Count - 1;
+            if (nameList.SelectedItem is LaunchGroup g)
+            {
+                var selectedGroup = groups.Where((x) => x.Name == g.Name).First();
+                groupView.DataContext = selectedGroup;
+                _group = selectedGroup;
+                GroupChanged();
+            }
+        }
+        private void RemoveGroupButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (nameList.SelectedItem == null)
+            {
+                return;
+            }
+            int index = nameList.SelectedIndex;
+            if (nameList.SelectedItem is LaunchGroup a)
+            {
+                var set = DataContext as SettingsViewModel;
+                var groups = set.Settings.Groups;
+                //var selectedGroup = groups.Where((x) => x.Name == g.Name).First();
+                groups.Remove(a);
+            }
+            if (nameList.Items.Count == 0)
+            {
+                groupView.Visibility = Visibility.Collapsed;
+                noGroupsView.Visibility = Visibility.Visible;
+                return;
+            }
+            nameList.SelectedIndex = ((index - 1) >= 0) ? index - 1 : 0;
+            if (nameList.SelectedItem is LaunchGroup g)
+            {
+                var set = DataContext as SettingsViewModel;
+                var groups = set.Settings.Groups;
+                var selectedGroup = groups.Where((x) => x.Name == g.Name).First();
+                groupView.DataContext = selectedGroup;
+                _group = selectedGroup;
+                GroupChanged();
+            }
+            HandleVisibility();
+        }
+
+        private void AppSelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Tuple<string, string, string> app = AppSelector.SelectApp();
+            if (app == null)
+            {
+                return;
+            }
+            _group.Action.Target = app.Item1;
+            _group.Action.TargetArgs = app.Item2;
+        }
+
+        private void ScriptSelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string file = API.Instance.Dialogs.SelectFile("Script File|*.bat");
+            if (file != null)
+            {
+                _group.Action.Target = file;
+            }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
+            e.Handled = true;
+        }
     }
 }
