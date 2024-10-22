@@ -46,8 +46,12 @@
                 <TextBlock Text="Group Name: " Margin="0,5,0,0"/>
                 <TextBox Text="{Binding Name}" MinWidth="50"/>
             </StackPanel>
-            <StackPanel DockPanel.Dock="Top" Margin="10">
-                <Grid DockPanel.Dock="Top">
+            <Grid DockPanel.Dock="Top" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" DockPanel.Dock="Top">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -128,16 +132,19 @@
                         <TextBlock Grid.Column="2" Text="{DynamicResource LOCLaunchMateMS}" Margin="5,0,0,0" VerticalAlignment="Center" />
                     </Grid>
                 </Grid>
-                <GroupBox Margin="0,25,0,0">
+                <GroupBox Margin="0,25,0,0" Grid.Row="1">
                     <GroupBox.Header>
                         <TextBlock>
                             <Run Text="Launch Conditions"/>
                         </TextBlock>
                     </GroupBox.Header>
                     <DockPanel>
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-                            <Button Content="{DynamicResource LOCAddTitle}" Click="AddButton_Click" Margin="5"/>
-                            <Button Content="{DynamicResource LOCRemoveGame}" Click="RemoveButton_Click" Margin="5"/>
+                        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+                                <Button Content="{DynamicResource LOCAddTitle}" Click="AddButton_Click" Margin="5"/>
+                                <Button Content="{DynamicResource LOCRemoveGame}" Click="RemoveButton_Click" Margin="5"/>
+                            </StackPanel>
+                            <Button Content="{DynamicResource LOCLaunchMateSeeMatched}" Name="SeeMatches" Click="SeeMatches_Click" Margin="0,10,0,0" />
                         </StackPanel>
                         <DataGrid Name="GridConditions" DockPanel.Dock="Top" ItemsSource="{Binding Conditions}" LoadingRow="DataGrid_LoadingRow" MaxHeight="240" 
                                   CanUserAddRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" GridLinesVisibility="None" SelectionMode="Single" Width="Auto">
@@ -158,7 +165,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" >
+                                <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" MinWidth="130">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
@@ -191,8 +198,7 @@
                         </DataGrid>
                     </DockPanel>
                 </GroupBox>
-                <Button Content="{DynamicResource LOCLaunchMateSeeMatched}" Name="SeeMatches" Click="SeeMatches_Click" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-            </StackPanel>
+            </Grid>
         </DockPanel>
         <StackPanel x:Name="noGroupsView" Visibility="Collapsed" VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center">

@@ -70,7 +70,7 @@ namespace LaunchMate.ViewModels
             { "Launch an App", ActionType.App },
             { "Open a Webpage", ActionType.Web },
             { "Run a Script", ActionType.Script },
-            { "Close program", ActionType.Close },
+            { "Close a Program", ActionType.Close },
 
         };
 
