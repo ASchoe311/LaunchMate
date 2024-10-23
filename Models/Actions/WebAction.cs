@@ -70,35 +70,6 @@ namespace LaunchMate.Models
             }
         }
 
-        //private async void BringPageForward(IWebView webView, string groupName)
-        //{
-        //    await Task.Run(() =>
-        //    {
-        //        int cycles = 0;
-
-        //        while (true)
-        //        {
-        //            var pageSource = webView.GetPageSource();
-        //            var pageTitle = Regex.Match(pageSource, ".*?<title>(.*?)</title>.*").Groups[1].Value;
-        //            if (pageTitle != null && pageTitle != string.Empty)
-        //            {
-        //                // Bring web view to foreground
-        //                logger.Debug($"{groupName} - Trying to bring webview into foreground");
-        //                SetForegroundHelper.SetForeground(pageTitle);
-        //                break;
-        //            }
-
-        //            if (cycles >= 25)
-        //            {
-        //                logger.Debug($"{groupName} - Awaiting webview took too long, leaving in background");
-        //                break;
-        //            }
-
-        //            System.Threading.Thread.Sleep(100);
-        //        }
-        //    });
-        //}
-
         public override void AutoClose(string groupName)
         {
             logger.Debug($"{groupName} - Closing webview for {Target}");

@@ -1,17 +1,17 @@
-﻿using LaunchMate.Enums;
-using LaunchMate.Models;
-using Playnite.SDK;
-using System;
+﻿using Playnite.SDK;
+using Playnite.SDK.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LaunchMate.Models;
+using LaunchMate.Enums;
+using System;
 
 namespace LaunchMate.ViewModels
 {
-    public class LaunchMatePanelViewModel : ObservableObject
+
+    public class LaunchMatePanelViewModel : ObservableObject, ISettings
     {
         private readonly LaunchMate plugin;
+        private Settings EditingClone { get; set; }
 
         private Settings _settings;
         public Settings Settings
@@ -21,8 +21,11 @@ namespace LaunchMate.ViewModels
             {
                 _settings = value;
                 OnPropertyChanged();
+                SubscribeToGroupChanges();
             }
         }
+
+        public event EventHandler PanelUpdated;
 
         public LaunchMatePanelViewModel(LaunchMate plugin)
         {
@@ -33,15 +36,67 @@ namespace LaunchMate.ViewModels
             var savedSettings = plugin.LoadPluginSettings<Settings>();
 
             // LoadPluginSettings returns null if no saved data is available.
-            if (savedSettings != null)
+            Settings = savedSettings ?? new Settings();
+            FixActionTypes();
+
+            SubscribeToGroupChanges();
+        }
+
+        private void SubscribeToGroupChanges()
+        {
+            Settings.Groups.CollectionChanged += (s, e) =>
             {
-                Settings = savedSettings;
-                FixActionTypes();
-            }
-            else
+                Save();
+                if (e.NewItems != null)
+                {
+                    foreach (LaunchGroup group in e.NewItems)
+                    {
+                        group.PropertyChanged += (s1, e1) => Save();
+                        foreach (var condition in group.Conditions)
+                        {
+                            condition.PropertyChanged += (s2, e2) => Save();
+                        }
+                        group.Conditions.CollectionChanged += (s3, e3) =>
+                        {
+                            Save();
+                            if (e3.NewItems != null)
+                            {
+                                foreach (LaunchCondition condition in e3.NewItems)
+                                {
+                                    condition.PropertyChanged += (t, f) => Save();
+                                }
+                            }
+                        };
+                        group.Action.PropertyChanged += (s4, e4) => Save();
+                    }
+                }
+            };
+            foreach (var group in Settings.Groups)
             {
-                Settings = new Settings();
+                group.PropertyChanged += (s, e) => Save();
+                foreach (var condition in group.Conditions)
+                {
+                    condition.PropertyChanged += (s, e) => Save();
+                }
+                group.Conditions.CollectionChanged += (s, e) =>
+                {
+                    Save();
+                    if (e.NewItems != null)
+                    {
+                        foreach (LaunchCondition condition in e.NewItems)
+                        {
+                            condition.PropertyChanged += (t, f) => Save();
+                        }
+                    }
+                };
+                group.Action.PropertyChanged += (s, e) => Save();
             }
+        }
+
+        private void Save()
+        {
+            plugin.SavePluginSettings(Settings);
+            PanelUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
@@ -75,80 +130,9 @@ namespace LaunchMate.ViewModels
             { "Launch an App", ActionType.App },
             { "Open a Webpage", ActionType.Web },
             { "Run a Script", ActionType.Script },
-            { "Close program", ActionType.Close },
+            { "Close a Program", ActionType.Close },
 
         };
-
-        /// <summary>
-        /// Command to create a new <see cref="LaunchGroup"/> and open a window to edit it
-        /// </summary>
-        public RelayCommand AddLaunchGroupCmd
-        {
-            get => new RelayCommand(() =>
-            {
-                var launchGroup = new LaunchGroup();
-
-                var window = LaunchGroupEditorViewModel.GetWindow(launchGroup);
-
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Settings.Groups.Add(launchGroup);
-            });
-        }
-
-        /// <summary>
-        /// Command to remove the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<LaunchGroup> RemoveLaunchGroupCmd
-        {
-            get => new RelayCommand<LaunchGroup>((a) =>
-            {
-                if (a == null) { return; }
-                Settings.Groups.Remove(a);
-            });
-        }
-
-        /// <summary>
-        /// Command to launch a window to show the list of games matched by the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<LaunchGroup> ShowMatchesCmd
-        {
-            get => new RelayCommand<LaunchGroup>((grp) =>
-            {
-
-                if (grp == null)
-                {
-                    return;
-                }
-                var window = MatchedGamesViewModel.GetWindow(grp);
-                if (window == null)
-                {
-                    return;
-                }
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-            });
-        }
-
-        public RelayCommand SaveCmd
-        {
-            get => new RelayCommand(() =>
-            {
-                plugin.Settings.Groups = Settings.Groups;
-                plugin.SavePluginSettings(Settings);
-            });
-        }
 
         private void FixActionTypes()
         {
@@ -156,10 +140,18 @@ namespace LaunchMate.ViewModels
             {
                 switch (group.ActionType)
                 {
+                    case ActionType.App:
+                        group.Action = new AppAction
+                        {
+                            Target = group.Action.Target,
+                            TargetArgs = group.Action.TargetArgs
+                        };
+                        break;
                     case ActionType.Web:
                         group.Action = new WebAction
                         {
-                            Target = group.Action.Target
+                            Target = group.Action.Target,
+                            UseWebView = group.Action.UseWebView,
                         };
                         break;
                     case ActionType.Script:
@@ -180,6 +172,34 @@ namespace LaunchMate.ViewModels
             }
         }
 
+        public void BeginEdit()
+        {
+            // Code executed when settings view is opened and user starts editing values.
+            EditingClone = Serialization.GetClone(Settings);
+        }
+
+        public void CancelEdit()
+        {
+            // Code executed when user decides to cancel any changes made since BeginEdit was called.
+            Settings = EditingClone;
+            FixActionTypes();
+        }
+
+        public void EndEdit()
+        {
+            // Code executed when user decides to confirm changes made since BeginEdit was called.
+            plugin.SavePluginSettings(Settings);
+            FixActionTypes();
+            PanelUpdated?.Invoke(this, EventArgs.Empty); // Notify that settings are updated
+        }
+
+        public bool VerifySettings(out List<string> errors)
+        {
+            // Code execute when user decides to confirm changes made since BeginEdit was called.
+            // Executed before EndEdit is called and EndEdit is not called if false is returned.
+            // List of errors is presented to user if verification fails.
+            errors = new List<string>();
+            return true;
+        }
     }
-    
 }

@@ -17,7 +17,7 @@ namespace LaunchMate
         private static readonly ILogger logger = LogManager.GetLogger();
 
         private SettingsViewModel settings { get; set; }
-        private LaunchMatePanelViewModel launchMatePanelModel { get; set; }
+        internal LaunchMatePanelViewModel launchMatePanelModel { get; set; }
 
         internal Settings Settings { get; set; }
 
@@ -36,6 +36,7 @@ namespace LaunchMate
             Settings = settings.Settings;
             settings.SettingsUpdated += OnSettingsUpdated;
             launchMatePanelModel = new LaunchMatePanelViewModel(this);
+            launchMatePanelModel.PanelUpdated += OnPanelUpdated;
             Properties = new GenericPluginProperties
             {
                 HasSettings = true
@@ -43,7 +44,7 @@ namespace LaunchMate
             Instance = this;
             launchGroupsSidebarItem = new SidebarItem
             {
-                Title = "LaunchMate",
+                Title = "LaunchMate1",
                 Icon = Path.Combine(Path.GetDirectoryName(typeof(LaunchMate).Assembly.Location), "icon.png"),
                 Type = SiderbarItemType.View,
                 Opened = () => GetLaunchMateManager(),
@@ -57,11 +58,19 @@ namespace LaunchMate
             Settings = settings.Settings;
         }
 
+        private void OnPanelUpdated(object sender, EventArgs e)
+        {
+            Settings = launchMatePanelModel.Settings;
+        }
+
         public static LaunchMatePanelView GetLaunchMateManager()
         {
             if (Instance.LaunchGroupsManager == null)
             {
-                Instance.LaunchGroupsManager = new LaunchMatePanelView(Instance.launchMatePanelModel);
+                Instance.LaunchGroupsManager = new LaunchMatePanelView()
+                {
+                    DataContext = Instance.launchMatePanelModel
+                };
             }
             return Instance.LaunchGroupsManager;
         }
