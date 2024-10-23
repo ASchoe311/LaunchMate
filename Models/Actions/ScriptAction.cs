@@ -14,6 +14,7 @@ namespace LaunchMate.Models
 
         public override bool Execute(string groupName)
         {
+            if ((Target ?? "") == string.Empty) return false;
             logger.Debug($"{groupName} - Launching script \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {

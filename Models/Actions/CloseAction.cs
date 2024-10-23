@@ -14,6 +14,7 @@ namespace LaunchMate.Models
         public override bool Execute(string groupName)
         {
             ILogger logger = LogManager.GetLogger();
+            if ((Target ?? "") == string.Empty) return false;
             try
             {
                 string targName = Target.Replace(".exe", "");

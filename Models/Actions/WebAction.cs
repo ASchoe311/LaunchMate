@@ -21,6 +21,7 @@ namespace LaunchMate.Models
 
         public override bool Execute(string groupName)
         {
+            if ((Target ?? "") == string.Empty) return false;
             try
             {
                 logger.Debug($"{groupName} - Opening webpage \"{Target}\"");
@@ -40,7 +41,8 @@ namespace LaunchMate.Models
                     webView.Navigate(Target);
 
                     // Watch for page loading changed
-                    // Not using for now, has some issue that causes extreme CPU usage
+                    // Potential for high CPU usage for certain pages. Uncertain of cause
+                    // Only known example so far: atlauncher.com
                     webView.LoadingChanged += async (s, e) =>
                     {
                         var pageSource = await webView.GetPageSourceAsync();

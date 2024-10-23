@@ -15,12 +15,14 @@ namespace LaunchMate.Models
     {
         private readonly ILogger logger = LogManager.GetLogger();
 
-        private string _lnkName;
+        //private string _lnkName;
 
-        public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
+        //public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
 
         public override bool Execute(string groupName)
         {
+            // If no target, return
+            if ((Target ?? "") == string.Empty) return false;
             logger.Debug($"{groupName} - Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {
@@ -36,8 +38,10 @@ namespace LaunchMate.Models
             }
         }
 
+
         public override void AutoClose(string groupName)
         {
+            // Use WMI query to find processes with the same executable path as the app launched by this action
             var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
             using (var searcher = new ManagementObjectSearcher(wmiQueryString))
             using (var results = searcher.Get())
