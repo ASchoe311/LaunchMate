@@ -121,6 +121,7 @@ namespace LaunchMate.Models
                         break;
                 }
             }
+            logger.Debug($"App will launch given matches up to condition numer {matches.Count}? {execute}");
             return execute;
         }
 

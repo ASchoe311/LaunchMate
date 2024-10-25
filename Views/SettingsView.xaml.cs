@@ -9,6 +9,11 @@ using LaunchMate.ViewModels;
 using LaunchMate.Utilities;
 using Playnite.SDK;
 using System.Windows.Navigation;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Diagnostics;
+using System.ServiceProcess;
 
 namespace LaunchMate.Views
 {
@@ -19,6 +24,8 @@ namespace LaunchMate.Views
         private DispatcherTimer _debounceTimer;
         private LaunchGroup _group;
         private ActionType _lastActionType;
+
+        private readonly ILogger logger = LogManager.GetLogger();
 
         public SettingsView()
         {
@@ -31,6 +38,16 @@ namespace LaunchMate.Views
         /// </summary>
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // Make sure settings window is a useable size
+            Window parentWindow = Window.GetWindow(this);
+            parentWindow.Width = 1200;
+            parentWindow.Height = 700;
+
+            // Center settings window
+            Window mainWindow = API.Instance.Dialogs.GetCurrentAppWindow();
+            parentWindow.Top = (mainWindow.Top + (mainWindow.ActualHeight / 2)) - 350;
+            parentWindow.Left = (mainWindow.Left + (mainWindow.ActualWidth / 2)) - 600;
+
             nameList.SelectedIndex = 0;
             if (nameList.SelectedItem is LaunchGroup g)
             {
@@ -390,6 +407,132 @@ namespace LaunchMate.Views
         {
             System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
             e.Handled = true;
+        }
+
+        private void FilterTypeSelect_DropDownClosed(object sender, EventArgs e)
+        {
+            if (sender is ComboBox cmb)
+            {
+                FilterTypes filterType = (FilterTypes)cmb.SelectedValue;
+                List<GenericItemOption> items = new List<GenericItemOption>();
+                Guid filterId = Guid.Empty;
+                switch (filterType)
+                {
+                    case FilterTypes.Name:
+                        foreach (var game in API.Instance.Database.Games)
+                        {
+                            items.Add(new GenericItemOption(game.Name, game.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Source:
+                        foreach (var source in API.Instance.Database.Sources)
+                        {
+                            items.Add(new GenericItemOption(source.Name, source.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Developers:
+                        foreach (var dev in API.Instance.Database.Companies)
+                        {
+                            items.Add(new GenericItemOption(dev.Name, dev.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Publishers:
+                        foreach (var pub in API.Instance.Database.Companies)
+                        {
+                            items.Add(new GenericItemOption(pub.Name, pub.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Categories:
+                        foreach (var category in API.Instance.Database.Categories)
+                        {
+                            items.Add(new GenericItemOption(category.Name, category.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Genres:
+                        foreach (var genre in API.Instance.Database.Genres)
+                        {
+                            items.Add(new GenericItemOption(genre.Name, genre.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Tags:
+                        foreach (var tag in API.Instance.Database.Tags)
+                        {
+                            items.Add(new GenericItemOption(tag.Name, tag.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Features:
+                        foreach (var feature in API.Instance.Database.Features)
+                        {
+                            items.Add(new GenericItemOption(feature.Name, feature.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.AgeRatings:
+                        foreach (var age in API.Instance.Database.AgeRatings)
+                        {
+                            items.Add(new GenericItemOption(age.Name, age.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Series:
+                        foreach (var series in API.Instance.Database.Series)
+                        {
+                            items.Add(new GenericItemOption(series.Name, series.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Platforms:
+                        foreach (var platform in API.Instance.Database.Platforms)
+                        {
+                            items.Add(new GenericItemOption(platform.Name, platform.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Process:
+                        foreach (var proc in Process.GetProcesses())
+                        {
+                            try
+                            {
+                                items.Add(new GenericItemOption(proc.ProcessName, proc.MainWindowTitle));
+                            }
+                            catch 
+                            {
+                                continue;
+                            }
+                        }
+                        items = items.GroupBy((x) => x.Name).Select((group) => group.First()).ToList();
+                        break;
+                    case FilterTypes.Service:
+                        foreach (var service in ServiceController.GetServices())
+                        {
+                            items.Add(new GenericItemOption(service.DisplayName, service.ServiceName));
+                        }
+                        break;
+                    default:
+                        return;
+                }
+                GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
+                            items, (x) => SearchFunction(x, items)
+                            );
+                if (chosen != null && GridConditions.SelectedItem != null)
+                {
+                    if (GridConditions.SelectedItem is LaunchCondition lc)
+                    {
+                        lc.Filter = chosen.Name;
+                        if (filterType <= FilterTypes.Platforms)
+                        {
+                            lc.FilterId = new Guid(chosen.Description);
+                        }
+                    }
+                }
+            }
+        }
+
+        private List<GenericItemOption> SearchFunction(string searchTerm, List<GenericItemOption> itemsList)
+        {
+            if (searchTerm == null || searchTerm == string.Empty)
+            {
+                return itemsList;
+            }
+
+            return itemsList.Where((x) => x.Name.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase)).ToList();
+
         }
     }
 }

@@ -21,6 +21,9 @@ namespace LaunchMate.Enums
         Features = 10,
         AgeRatings = 11,
         Series = 12,
-        Platforms = 13
+        Platforms = 13,
+        ExeName = 14,
+        Process = 15,
+        Service = 16,
     }
 }

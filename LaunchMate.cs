@@ -17,17 +17,12 @@ namespace LaunchMate
         private static readonly ILogger logger = LogManager.GetLogger();
 
         private SettingsViewModel settings { get; set; }
-        internal LaunchMatePanelViewModel launchMatePanelModel { get; set; }
 
         internal Settings Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("61d7fcec-322d-4eb6-b981-1c8f8122ddc8");
 
         private readonly int vNum = 1;
-
-        public static LaunchMate Instance { get; set; }
-
-        public LaunchMatePanelView LaunchGroupsManager { get; set; }
         private readonly SidebarItem launchGroupsSidebarItem;
 
         public LaunchMate(IPlayniteAPI api) : base(api)
@@ -35,19 +30,16 @@ namespace LaunchMate
             settings = new SettingsViewModel(this);
             Settings = settings.Settings;
             settings.SettingsUpdated += OnSettingsUpdated;
-            launchMatePanelModel = new LaunchMatePanelViewModel(this);
-            launchMatePanelModel.PanelUpdated += OnPanelUpdated;
             Properties = new GenericPluginProperties
             {
                 HasSettings = true
             };
-            Instance = this;
             launchGroupsSidebarItem = new SidebarItem
             {
-                Title = "LaunchMate1",
-                Icon = Path.Combine(Path.GetDirectoryName(typeof(LaunchMate).Assembly.Location), "icon.png"),
-                Type = SiderbarItemType.View,
-                Opened = () => GetLaunchMateManager(),
+                Title = "LaunchMate",
+                Icon = Path.Combine(Path.GetDirectoryName(typeof(LaunchMate).Assembly.Location), "icon-gray.png"),
+                Type = SiderbarItemType.Button,
+                Activated = () => this.OpenSettingsView(),
                 ProgressValue = 0,
                 ProgressMaximum = 100
             };
@@ -58,26 +50,9 @@ namespace LaunchMate
             Settings = settings.Settings;
         }
 
-        private void OnPanelUpdated(object sender, EventArgs e)
-        {
-            Settings = launchMatePanelModel.Settings;
-        }
-
-        public static LaunchMatePanelView GetLaunchMateManager()
-        {
-            if (Instance.LaunchGroupsManager == null)
-            {
-                Instance.LaunchGroupsManager = new LaunchMatePanelView()
-                {
-                    DataContext = Instance.launchMatePanelModel
-                };
-            }
-            return Instance.LaunchGroupsManager;
-        }
-
         public override IEnumerable<SidebarItem> GetSidebarItems()
         {
-            yield return Instance.launchGroupsSidebarItem;
+            yield return launchGroupsSidebarItem;
         }
 
         private Stack<LaunchGroup> toClose = new Stack<LaunchGroup>();

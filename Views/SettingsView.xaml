@@ -40,8 +40,8 @@
                 </StackPanel>
             </Grid>
         </GroupBox>
-        <GroupBox>
-            <Grid x:Name="groupView" Margin="10,0,10,0">
+        <GroupBox x:Name="groupView">
+            <Grid Margin="10,0,10,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -116,7 +116,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <CheckBox x:Name="webViewCheck" Grid.Column="1" Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Action.UseWebView, UpdateSourceTrigger=PropertyChanged}"/>
+                        <CheckBox x:Name="webViewCheck" Grid.Column="1" Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Action.UseWebView, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Row="1" Grid.Column="1" Margin="20,10,0,10" HorizontalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -128,7 +128,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Column="0" Text="Action Delay: " VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1" Text="{Binding LaunchDelay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100" MaxHeight="28"/>
+                        <TextBox Grid.Column="1" Text="{Binding LaunchDelay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100" MaxHeight="28" />
                         <TextBlock Grid.Column="2" Text="{DynamicResource LOCLaunchMateMS}" Margin="5,0,0,0" VerticalAlignment="Center" />
                     </Grid>
                 </Grid>
@@ -159,8 +159,8 @@
                                 <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilterType}" Width="Auto" MinWidth="77">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ComboBox Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
-                    SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" 
+                                            <ComboBox x:Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
+                    SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" DropDownClosed="FilterTypeSelect_DropDownClosed"
                     ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>

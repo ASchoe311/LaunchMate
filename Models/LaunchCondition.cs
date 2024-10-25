@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using LaunchMate.Enums;
 using LaunchMate.Utilities;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Linq;
+using System.Management;
+using System.IO;
 
 namespace LaunchMate.Models
 {
@@ -16,12 +20,14 @@ namespace LaunchMate.Models
         private bool _fuzzyMatch = false;
         private JoinType _joiner = JoinType.And;
         private bool _not = false;
+        private Guid _filterId;
 
         public FilterTypes FilterType { get => _filterType; set => SetValue(ref _filterType, value); } 
         public string Filter { get => _condition; set => SetValue(ref _condition, value); }
         public bool FuzzyMatch { get => _fuzzyMatch; set => SetValue(ref _fuzzyMatch, value); }
         public JoinType Joiner { get => _joiner; set => SetValue(ref _joiner, value); }
         public bool Not { get => _not; set => SetValue(ref _not, value); }
+        public Guid FilterId { get => _filterId; set => SetValue(ref _filterId, value); }
 
 
         [DontSerialize]
@@ -178,6 +184,23 @@ namespace LaunchMate.Models
                     if (pnMatch || rgxMatch)
                     {
                         return true;
+                    }
+                    break;
+                case FilterTypes.ExeName:
+                    foreach(var proc in Process.GetProcesses())
+                    {
+
+                    }
+                    break;
+                case FilterTypes.Process:
+                    logger.Debug($"Checking processes for {Filter}");
+                    foreach (var proc in Process.GetProcesses())
+                    {
+                        if (rgx.IsMatch(proc.ProcessName))
+                        {
+                            logger.Debug($"{proc.ProcessName} matches filter {Filter}");
+                            return true;
+                        }
                     }
                     break;
                 default:

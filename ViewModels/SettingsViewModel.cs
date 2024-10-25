@@ -62,7 +62,10 @@ namespace LaunchMate.ViewModels
             { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
             { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
             { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
-            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series }
+            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series },
+            { "Executable Running", FilterTypes.ExeName },
+            { "Process Running", FilterTypes.Process },
+            { "Service Running", FilterTypes.Service },
         };
 
         public Dictionary<string, ActionType> ActionTypesDict { get; } = new Dictionary<string, ActionType>()
