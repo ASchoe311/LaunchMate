@@ -54,6 +54,9 @@ namespace LaunchMate.Models
                 var gpo = new GlobalProgressOptions(ResourceProvider.GetString("LOCLaunchMateCheckingGames"), true);
                 gpo.IsIndeterminate = false;
                 bool cancelled = false;
+
+                LaunchMate.Cache.Clear();
+
                 API.Instance.Dialogs.ActivateGlobalProgress((activateGlobalProgress) =>
                 {
                     activateGlobalProgress.ProgressMaxValue = numGames;
@@ -72,6 +75,8 @@ namespace LaunchMate.Models
                         }
                     }
                 }, gpo);
+
+
 
                 return cancelled ? null : matches;
             }

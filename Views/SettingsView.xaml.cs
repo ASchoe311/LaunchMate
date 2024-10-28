@@ -501,7 +501,7 @@ namespace LaunchMate.Views
                     case FilterTypes.Service:
                         foreach (var service in ServiceController.GetServices())
                         {
-                            items.Add(new GenericItemOption(service.DisplayName, service.ServiceName));
+                            items.Add(new GenericItemOption(service.DisplayName, Enum.GetName(typeof(ServiceControllerStatus), service.Status)));
                         }
                         break;
                     default:

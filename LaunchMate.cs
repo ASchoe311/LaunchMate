@@ -25,6 +25,8 @@ namespace LaunchMate
         private readonly int vNum = 1;
         private readonly SidebarItem launchGroupsSidebarItem;
 
+        public static Cache Cache;
+
         public LaunchMate(IPlayniteAPI api) : base(api)
         {
             settings = new SettingsViewModel(this);
@@ -34,6 +36,7 @@ namespace LaunchMate
             {
                 HasSettings = true
             };
+            Cache = new Cache();
             launchGroupsSidebarItem = new SidebarItem
             {
                 Title = "LaunchMate",
