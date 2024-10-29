@@ -107,11 +107,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\AppSelector.cs" />
     <Compile Include="Utilities\WindowHelper.cs" />
-    <Compile Include="ViewModels\LaunchGroupEditorViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
-    <Compile Include="Views\LaunchGroupEditorView.xaml.cs">
-      <DependentUpon>LaunchGroupEditorView.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="AddonManifest.yaml" />
@@ -140,10 +136,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LaunchGroupEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
