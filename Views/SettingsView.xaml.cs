@@ -187,6 +187,8 @@ namespace LaunchMate.Views
                 case ActionType.App:
                     AppSelectBtn.Visibility = Visibility.Visible;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    ServiceSelectBtn.Visibility = Visibility.Hidden;
+                    ProcessSelectBtn.Visibility = Visibility.Hidden;
                     TargetText.Text = "App Path: ";
                     ArgsText.Text = "App Parameters: ";
                     r0c1Args.Visibility = Visibility.Visible;
@@ -196,6 +198,8 @@ namespace LaunchMate.Views
                 case ActionType.Web:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    ServiceSelectBtn.Visibility = Visibility.Hidden;
+                    ProcessSelectBtn.Visibility = Visibility.Hidden;
                     TargetText.Text = "Web URL: ";
                     r0c1Args.Visibility = Visibility.Hidden;
                     r0c1Web.Visibility = Visibility.Visible;
@@ -204,6 +208,8 @@ namespace LaunchMate.Views
                 case ActionType.Script:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Visible;
+                    ServiceSelectBtn.Visibility = Visibility.Hidden;
+                    ProcessSelectBtn.Visibility = Visibility.Hidden;
                     TargetText.Text = "Script: ";
                     r0c1Args.Visibility = Visibility.Visible;
                     ArgsText.Text = "Script Arguments: ";
@@ -213,7 +219,29 @@ namespace LaunchMate.Views
                 case ActionType.Close:
                     AppSelectBtn.Visibility = Visibility.Hidden;
                     ScriptSelectBtn.Visibility = Visibility.Hidden;
-                    TargetText.Text = "Program Name: ";
+                    ServiceSelectBtn.Visibility = Visibility.Hidden;
+                    ProcessSelectBtn.Visibility = Visibility.Visible;
+                    TargetText.Text = "Process Name: ";
+                    r0c1Args.Visibility = Visibility.Hidden;
+                    r0c1Web.Visibility = Visibility.Hidden;
+                    AutoCloseGrid.Visibility = Visibility.Hidden;
+                    break;
+                case ActionType.StartService:
+                    AppSelectBtn.Visibility = Visibility.Hidden;
+                    ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    ServiceSelectBtn.Visibility = Visibility.Visible;
+                    ProcessSelectBtn.Visibility = Visibility.Hidden;
+                    TargetText.Text = "Service Name: ";
+                    r0c1Args.Visibility = Visibility.Hidden;
+                    r0c1Web.Visibility = Visibility.Hidden;
+                    AutoCloseGrid.Visibility = Visibility.Hidden;
+                    break;
+                case ActionType.Stop:
+                    AppSelectBtn.Visibility = Visibility.Hidden;
+                    ScriptSelectBtn.Visibility = Visibility.Hidden;
+                    ServiceSelectBtn.Visibility = Visibility.Visible;
+                    ProcessSelectBtn.Visibility = Visibility.Hidden;
+                    TargetText.Text = "Service Name: ";
                     r0c1Args.Visibility = Visibility.Hidden;
                     r0c1Web.Visibility = Visibility.Hidden;
                     AutoCloseGrid.Visibility = Visibility.Hidden;
@@ -251,6 +279,20 @@ namespace LaunchMate.Views
                     break;
                 case ActionType.Close:
                     _group.Action = new CloseAction
+                    {
+                        Target = _group.Action.Target ?? string.Empty,
+                        TargetArgs = _group.Action.TargetArgs ?? string.Empty,
+                    };
+                    break;
+                case ActionType.StartService:
+                    _group.Action = new StartServiceAction
+                    {
+                        Target = _group.Action.Target ?? string.Empty,
+                        TargetArgs = _group.Action.TargetArgs ?? string.Empty,
+                    };
+                    break;
+                case ActionType.Stop:
+                    _group.Action = new StopServiceAction
                     {
                         Target = _group.Action.Target ?? string.Empty,
                         TargetArgs = _group.Action.TargetArgs ?? string.Empty,
@@ -397,9 +439,49 @@ namespace LaunchMate.Views
         private void ScriptSelectBtn_Click(object sender, RoutedEventArgs e)
         {
             string file = API.Instance.Dialogs.SelectFile("Script File|*.bat");
-            if (file != null)
+            if (file != null && file != string.Empty)
             {
                 _group.Action.Target = file;
+            }
+        }
+
+
+        private void ServiceSelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            List<GenericItemOption> items = new List<GenericItemOption>();
+            foreach (var service in ServiceController.GetServices())
+            {
+                items.Add(new GenericItemOption(service.DisplayName, Enum.GetName(typeof(ServiceControllerStatus), service.Status)));
+            }
+            GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
+                            items, (x) => SearchFunction(x, items)
+                            );
+            if (chosen != null)
+            {
+                _group.Action.Target = chosen.Name;
+            }
+        }
+        private void ProcessSelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            List<GenericItemOption> items = new List<GenericItemOption>();
+            foreach (var proc in Process.GetProcesses())
+            {
+                try
+                {
+                    items.Add(new GenericItemOption(proc.ProcessName, proc.MainWindowTitle));
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            items = items.GroupBy((x) => x.Name).Select((group) => group.First()).ToList();
+            GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
+                            items, (x) => SearchFunction(x, items)
+                            );
+            if (chosen != null)
+            {
+                _group.Action.Target = chosen.Name;
             }
         }
 
@@ -533,6 +615,126 @@ namespace LaunchMate.Views
 
             return itemsList.Where((x) => x.Name.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase)).ToList();
 
+        }
+
+        private void FilterSelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button b && GridConditions.SelectedItem != null && GridConditions.SelectedItem is LaunchCondition lc)
+            {
+                FilterTypes filterType = lc.FilterType;
+                List<GenericItemOption> items = new List<GenericItemOption>();
+                Guid filterId = Guid.Empty;
+                switch (filterType)
+                {
+                    case FilterTypes.Name:
+                        foreach (var game in API.Instance.Database.Games)
+                        {
+                            items.Add(new GenericItemOption(game.Name, game.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Source:
+                        foreach (var source in API.Instance.Database.Sources)
+                        {
+                            items.Add(new GenericItemOption(source.Name, source.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Developers:
+                        foreach (var dev in API.Instance.Database.Companies)
+                        {
+                            items.Add(new GenericItemOption(dev.Name, dev.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Publishers:
+                        foreach (var pub in API.Instance.Database.Companies)
+                        {
+                            items.Add(new GenericItemOption(pub.Name, pub.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Categories:
+                        foreach (var category in API.Instance.Database.Categories)
+                        {
+                            items.Add(new GenericItemOption(category.Name, category.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Genres:
+                        foreach (var genre in API.Instance.Database.Genres)
+                        {
+                            items.Add(new GenericItemOption(genre.Name, genre.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Tags:
+                        foreach (var tag in API.Instance.Database.Tags)
+                        {
+                            items.Add(new GenericItemOption(tag.Name, tag.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Features:
+                        foreach (var feature in API.Instance.Database.Features)
+                        {
+                            items.Add(new GenericItemOption(feature.Name, feature.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.AgeRatings:
+                        foreach (var age in API.Instance.Database.AgeRatings)
+                        {
+                            items.Add(new GenericItemOption(age.Name, age.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Series:
+                        foreach (var series in API.Instance.Database.Series)
+                        {
+                            items.Add(new GenericItemOption(series.Name, series.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Platforms:
+                        foreach (var platform in API.Instance.Database.Platforms)
+                        {
+                            items.Add(new GenericItemOption(platform.Name, platform.Id.ToString()));
+                        }
+                        break;
+                    case FilterTypes.Process:
+                        foreach (var proc in Process.GetProcesses())
+                        {
+                            try
+                            {
+                                items.Add(new GenericItemOption(proc.ProcessName, proc.MainWindowTitle));
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
+                        items = items.GroupBy((x) => x.Name).Select((group) => group.First()).ToList();
+                        break;
+                    case FilterTypes.Service:
+                        foreach (var service in ServiceController.GetServices())
+                        {
+                            items.Add(new GenericItemOption(service.DisplayName, Enum.GetName(typeof(ServiceControllerStatus), service.Status)));
+                        }
+                        break;
+                    case FilterTypes.ExeName:
+                        Tuple<string, string, string> app = AppSelector.SelectApp();
+                        if (app == null)
+                        {
+                            return;
+                        }
+                        lc.Filter = app.Item1;
+                        return;
+                    default:
+                        return;
+                }
+                GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
+                            items, (x) => SearchFunction(x, items)
+                            );
+                if (chosen != null && GridConditions.SelectedItem != null)
+                {
+                    lc.Filter = chosen.Name;
+                    if (filterType <= FilterTypes.Platforms)
+                    {
+                        lc.FilterId = new Guid(chosen.Description);
+                    }
+                }
+            }
         }
     }
 }

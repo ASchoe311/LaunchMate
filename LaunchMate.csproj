@@ -79,6 +79,8 @@
     <Compile Include="Models\Actions\ActionBase.cs" />
     <Compile Include="Models\Actions\CloseAction.cs" />
     <Compile Include="Models\Actions\ScriptAction.cs" />
+    <Compile Include="Models\Actions\StopServiceAction.cs" />
+    <Compile Include="Models\Actions\StartServiceAction.cs" />
     <Compile Include="Models\ConditionGroup.cs" />
     <Compile Include="Models\ICondition.cs" />
     <Compile Include="Models\Actions\IAction.cs" />

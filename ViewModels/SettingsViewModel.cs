@@ -73,7 +73,9 @@ namespace LaunchMate.ViewModels
             { "Launch an App", ActionType.App },
             { "Open a Webpage", ActionType.Web },
             { "Run a Script", ActionType.Script },
-            { "Close a Program", ActionType.Close },
+            { "Start a Service", ActionType.StartService },
+            { "Stop a Process", ActionType.Close },
+            { "Stop a Service", ActionType.Stop },
 
         };
 
@@ -106,6 +108,18 @@ namespace LaunchMate.ViewModels
                         break;
                     case ActionType.Close:
                         group.Action = new CloseAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    case ActionType.StartService:
+                        group.Action = new StartServiceAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    case ActionType.Stop:
+                        group.Action = new StopServiceAction
                         {
                             Target = group.Action.Target
                         };

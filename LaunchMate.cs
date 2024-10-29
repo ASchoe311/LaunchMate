@@ -114,7 +114,7 @@ namespace LaunchMate
             {
                 LaunchGroup group = toClose.Pop();
 
-                logger.Debug($"{group.Name} - Trying to close {group.Action.Target}");
+                //logger.Debug($"{group.Name} - Trying to close {group.Action.Target}");
 
                 group.Action.AutoClose(group.Name);
 

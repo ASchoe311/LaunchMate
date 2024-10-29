@@ -92,6 +92,10 @@
                                     Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}" MaxHeight="28" VerticalAlignment="Center"/>
                         <Button Name="ScriptSelectBtn" Grid.Column="2" Content="&#xec5b;" Click="ScriptSelectBtn_Click" 
                                     Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}" MaxHeight="28" VerticalAlignment="Center"/>
+                        <Button Name="ServiceSelectBtn" Grid.Column="2" Content="&#xec82;" Click="ServiceSelectBtn_Click" 
+                                    Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}" MaxHeight="28" VerticalAlignment="Center"/>
+                        <Button Name="ProcessSelectBtn" Grid.Column="2" Content="&#xec82;" Click="ProcessSelectBtn_Click" 
+                                    Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}" MaxHeight="28" VerticalAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Row="2" Grid.Column="1" Margin="0,10,0,10" x:Name="AutoCloseGrid">
                         <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}" 
@@ -160,7 +164,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox x:Name="FilterTypeSelect" DisplayMemberPath="Key" SelectedValuePath="Value"
-                    SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}" DropDownClosed="FilterTypeSelect_DropDownClosed"
+                    SelectedValue="{Binding FilterType, UpdateSourceTrigger=PropertyChanged}"
                     ItemsSource="{Binding DataContext.FilterTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -168,7 +172,14 @@
                                 <DataGridTemplateColumn Header="{DynamicResource LOCLaunchMateFilter}" Width="*" MinWidth="130">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Grid.Column="0"/>
+                                                <Button x:Name="FilterSelectBtn" Click="FilterSelectBtn_Click" Content="&#xec82;" MaxHeight="28" Grid.Column="1" FontFamily="{DynamicResource FontIcoFont}"/>
+                                            </Grid>
                                             <DataTemplate.Triggers>
                                                 <DataTrigger Binding="{Binding FilterType}" Value="0">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
