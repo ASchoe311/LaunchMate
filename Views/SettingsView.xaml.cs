@@ -370,6 +370,11 @@ namespace LaunchMate.Views
             }
         }
 
+        /// <summary>
+        /// Event handler for adding a new Launch Group
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddGroupButton_Click(object sender, RoutedEventArgs e)
         {
             var set = DataContext as SettingsViewModel;
@@ -392,6 +397,12 @@ namespace LaunchMate.Views
                 GroupChanged();
             }
         }
+
+        /// <summary>
+        /// Event handler for removing a launch group
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RemoveGroupButton_Click(object sender, RoutedEventArgs e)
         {
             if (nameList.SelectedItem == null)
@@ -425,6 +436,12 @@ namespace LaunchMate.Views
             HandleVisibility();
         }
 
+        /// <summary>
+        /// Event handler for clicking the app selection button
+        /// Presents a file select dialog filtered on .exe files
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AppSelectBtn_Click(object sender, RoutedEventArgs e)
         {
             Tuple<string, string, string> app = AppSelector.SelectApp();
@@ -436,6 +453,12 @@ namespace LaunchMate.Views
             _group.Action.TargetArgs = app.Item2;
         }
 
+        /// <summary>
+        /// Event handler for clicking the script selection button
+        /// Presents a file select dialog filtered on .bat files
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScriptSelectBtn_Click(object sender, RoutedEventArgs e)
         {
             string file = API.Instance.Dialogs.SelectFile("Script File|*.bat");
@@ -445,7 +468,12 @@ namespace LaunchMate.Views
             }
         }
 
-
+        /// <summary>
+        /// Event handler for clicking the service selection button
+        /// Presents a a search and select dialog with all services
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ServiceSelectBtn_Click(object sender, RoutedEventArgs e)
         {
             List<GenericItemOption> items = new List<GenericItemOption>();
@@ -461,6 +489,13 @@ namespace LaunchMate.Views
                 _group.Action.Target = chosen.Name;
             }
         }
+
+        /// <summary>
+        /// Event handler for clicking the process selection button
+        /// Presents a a search and select dialog with all running processes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ProcessSelectBtn_Click(object sender, RoutedEventArgs e)
         {
             List<GenericItemOption> items = new List<GenericItemOption>();
@@ -485,12 +520,23 @@ namespace LaunchMate.Views
             }
         }
 
+        /// <summary>
+        /// Handles link clicking
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             System.Diagnostics.Process.Start(e.Uri.AbsoluteUri);
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Search function for use with search and select dialogs
+        /// </summary>
+        /// <param name="searchTerm">Search term</param>
+        /// <param name="itemsList">List of options, see <see cref="GenericItemOption"/></param>
+        /// <returns></returns>
         private List<GenericItemOption> SearchFunction(string searchTerm, List<GenericItemOption> itemsList)
         {
             if (searchTerm == null || searchTerm == string.Empty)
@@ -502,6 +548,12 @@ namespace LaunchMate.Views
 
         }
 
+        /// <summary>
+        /// Event handler for filter selection
+        /// Presents dialogs to aid in filter selection based on filter type
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FilterSelectBtn_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button b && GridConditions.SelectedItem != null && GridConditions.SelectedItem is LaunchCondition lc)

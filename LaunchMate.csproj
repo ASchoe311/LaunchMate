@@ -85,7 +85,7 @@
     <Compile Include="Models\ICondition.cs" />
     <Compile Include="Models\Actions\IAction.cs" />
     <Compile Include="Models\Actions\AppAction.cs" />
-    <Compile Include="Models\ProcessCache.cs" />
+    <Compile Include="Models\Cache.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\LaunchGroup.cs" />
     <Compile Include="Models\LaunchCondition.cs" />

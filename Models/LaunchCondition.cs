@@ -50,7 +50,7 @@ namespace LaunchMate.Models
         [DontSerialize]
         public bool IsMet(Game game)
         {
-            RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant;
+            //RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant;
             //string pattern = $@"{Filter}";
             //StringBuilder stringBuilder = new StringBuilder();
             //foreach (char c in pattern)

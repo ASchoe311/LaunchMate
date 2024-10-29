@@ -8,57 +8,10 @@ using LaunchMate.Utilities;
 
 namespace LaunchMate.Models
 {
-    //public class ProcessCache
-    //{
-    //    //private List<Tuple<string, bool>> _cache;
-    //    private Dictionary<string, string> _cacheDict;
-    //    private HashSet<string> _cachePaths;
-
-    //    public ProcessCache()
-    //    {
-    //        //_cacheDict = new Dictionary<string, string>();
-    //        _cachePaths = new HashSet<string>();
-    //    }
-
-    //    public void Clear()
-    //    {
-    //        //_cacheDict.Clear();
-    //        _cachePaths.Clear();
-    //    }
-
-    //    public void Add(string key, string value)
-    //    {
-    //        //if (key.ToLow)
-    //        //_cacheDict.Add(key.ToLowerInvariant(), value);
-    //        _cachePaths.Add(value.ToLowerInvariant());
-    //    }
-
-    //    public bool TryAccess(string key, out string value)
-    //    {
-    //        //foreach (var k in _cacheDict.Keys)
-    //        //{
-    //        //    if (k.Contains(key, StringComparison.InvariantCultureIgnoreCase))
-    //        //    {
-    //        //        value = _cacheDict[k];
-    //        //        return true;
-    //        //    }
-    //        //}
-    //        //value = string.Empty;
-    //        //return false;
-    //        value = _cachePaths.FirstOrDefault((x) =>
-    //        {
-    //            return 
-    //            (
-    //                x == key.ToLowerInvariant() ||
-    //                Path.GetFileName(x) == key.ToLowerInvariant() ||
-    //                Path.GetFileNameWithoutExtension(x) == key.ToLowerInvariant()
-    //            );
-    //        });
-    //        return value != string.Empty;
-    //    }
-
-    //}
-
+    /// <summary>
+    /// Provides a simple cache for non-playnite conditions
+    /// Used to speed up checking all matched games
+    /// </summary>
     public class Cache
     {
         public class CacheType
@@ -70,6 +23,11 @@ namespace LaunchMate.Models
                 _cache = new Dictionary<string, bool>();
             }
 
+            /// <summary>
+            /// Checks if the cached item is currently running
+            /// </summary>
+            /// <param name="key">Key to check</param>
+            /// <returns>The running status of the cache item with key <paramref name="key"/>, null if <paramref name="key"/> does not exist</returns>
             public bool? IsRunning(string key)
             {
                 key = key.ToLowerInvariant();
@@ -81,6 +39,11 @@ namespace LaunchMate.Models
                 return null;
             }
 
+            /// <summary>
+            /// Sets the running status in the cache for an item with given key
+            /// </summary>
+            /// <param name="key">Name of the item</param>
+            /// <param name="running">Running status</param>
             public void SetRunning(string key, bool running)
             {
                 key = key.ToLowerInvariant();
@@ -94,6 +57,9 @@ namespace LaunchMate.Models
                 }
             }
 
+            /// <summary>
+            /// Clears the cache
+            /// </summary>
             public void Clear()
             {
                 _cache.Clear();
@@ -112,6 +78,9 @@ namespace LaunchMate.Models
             ServiceCache = new CacheType();
         }
 
+        /// <summary>
+        /// Clears all portions of cache
+        /// </summary>
         public void Clear()
         {
             ExeCache.Clear();
