@@ -156,7 +156,14 @@ namespace LaunchMate.ViewModels
             // Executed before EndEdit is called and EndEdit is not called if false is returned.
             // List of errors is presented to user if verification fails.
             errors = new List<string>();
-            return true;
+            foreach (var group in Settings.Groups)
+            {
+                if (group.Action.Target == null ||  group.Action.Target == string.Empty)
+                {
+                    errors.Add($"Error: Launch Group {group.Name} does not have an action target\n");
+                }
+            }
+            return errors.Count == 0;
         }
     }
 }
