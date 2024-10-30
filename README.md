@@ -1,3 +1,5 @@
+# There is a major new release in the works with plenty of new features. Check it out on the ["Working"](https://github.com/ASchoe311/LaunchMate/tree/Working) branch. Beta testers welcome, but you will have to build the plugin yourself from source.
+
 # Welcome to LaunchMate: Your Ultimate Companion for Game Launch Automation!
 
 Tired of manually setting up launch actions for your games? Meet LaunchMate—the game-changing plugin for Playnite that automates the entire process!
