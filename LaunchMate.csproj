@@ -34,6 +34,9 @@
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Playnite.SDK, Version=6.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\PlayniteSDK.6.11.0\lib\net462\Playnite.SDK.dll</HintPath>
     </Reference>
@@ -86,12 +89,15 @@
     <Compile Include="Models\Actions\IAction.cs" />
     <Compile Include="Models\Actions\AppAction.cs" />
     <Compile Include="Models\Cache.cs" />
+    <Compile Include="Models\OldSettings.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\LaunchGroup.cs" />
     <Compile Include="Models\LaunchCondition.cs" />
     <Compile Include="LaunchMate.cs" />
     <Compile Include="Models\Actions\WebAction.cs" />
+    <Compile Include="Utilities\DisplayDevices.cs" />
     <Compile Include="Utilities\RegexExtensions.cs" />
+    <Compile Include="Utilities\ScreenInterrogatory.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="ViewModels\ConditionGroupEditorViewModel.cs" />
     <Compile Include="ViewModels\MatchedGamesViewModel.cs" />

@@ -9,6 +9,13 @@ using System.Windows.Controls;
 using LaunchMate.Models;
 using LaunchMate.Views;
 using LaunchMate.ViewModels;
+using System.Linq;
+using System.Text;
+using System.Management;
+using LaunchMate.Utilities;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
+using Playnite.SDK.Models;
 
 namespace LaunchMate
 {
@@ -22,7 +29,7 @@ namespace LaunchMate
 
         public override Guid Id { get; } = Guid.Parse("61d7fcec-322d-4eb6-b981-1c8f8122ddc8");
 
-        private readonly int vNum = 1;
+        private readonly int vNum = 2;
         private readonly SidebarItem launchGroupsSidebarItem;
 
         public static Cache Cache;
@@ -37,6 +44,7 @@ namespace LaunchMate
                 HasSettings = true
             };
             Cache = new Cache();
+
             launchGroupsSidebarItem = new SidebarItem
             {
                 Title = "LaunchMate",
@@ -56,6 +64,95 @@ namespace LaunchMate
         public override IEnumerable<SidebarItem> GetSidebarItems()
         {
             yield return launchGroupsSidebarItem;
+        }
+
+        public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
+        {
+            //MigrateSettings();
+            if (settings.Settings.PluginVersion != vNum)
+            {
+                PlayniteApi.Dialogs.ShowMessage(
+                    "Thank you for installing the newest version of LaunchMate! There have been many changes, and unfortunately the new system is not 100% compatible with the old settings. The plugin will do its best to migrate your old settings, but some issues may occur.\n\nYour old plugin settings have been saved in the plugin data directory.\n\nI'm very sorry for the inconvenience.",
+                    "LaunchMate 2.0", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation
+                    );
+                ConvertOldSettings();
+            }
+        }
+
+        public void ConvertOldSettings()
+        {
+            var settingsFile = Path.Combine(GetPluginUserDataPath(), "config.json");
+            OldSettings oldSettings;
+            var tempFile = Path.Combine(GetPluginUserDataPath(), "config.old.json");
+            string jsonStr = File.ReadAllText(settingsFile);
+            using (FileStream fs = File.Create(tempFile))
+            {
+                using (var sw = new StreamWriter(fs))
+                {
+                    sw.WriteLine(jsonStr);
+                }
+            }
+            oldSettings = JsonConvert.DeserializeObject<OldSettings>(jsonStr);
+
+            Settings newSettings = new Settings();
+
+            newSettings.PluginVersion = 2;
+            int i = 0;
+            foreach (var group in oldSettings.Groups)
+            {
+                string groupName = $"Unnamed Group ({i})";
+
+                AppAction act = new AppAction
+                {
+                    Target = group.LaunchTargetUri,
+                    TargetArgs = group.AppExeArgs,
+                };
+                
+                ObservableCollection<LaunchCondition> conditions = new ObservableCollection<LaunchCondition>();
+
+                foreach (var condGroup in group.ConditionGroups)
+                {
+                    bool thisNot = condGroup.Not;
+
+                    for (int j = 0; j < condGroup.Conditions.Count; j++)
+                    {
+                        var cond = condGroup.Conditions[j];
+                        bool not = cond.Not ^ condGroup.Not;
+                        var joiner = j < condGroup.Conditions.Count - 1 ? cond.Joiner : condGroup.Joiner;
+
+
+                        conditions.Add(new LaunchCondition
+                        {
+                            Not = not,
+                            Filter = cond.Filter,
+                            FilterId = null,
+                            FilterType = cond.FilterType,
+                            FuzzyMatch = cond.FuzzyMatch,
+                            Joiner = joiner,
+                        });
+
+                    }
+
+                }
+
+                newSettings.Groups.Add(new LaunchGroup
+                {
+                    Action = act,
+                    Enabled = group.Enabled.HasValue ? group.Enabled.Value : true,
+                    ActionType = Enums.ActionType.App,
+                    AutoClose = group.AutoClose.HasValue ? group.AutoClose.Value : true,
+                    LaunchDelay = group.LaunchDelay.HasValue ? group.LaunchDelay.Value : 0,
+                    Name = groupName,
+                    Conditions = conditions,
+                    
+                });
+
+
+                i += 1;
+            }
+
+            settings.Settings = newSettings;
+            SavePluginSettings(settings.Settings);
         }
 
         private Stack<LaunchGroup> toClose = new Stack<LaunchGroup>();

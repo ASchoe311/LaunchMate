@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LaunchMate.Models
 {
@@ -17,8 +18,11 @@ namespace LaunchMate.Models
         private bool _not;
         private JoinType _joinType;
 
+        [JsonProperty("Not", NullValueHandling = NullValueHandling.Ignore)]
         public bool Not { get => _not; set => SetValue(ref _not, value); }
+        [JsonProperty("Joiner", NullValueHandling = NullValueHandling.Ignore)]
         public JoinType Joiner { get => _joinType; set => SetValue(ref _joinType, value); }
+        [JsonProperty("Conditions", NullValueHandling = NullValueHandling.Ignore)]
         public ObservableCollection<LaunchCondition> Conditions { get; set; } = new ObservableCollection<LaunchCondition>();
 
         [DontSerialize]
