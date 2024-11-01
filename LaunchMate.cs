@@ -16,6 +16,7 @@ using LaunchMate.Utilities;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using Playnite.SDK.Models;
+using System.Diagnostics;
 
 namespace LaunchMate
 {
@@ -69,13 +70,28 @@ namespace LaunchMate
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
             //MigrateSettings();
-            if (settings.Settings.PluginVersion != vNum)
+            if (settings.Settings.PluginVersion == 1)
             {
                 PlayniteApi.Dialogs.ShowMessage(
-                    "Thank you for installing the newest version of LaunchMate! There have been many changes, and unfortunately the new system is not 100% compatible with the old settings. The plugin will do its best to migrate your old settings, but some issues may occur.\n\nYour old plugin settings have been saved in the plugin data directory.\n\nI'm very sorry for the inconvenience.",
+                    "Thank you for installing LaunchMate 2.0!\nThere have been many changes, and unfortunately the new system is not 100% compatible with the old settings. The plugin will do its best to migrate your old settings, but some issues may occur.\n\nYour old plugin settings have been saved in the plugin data directory.\n\nI'm very sorry for the inconvenience.",
                     "LaunchMate 2.0", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation
                     );
                 ConvertOldSettings();
+            }
+            else if (settings.Settings.ShowFirstRunMessage)
+            {
+                List<MessageBoxOption> options = new List<MessageBoxOption>()
+                {
+                    new MessageBoxOption("Ok", isDefault: true, isCancel:true),
+                    new MessageBoxOption("Show Guide")
+                };
+                MessageBoxOption chosen = PlayniteApi.Dialogs.ShowMessage("Thank you for installing LaunchMate! To control the plugin, just click the rocket icon in the left sidebar. For help, click \"Show Guide\".\n\nThis message will not be shown again.", "LaunchMate First Run", System.Windows.MessageBoxImage.Information, options);
+                if (!chosen.IsDefault && !chosen.IsCancel)
+                {
+                    Process.Start("https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage");
+                }
+                settings.Settings.ShowFirstRunMessage = false;
+                SavePluginSettings(settings.Settings);
             }
         }
 
