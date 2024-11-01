@@ -5,12 +5,13 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LaunchMate.Models
 {
     public class StartServiceAction : ActionBase
     {
-        public override bool Execute(string groupName)
+        public override bool Execute(string groupName, Screen screen = null)
         {
             try
             {

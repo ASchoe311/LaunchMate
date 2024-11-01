@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using LaunchMate.Models;
 using LaunchMate.Enums;
 using System;
+using System.Collections.ObjectModel;
+using System.Windows.Forms;
+using LaunchMate.Utilities;
 
 namespace LaunchMate.ViewModels
 {
@@ -39,6 +42,30 @@ namespace LaunchMate.ViewModels
             FixActionTypes();
         }
 
+        public Dictionary<string, Screen> GetScreens
+        {
+            get
+            {
+                Dictionary<string, Screen> screens = new Dictionary<string, Screen>();
+                int i = 0;
+                foreach (var s in Screen.AllScreens)
+                {
+                    string name = s.DeviceFriendlyName();
+                    if (s == Screen.PrimaryScreen)
+                    {
+                        name = "*" + name;
+                    }
+                    else
+                    {
+                        name += $"({i})";
+                    }
+                    screens.Add(name, s);
+                    i++;
+                }
+                return screens;
+            }
+        }
+
         public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
         {
             { ResourceProvider.GetString("LOCLaunchMateAnd"), JoinType.And },
@@ -58,11 +85,12 @@ namespace LaunchMate.ViewModels
             { ResourceProvider.GetString("LOCPublisherLabel"), FilterTypes.Publishers },
             { ResourceProvider.GetString("LOCCategoryLabel"), FilterTypes.Categories },
             { ResourceProvider.GetString("LOCGenreLabel"), FilterTypes.Genres },
-            { ResourceProvider.GetString("LOCGameId"), FilterTypes.GameId },
+            //{ ResourceProvider.GetString("LOCGameId"), FilterTypes.GameId },
             { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
             { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
             { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
             { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series },
+            { "Install Directory", FilterTypes.InstallDirectory },
             { "Executable Running", FilterTypes.ExeName },
             { "Process Running", FilterTypes.Process },
             { "Service Running", FilterTypes.Service },

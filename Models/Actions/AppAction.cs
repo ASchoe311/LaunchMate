@@ -8,6 +8,8 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using LaunchMate.Utilities;
 
 namespace LaunchMate.Models
 {
@@ -19,15 +21,24 @@ namespace LaunchMate.Models
 
         //public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
 
-        public override bool Execute(string groupName)
+        public override bool Execute(string groupName, Screen screen = null)
         {
+            if (screen == null)
+            {
+                screen = Screen.PrimaryScreen;
+            }
             // If no target, return
             if ((Target ?? "") == string.Empty) return false;
             logger.Debug($"{groupName} - Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {
                 API.Instance.Notifications.Remove($"{groupName} - Error: {Target}");
-                Process.Start(Target, TargetArgs);
+                ProcessStartInfo startInfo = new ProcessStartInfo(Target)
+                {
+                    Arguments = TargetArgs
+                };
+                Process p = Process.Start(startInfo);
+                //MoveWindow(p, screen);
                 return true;
             }
             catch (Exception ex)
@@ -38,6 +49,14 @@ namespace LaunchMate.Models
             }
         }
 
+        //public async void MoveWindow(Process p,  Screen screen)
+        //{
+        //    await Task.Run(() =>
+        //    {
+        //        System.Threading.Thread.Sleep(2000);
+        //        WindowHelper.MoveWindow(p.MainWindowHandle, screen);
+        //    });
+        //}
 
         public override void AutoClose(string groupName)
         {

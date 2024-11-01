@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace LaunchMate.Models
 {
@@ -19,8 +20,12 @@ namespace LaunchMate.Models
         [DontSerialize]
         public IWebView WebView { get; set; } = null;
 
-        public override bool Execute(string groupName)
+        public override bool Execute(string groupName, Screen screen = null)
         {
+            if (screen == null)
+            {
+                screen = Screen.PrimaryScreen;
+            }
             if ((Target ?? "") == string.Empty) return false;
             try
             {
@@ -52,7 +57,8 @@ namespace LaunchMate.Models
                         {
                             // Bring web view to foreground
                             logger.Debug($"{groupName} - Trying to bring webview into foreground");
-                            SetForegroundHelper.SetForeground(pageTitle);
+                            //WindowHelper.MoveWindow(pageTitle, screen);
+                            WindowHelper.SetForeground(pageTitle);
                         }
                     };
 

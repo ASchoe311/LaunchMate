@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LaunchMate.Models
 {
@@ -12,7 +13,7 @@ namespace LaunchMate.Models
     {
         private readonly ILogger logger = LogManager.GetLogger();
 
-        public override bool Execute(string groupName)
+        public override bool Execute(string groupName, Screen screen = null)
         {
             if ((Target ?? "") == string.Empty) return false;
             logger.Debug($"{groupName} - Launching script \"{Target}\" with arguments \"{TargetArgs}\"");

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
@@ -18,18 +19,41 @@ namespace LaunchMate.Utilities
     /// </summary>
     public class SetForegroundHelper
     {
+    }
+
+    public static class WindowHelper
+    {
         public static void SetForeground(string windowTitle)
         {
             const uint WM_GETTEXT = 0x000D;
-            foreach (var handle in SetForegroundHelper.EnumerateProcessWindowHandles(Process.GetProcessesByName("Playnite.DesktopApp").First().Id))
+            foreach (var handle in EnumerateProcessWindowHandles(Process.GetProcessesByName("Playnite.DesktopApp").First().Id))
             {
                 StringBuilder message = new StringBuilder(1000);
-                SetForegroundHelper.SendMessage(handle, WM_GETTEXT, message.Capacity, message);
+                SendMessage(handle, WM_GETTEXT, message.Capacity, message);
                 if (message.ToString().Contains(windowTitle))
                 {
-                    SetForegroundHelper.SetForegroundWindow(handle);
+                    SetForegroundWindow(handle);
                 }
             }
+        }
+
+        public static void MoveWindow(string windowTitle, Screen screen)
+        {
+            const uint WM_GETTEXT = 0x000D;
+            foreach (var handle in EnumerateProcessWindowHandles(Process.GetProcessesByName("Playnite.DesktopApp").First().Id))
+            {
+                StringBuilder message = new StringBuilder(1000);
+                SendMessage(handle, WM_GETTEXT, message.Capacity, message);
+                if (message.ToString().Contains(windowTitle))
+                {
+                    MoveWindow(handle, screen.WorkingArea.Right, screen.WorkingArea.Top, screen.WorkingArea.Width, screen.WorkingArea.Height, false);
+                }
+            }
+        }
+
+        public static void MoveWindow(IntPtr windowHandle, Screen screen)
+        {
+            MoveWindow(windowHandle, screen.WorkingArea.Right, screen.WorkingArea.Top, screen.WorkingArea.Width, screen.WorkingArea.Height, false);
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -54,10 +78,9 @@ namespace LaunchMate.Utilities
 
             return handles;
         }
-    }
 
-    public static class WindowHelper
-    {
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         /// <summary>
         /// Get a width and a height near the max size of the user's screen

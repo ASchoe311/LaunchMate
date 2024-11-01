@@ -95,7 +95,6 @@
     <Compile Include="Models\LaunchCondition.cs" />
     <Compile Include="LaunchMate.cs" />
     <Compile Include="Models\Actions\WebAction.cs" />
-    <Compile Include="Utilities\DisplayDevices.cs" />
     <Compile Include="Utilities\RegexExtensions.cs" />
     <Compile Include="Utilities\ScreenInterrogatory.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />

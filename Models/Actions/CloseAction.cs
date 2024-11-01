@@ -6,12 +6,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LaunchMate.Models
 {
     public class CloseAction : ActionBase
     {
-        public override bool Execute(string groupName)
+        public override bool Execute(string groupName, Screen screen = null)
         {
             ILogger logger = LogManager.GetLogger();
             if ((Target ?? "") == string.Empty) return false;
