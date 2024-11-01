@@ -168,7 +168,7 @@ namespace LaunchMate
             }
 
             settings.Settings = newSettings;
-            SavePluginSettings(settings.Settings);
+            settings.EndEdit();
         }
 
         private Stack<LaunchGroup> toClose = new Stack<LaunchGroup>();
