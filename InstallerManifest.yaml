@@ -1,5 +1,19 @@
 ﻿AddonId: LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8
 Packages:
+  - Version: 2.0
+    RequiredApiVersion: 6.2.0
+    ReleaseDate: 2024-11-01
+    PackageUrl: https://github.com/ASchoe311/LaunchMate/releases/download/v2.0/LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8_2_0.pext
+    Changelog:
+      - Complete UI overhaul - LaunchMate is now accessible from a side panel button. The groups editor is now a single window with a tab-style view to reduce complexity
+      - Removed condition groups to further reduce complexity
+      - Launch groups can now run scripts
+      - Launch groups can now stop processes
+      - Launch groups can now start and stop Windows services
+      - Added launch group naming 
+      - Condition filters now present a search window for more easily defining conditions
+      - Playnite conditions now relate to their ID where possible to prevent conditions from breaking when names are changed
+      - Conditions can now relate to things outside Playnite, such as if an app, process, or service is running
   - Version: 1.1
     RequiredApiVersion: 6.2.0
     ReleaseDate: 2024-10-16
