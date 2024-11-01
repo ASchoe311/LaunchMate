@@ -77,6 +77,18 @@ namespace LaunchMate
                     "LaunchMate 2.0", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation
                     );
                 ConvertOldSettings();
+                List<MessageBoxOption> options = new List<MessageBoxOption>()
+                {
+                    new MessageBoxOption("Ok", isDefault: true, isCancel:true),
+                    new MessageBoxOption("Show Guide")
+                };
+                MessageBoxOption chosen = PlayniteApi.Dialogs.ShowMessage("Thank you for installing LaunchMate! To control the plugin, just click the rocket icon in the left sidebar. For help, click \"Show Guide\".\n\nThis message will not be shown again.", "LaunchMate First Run", System.Windows.MessageBoxImage.Information, options);
+                if (!chosen.IsDefault && !chosen.IsCancel)
+                {
+                    Process.Start("https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage");
+                }
+                settings.Settings.ShowFirstRunMessage = false;
+                SavePluginSettings(settings.Settings);
             }
             else if (settings.Settings.ShowFirstRunMessage)
             {
