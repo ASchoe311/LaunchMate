@@ -24,6 +24,7 @@ namespace LaunchMate.Views
         private DispatcherTimer _debounceTimer;
         private LaunchGroup _group;
         private ActionType _lastActionType;
+        //private bool _condAutoChange = false;
 
         private readonly ILogger logger = LogManager.GetLogger();
 
@@ -558,6 +559,7 @@ namespace LaunchMate.Views
         {
             if (sender is Button b && GridConditions.SelectedItem != null && GridConditions.SelectedItem is LaunchCondition lc)
             {
+                //_condAutoChange = true;
                 FilterTypes filterType = lc.FilterType;
                 List<GenericItemOption> items = new List<GenericItemOption>();
                 Guid filterId = Guid.Empty;
@@ -629,6 +631,20 @@ namespace LaunchMate.Views
                             items.Add(new GenericItemOption(platform.Name, platform.Id.ToString()));
                         }
                         break;
+                    //case FilterTypes.GameId:
+                    //    foreach (var game in API.Instance.Database.Games)
+                    //    {
+                    //        items.Add(new GenericItemOption(game.Name, game.Id.ToString()));
+                    //    }
+                    //    break;
+                    case FilterTypes.InstallDirectory:
+                        string folder = API.Instance.Dialogs.SelectFolder();
+                        if (folder != null)
+                        {
+                            lc.Filter = folder;
+                            //_condAutoChange = false;
+                        }
+                        return;
                     case FilterTypes.Process:
                         foreach (var proc in Process.GetProcesses())
                         {
@@ -651,11 +667,11 @@ namespace LaunchMate.Views
                         break;
                     case FilterTypes.ExeName:
                         Tuple<string, string, string> app = AppSelector.SelectApp();
-                        if (app == null)
+                        if (app != null)
                         {
-                            return;
+                            lc.Filter = app.Item1;
+                            //_condAutoChange = false;
                         }
-                        lc.Filter = app.Item1;
                         return;
                     default:
                         return;
@@ -671,7 +687,16 @@ namespace LaunchMate.Views
                         lc.FilterId = new Guid(chosen.Description);
                     }
                 }
+                //_condAutoChange = false;
             }
         }
+
+        //private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    if (sender is TextBox t && GridConditions.SelectedItem != null && GridConditions.SelectedItem is LaunchCondition lc && !_condAutoChange)
+        //    {
+        //        logger.Debug("Text Changed");
+        //    }
+        //}
     }
 }
