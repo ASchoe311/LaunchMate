@@ -1,24 +1,23 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Events;
-using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Management;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using LaunchMate.Models;
-using LaunchMate.Enums;
 using LaunchMate.Views;
 using LaunchMate.ViewModels;
-using System.Windows;
+using System.Linq;
+using System.Text;
+using System.Management;
 using LaunchMate.Utilities;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
+using Playnite.SDK.Models;
+using System.Diagnostics;
+using LaunchMate.Enums;
 
 namespace LaunchMate
 {
@@ -28,27 +27,193 @@ namespace LaunchMate
 
         private SettingsViewModel settings { get; set; }
 
+        internal Settings Settings { get; set; }
+
         public override Guid Id { get; } = Guid.Parse("61d7fcec-322d-4eb6-b981-1c8f8122ddc8");
 
-        private readonly int vNum = 1;
+        private readonly int vNum = 2;
+        private readonly SidebarItem launchGroupsSidebarItem;
+
+        public static Cache Cache;
 
         public LaunchMate(IPlayniteAPI api) : base(api)
         {
             settings = new SettingsViewModel(this);
+            Settings = settings.Settings;
+            settings.SettingsUpdated += OnSettingsUpdated;
             Properties = new GenericPluginProperties
             {
                 HasSettings = true
             };
+            Cache = new Cache();
+
+            launchGroupsSidebarItem = new SidebarItem
+            {
+                Title = "LaunchMate",
+                Icon = Path.Combine(Path.GetDirectoryName(typeof(LaunchMate).Assembly.Location), "icon-gray.png"),
+                Type = SiderbarItemType.Button,
+                Activated = () => this.OpenSettingsView(),
+                ProgressValue = 0,
+                ProgressMaximum = 100
+            };
         }
 
-        private Stack<LaunchGroup> launchedGroups = new Stack<LaunchGroup>();
+        private void OnSettingsUpdated(object sender, EventArgs e)
+        {
+            Settings = settings.Settings;
+        }
+
+        public override IEnumerable<SidebarItem> GetSidebarItems()
+        {
+            yield return launchGroupsSidebarItem;
+        }
+
+        public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
+        {
+            //MigrateSettings();
+            if (settings.Settings.PluginVersion == 1)
+            {
+                PlayniteApi.Dialogs.ShowMessage(
+                    "Thank you for installing LaunchMate 2.0!\nThere have been many changes, and unfortunately the new system is not 100% compatible with the old settings. The plugin will do its best to migrate your old settings, but some issues may occur.\n\nYour old plugin settings have been saved in the plugin data directory.\n\nI'm very sorry for the inconvenience.",
+                    "LaunchMate 2.0", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation
+                    );
+                ConvertOldSettings();
+                List<MessageBoxOption> options = new List<MessageBoxOption>()
+                {
+                    new MessageBoxOption("Ok", isDefault: true, isCancel:true),
+                    new MessageBoxOption("Show Guide")
+                };
+                MessageBoxOption chosen = PlayniteApi.Dialogs.ShowMessage("Thank you for installing LaunchMate! To control the plugin, just click the rocket icon in the left sidebar. For help, click \"Show Guide\".\n\nThis message will not be shown again.", "LaunchMate First Run", System.Windows.MessageBoxImage.Information, options);
+                if (!chosen.IsDefault && !chosen.IsCancel)
+                {
+                    Process.Start("https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage");
+                }
+                settings.Settings.ShowFirstRunMessage = false;
+                SavePluginSettings(settings.Settings);
+            }
+            else if (settings.Settings.ShowFirstRunMessage)
+            {
+                List<MessageBoxOption> options = new List<MessageBoxOption>()
+                {
+                    new MessageBoxOption("Ok", isDefault: true, isCancel:true),
+                    new MessageBoxOption("Show Guide")
+                };
+                MessageBoxOption chosen = PlayniteApi.Dialogs.ShowMessage("Thank you for installing LaunchMate! To control the plugin, just click the rocket icon in the left sidebar. For help, click \"Show Guide\".\n\nThis message will not be shown again.", "LaunchMate First Run", System.Windows.MessageBoxImage.Information, options);
+                if (!chosen.IsDefault && !chosen.IsCancel)
+                {
+                    Process.Start("https://github.com/ASchoe311/LaunchMate?tab=readme-ov-file#usage");
+                }
+                settings.Settings.ShowFirstRunMessage = false;
+                SavePluginSettings(settings.Settings);
+            }
+        }
+
+        public void ConvertOldSettings()
+        {
+            var settingsFile = Path.Combine(GetPluginUserDataPath(), "config.json");
+            OldSettings oldSettings;
+            var tempFile = Path.Combine(GetPluginUserDataPath(), "config.old.json");
+            string jsonStr = File.ReadAllText(settingsFile);
+            using (FileStream fs = File.Create(tempFile))
+            {
+                using (var sw = new StreamWriter(fs))
+                {
+                    sw.WriteLine(jsonStr);
+                }
+            }
+            oldSettings = JsonConvert.DeserializeObject<OldSettings>(jsonStr);
+
+            Settings newSettings = new Settings();
+
+            newSettings.PluginVersion = 2;
+            int i = 0;
+            foreach (var group in oldSettings.Groups)
+            {
+                string groupName = $"Unnamed Group ({i})";
+
+                ActionBase act = new AppAction
+                {
+                    Target = group.LaunchTargetUri,
+                    TargetArgs = group.AppExeArgs,
+                };
+                ActionType actType = ActionType.App;
+
+                if (group.LaunchTargetUri.Contains(".bat", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    act = new ScriptAction
+                    {
+                        Target = group.LaunchTargetUri,
+                        TargetArgs = group.AppExeArgs
+                    };
+                    actType = ActionType.Script;
+                }
+                else if (group.LaunchTargetUri.Contains("https://", StringComparison.InvariantCultureIgnoreCase) || group.LaunchTargetUri.Contains("http://", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    act = new WebAction
+                    {
+                        Target = group.LaunchTargetUri,
+                        TargetArgs = group.AppExeArgs
+                    };
+                    actType = ActionType.Web;
+                }
+                
+                ObservableCollection<LaunchCondition> conditions = new ObservableCollection<LaunchCondition>();
+
+                foreach (var condGroup in group.ConditionGroups)
+                {
+                    bool thisNot = condGroup.Not;
+
+                    for (int j = 0; j < condGroup.Conditions.Count; j++)
+                    {
+                        var cond = condGroup.Conditions[j];
+                        bool not = cond.Not ^ condGroup.Not;
+                        var joiner = j < condGroup.Conditions.Count - 1 ? cond.Joiner : condGroup.Joiner;
+
+
+                        conditions.Add(new LaunchCondition
+                        {
+                            Not = not,
+                            Filter = cond.Filter,
+                            FilterId = null,
+                            FilterType = cond.FilterType,
+                            FuzzyMatch = cond.FuzzyMatch,
+                            Joiner = joiner,
+                        });
+
+                    }
+
+                }
+
+                newSettings.Groups.Add(new LaunchGroup
+                {
+                    Action = act,
+                    Enabled = group.Enabled.HasValue ? group.Enabled.Value : true,
+                    ActionType = actType,
+                    AutoClose = group.AutoClose.HasValue ? group.AutoClose.Value : true,
+                    LaunchDelay = group.LaunchDelay.HasValue ? group.LaunchDelay.Value : 0,
+                    Name = groupName,
+                    Conditions = conditions,
+                    
+                });
+
+
+                i += 1;
+            }
+
+            newSettings.ShowFirstRunMessage = false;
+
+            settings.Settings = newSettings;
+            settings.EndEdit();
+        }
+
+        private Stack<LaunchGroup> toClose = new Stack<LaunchGroup>();
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
             base.OnGameStarting(args);
 
             // Dispatch group handling to async function
-            foreach (var group in settings.Settings.Groups)
+            foreach (var group in Settings.Groups)
             {
                 if (!group.Enabled)
                 {
@@ -75,112 +240,30 @@ namespace LaunchMate
         /// <param name="group">The launchgroup to execute</param>
         private void HandleLaunchGroup(OnGameStartingEventArgs args, LaunchGroup group)
         {
-
-            logger.Debug($"Checking launch conditions for group with app {Path.GetFileName(group.LaunchTargetUri)}");
+            logger.Info($"Checking launch group conditions for group named {group.Name}");
             
-            if (group.ShouldLaunchApp(args.Game))
+            if (group.MeetsConditions(args.Game))
             {
-                logger.Debug($"Waiting {group.LaunchDelay} ms to launch \"{group.LaunchTargetUri}\"");
+                logger.Info($"Conditions passed, waiting {group.LaunchDelay} ms to execute action for group \"{group.Name}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
-                logger.Debug($"Launching \"{group.LaunchTargetUri}\" with arguments \"{group.AppExeArgs}\"");
-                if (Path.GetExtension(group.LaunchTargetUri) == ".bat")
-                {
-                    logger.Debug("It's a script!");
-                    ProcessStartInfo processStartInfo = new ProcessStartInfo("cmd.exe", "/c " + group.LaunchTargetUri + " " + group.AppExeArgs)
-                    {
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
-                    Process p = new Process
-                    {
-                        StartInfo = processStartInfo
-                    };
-                    p.OutputDataReceived += (sender, pArgs) =>
-                    {
-                        logger.Info($"Standard output from {group.LaunchTargetUri}: {pArgs.Data}");
-                    };
-                    p.Start();
-                    p.BeginOutputReadLine();
-                    return;
+                if (group.Action.Execute(group.Name) && group.AutoClose){
+                    toClose.Push(group);
                 }
-                else if (group.LaunchTargetUri.Substring(0, 6).ToLowerInvariant() == "https:")
-                {
-                    // Dispatch to main thread
-                    Application.Current.Dispatcher.Invoke((Action)delegate
-                    {
-                        // Create a web view
-                        var windowSize = WindowHelper.GetNearMaxWindow(group.TargetDisplayName);
-                        logger.Debug($"Creating webview to display {group.LaunchTargetUri}");
-                        var webView = PlayniteApi.WebViews.CreateView(windowSize.Item1, windowSize.Item2, System.Windows.Media.Colors.Black);
-                        webView.Navigate(group.LaunchTargetUri);
-                        webView.Open();
-                        // Watch for page loading changed
-                        webView.LoadingChanged += async (s, e) =>
-                        {
-                            var pageSource = await webView.GetPageSourceAsync();
-                            // Get <title> tag of page
-                            var pageTitle = Regex.Match(pageSource, ".*?<title>(.*?)</title>.*").Groups[1].Value;
-                            if (pageTitle != null && pageTitle != string.Empty)
-                            {
-                                // Bring web view to foreground
-                                logger.Debug("Trying to bring webview into foreground");
-                                SetForegroundHelper.SetForeground(pageTitle);
-                            }
-                        };
-                        group.webView = webView;
-                    });
-                }
-                else
-                {
-                    Process.Start(group.LaunchTargetUri, group.AppExeArgs);
-                }
-                launchedGroups.Push(group);
             }
 
         }
 
-
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
             base.OnGameStopped(args);
-            while (launchedGroups.Count > 0)
+            while (toClose.Count > 0)
             {
-                LaunchGroup group = launchedGroups.Pop();
+                LaunchGroup group = toClose.Pop();
 
-                if (group.webView != null)
-                {
-                    logger.Debug($"Closing webview for {group.LaunchTargetUri}");
-                    group.webView.Close();
-                    group.webView.Dispose();
-                    group.webView = null;
-                    continue;
-                }
+                //logger.Debug($"{group.Name} - Trying to close {group.Action.Target}");
 
-                // Use WMI to get all processes and their executable paths
-                var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                using (var results = searcher.Get())
-                {
-                    var query = from p in Process.GetProcesses()
-                                join mo in results.Cast<ManagementObject>()
-                                on p.Id equals (int)(uint)mo["ProcessId"]
-                                select new
-                                {
-                                    Process = p,
-                                    Path = (string)mo["ExecutablePath"],
-                                    CommandLine = (string)mo["CommandLine"],
-                                };
-                    foreach (var item in query)
-                    {
-                        // Check if the executable path of the process is the launched executable and stop the process
-                        if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(group.LaunchTargetUri)) && group.AutoClose)
-                        {
-                            logger.Debug($"Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {group.TargetDisplayName}");
-                            item.Process.Kill();
-                        }
-                    }
-                }
+                group.Action.AutoClose(group.Name);
+
             }
         }
 

@@ -41,7 +41,9 @@ namespace LaunchMate.ViewModels
                 viewModel.Matches = launchGroup.MatchedGames;
                 if (viewModel.Matches == null)
                 {
+                    #if DEBUG
                     logger.Debug("Match scanning cancelled, returning null window");
+                    #endif
                     return null;
                 }
                 var matchedGamesView = new MatchedGamesView();

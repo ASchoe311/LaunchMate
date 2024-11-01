@@ -1,19 +1,12 @@
-﻿using Microsoft.Win32;
-using Playnite.SDK;
+﻿using Playnite.SDK;
 using Playnite.SDK.Data;
-using Playnite.SDK.Models;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shell32;
-using System.IO;
-using System.Reflection;
 using LaunchMate.Models;
 using LaunchMate.Enums;
-using System.Runtime;
+using System;
+using System.Collections.ObjectModel;
+using System.Windows.Forms;
+using LaunchMate.Utilities;
 
 namespace LaunchMate.ViewModels
 {
@@ -34,99 +27,7 @@ namespace LaunchMate.ViewModels
             }
         }
 
-        /// <summary>
-        /// Command to create a new <see cref="LaunchGroup"/> and open a window to edit it
-        /// </summary>
-        public RelayCommand AddLaunchGroupCmd
-        {
-            get => new RelayCommand(() =>
-            {
-                var launchGroup = new LaunchGroup();
-
-                var window = LaunchGroupEditorViewModel.GetWindow(launchGroup);
-
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Settings.Groups.Add(launchGroup);
-            });
-        }
-
-        /// <summary>
-        /// Command to open the editing window for the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<object> EditLaunchGroupCmd
-        {
-            get => new RelayCommand<object>((grp) =>
-            {
-                if (grp == null)
-                {
-                    return;
-                }
-                var grpOriginal = (LaunchGroup)grp;
-                var toEdit = Serialization.GetClone(grpOriginal);
-
-                var window = LaunchGroupEditorViewModel.GetWindow(toEdit);
-
-                if (window == null)
-                {
-                    return;
-                }
-
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-                Settings.Groups.Remove(grpOriginal);
-                Settings.Groups.Add(toEdit);
-
-            });
-        }
-
-        /// <summary>
-        /// Command to remove the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<LaunchGroup> RemoveLaunchGroupCmd
-        {
-            get => new RelayCommand<LaunchGroup>((a) =>
-            {
-                if (a == null) {  return; }
-                Settings.Groups.Remove(a);
-            });
-        }
-
-        /// <summary>
-        /// Command to launch a window to show the list of games matched by the selected <see cref="LaunchGroup"/>
-        /// </summary>
-        public RelayCommand<LaunchGroup> ShowMatchesCmd
-        {
-            get => new RelayCommand<LaunchGroup>((grp) =>
-            {
-
-                if (grp == null)
-                {
-                    return;
-                }
-                var window = MatchedGamesViewModel.GetWindow(grp);
-                if (window == null)
-                {
-                    return;
-                }
-                if (!(window.ShowDialog() ?? false))
-                {
-                    return;
-                }
-
-            });
-        }
+        public event EventHandler SettingsUpdated;
 
         public SettingsViewModel(LaunchMate plugin)
         {
@@ -137,13 +38,122 @@ namespace LaunchMate.ViewModels
             var savedSettings = plugin.LoadPluginSettings<Settings>();
 
             // LoadPluginSettings returns null if no saved data is available.
-            if (savedSettings != null)
+            Settings = savedSettings ?? new Settings();
+            FixActionTypes();
+        }
+
+        public Dictionary<string, Screen> GetScreens
+        {
+            get
             {
-                Settings = savedSettings;
+                Dictionary<string, Screen> screens = new Dictionary<string, Screen>();
+                int i = 0;
+                foreach (var s in Screen.AllScreens)
+                {
+                    string name = s.DeviceFriendlyName();
+                    if (s == Screen.PrimaryScreen)
+                    {
+                        name = "*" + name;
+                    }
+                    else
+                    {
+                        name += $"({i})";
+                    }
+                    screens.Add(name, s);
+                    i++;
+                }
+                return screens;
             }
-            else
+        }
+
+        public Dictionary<string, JoinType> JoinMethodsDict { get; } = new Dictionary<string, JoinType>()
+        {
+            { ResourceProvider.GetString("LOCLaunchMateAnd"), JoinType.And },
+            { ResourceProvider.GetString("LOCLaunchMateOr"), JoinType.Or },
+            //{ ResourceProvider.GetString("LOCLaunchMateXor"), JoinType.Xor }
+        };
+
+        /// <summary>
+        /// Dictionary to convert frontend filter types string representation to <see cref="FilterTypes"/> enums
+        /// </summary>
+        public static Dictionary<string, FilterTypes> FilterTypesDict { get; } = new Dictionary<string, FilterTypes>
+        {
+            { ResourceProvider.GetString("LOCAllGames"), FilterTypes.All },
+            { ResourceProvider.GetString("LOCNameLabel"), FilterTypes.Name },
+            { ResourceProvider.GetString("LOCSourceLabel"), FilterTypes.Source },
+            { ResourceProvider.GetString("LOCDeveloperLabel"), FilterTypes.Developers },
+            { ResourceProvider.GetString("LOCPublisherLabel"), FilterTypes.Publishers },
+            { ResourceProvider.GetString("LOCCategoryLabel"), FilterTypes.Categories },
+            { ResourceProvider.GetString("LOCGenreLabel"), FilterTypes.Genres },
+            //{ ResourceProvider.GetString("LOCGameId"), FilterTypes.GameId },
+            { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
+            { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
+            { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
+            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series },
+            { "Install Directory", FilterTypes.InstallDirectory },
+            { "Executable Running", FilterTypes.ExeName },
+            { "Process Running", FilterTypes.Process },
+            { "Service Running", FilterTypes.Service },
+        };
+
+        public Dictionary<string, ActionType> ActionTypesDict { get; } = new Dictionary<string, ActionType>()
+        {
+            { "Launch an App", ActionType.App },
+            { "Open a Webpage", ActionType.Web },
+            { "Run a Script", ActionType.Script },
+            { "Start a Service", ActionType.StartService },
+            { "Stop a Process", ActionType.Close },
+            { "Stop a Service", ActionType.Stop },
+
+        };
+
+        private void FixActionTypes()
+        {
+            foreach (var group in Settings.Groups)
             {
-                Settings = new Settings();
+                switch (group.ActionType)
+                {
+                    case ActionType.App:
+                        group.Action = new AppAction
+                        {
+                            Target = group.Action.Target,
+                            TargetArgs = group.Action.TargetArgs
+                        };
+                        break;
+                    case ActionType.Web:
+                        group.Action = new WebAction
+                        {
+                            Target = group.Action.Target,
+                            UseWebView = group.Action.UseWebView,
+                        };
+                        break;
+                    case ActionType.Script:
+                        group.Action = new ScriptAction
+                        {
+                            Target = group.Action.Target,
+                            TargetArgs = group.Action.TargetArgs
+                        };
+                        break;
+                    case ActionType.Close:
+                        group.Action = new CloseAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    case ActionType.StartService:
+                        group.Action = new StartServiceAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    case ActionType.Stop:
+                        group.Action = new StopServiceAction
+                        {
+                            Target = group.Action.Target
+                        };
+                        break;
+                    default: break;
+                }
             }
         }
 
@@ -157,12 +167,15 @@ namespace LaunchMate.ViewModels
         {
             // Code executed when user decides to cancel any changes made since BeginEdit was called.
             Settings = EditingClone;
+            FixActionTypes();
         }
 
         public void EndEdit()
         {
             // Code executed when user decides to confirm changes made since BeginEdit was called.
             plugin.SavePluginSettings(Settings);
+            FixActionTypes();
+            SettingsUpdated?.Invoke(this, EventArgs.Empty); // Notify that settings are updated
         }
 
         public bool VerifySettings(out List<string> errors)
@@ -171,7 +184,14 @@ namespace LaunchMate.ViewModels
             // Executed before EndEdit is called and EndEdit is not called if false is returned.
             // List of errors is presented to user if verification fails.
             errors = new List<string>();
-            return true;
+            foreach (var group in Settings.Groups)
+            {
+                if (group.Action.Target == null ||  group.Action.Target == string.Empty)
+                {
+                    errors.Add($"Error: Launch Group {group.Name} does not have an action target\n");
+                }
+            }
+            return errors.Count == 0;
         }
     }
 }

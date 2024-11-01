@@ -2,42 +2,42 @@
 using Playnite.SDK.Data;
 using Playnite.SDK.Models;
 using LaunchMate.Enums;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using LaunchMate.Utilities;
 
 namespace LaunchMate.Models
 {
     public class LaunchGroup : ObservableObject
     {
-        private string _targetUri = string.Empty;
-        private string _exeArgs = string.Empty;
-        private string _lnkName = null;
+        private string _name = string.Empty;
+        private ActionBase _action;
+        private ActionType _actionType;
         private bool _enabled = true;
         private bool _autoClose = true;
         private bool _ignoreCase = false;
         private int _delay = 0;
         private bool _makeActions = false;
 
-        public string LaunchTargetUri { get => _targetUri; set => SetValue(ref _targetUri, value); }
-        public string AppExeArgs { get => _exeArgs; set => SetValue(ref _exeArgs, value); }
-        public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
+        public string Name { get => _name; set => SetValue(ref _name, value); }
+        public ActionBase Action { get => _action; set => SetValue(ref _action, value); }
+        public ActionType ActionType { get => _actionType; set => SetValue(ref _actionType, value); }
         public bool Enabled { get => _enabled; set => SetValue(ref _enabled, value); }
         public bool AutoClose { get => _autoClose; set => SetValue(ref _autoClose, value); }
         public bool IgnoreCase { get => _ignoreCase; set => SetValue(ref _ignoreCase, value); }
         public int LaunchDelay { get => _delay; set => SetValue(ref _delay, value); }
         public bool MakeGameActions { get => _makeActions; set => SetValue(ref _makeActions, value); }
-        public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
+        //public ObservableCollection<ConditionGroup> ConditionGroups { get; set; } = new ObservableCollection<ConditionGroup>();
+        public ObservableCollection<LaunchCondition> Conditions { get; set; } = new ObservableCollection<LaunchCondition>();
 
         [DontSerialize]
         public IWebView webView { get; set; } = null;
 
+
+        public LaunchGroup()
+        {
+            _action = new AppAction();
+            _actionType = ActionType.App;
+        }
 
         [DontSerialize]
         private readonly ILogger logger = LogManager.GetLogger();
@@ -54,6 +54,9 @@ namespace LaunchMate.Models
                 var gpo = new GlobalProgressOptions(ResourceProvider.GetString("LOCLaunchMateCheckingGames"), true);
                 gpo.IsIndeterminate = false;
                 bool cancelled = false;
+
+                LaunchMate.Cache.Clear();
+
                 API.Instance.Dialogs.ActivateGlobalProgress((activateGlobalProgress) =>
                 {
                     activateGlobalProgress.ProgressMaxValue = numGames;
@@ -66,12 +69,14 @@ namespace LaunchMate.Models
                             break;
                         }
                         activateGlobalProgress.CurrentProgressValue += 1;
-                        if (ShouldLaunchApp(game))
+                        if (MeetsConditions(game))
                         {
                             matches.Add(game);
                         }
                     }
                 }, gpo);
+
+
 
                 return cancelled ? null : matches;
             }
@@ -84,26 +89,35 @@ namespace LaunchMate.Models
         /// <param name="game"><see cref="Game"/> object to check against</param>
         /// <returns>True if launch conditions evaluate to true, false otherwise</returns>
         [DontSerialize]
-        public bool ShouldLaunchApp(Game game)
+        public bool MeetsConditions(Game game)
         {
-            List<bool> matches = new List<bool>();
-            foreach (var conditionGroup in ConditionGroups)
+            if (Conditions.Count == 0)
             {
-                bool condMet = conditionGroup.IsMet(game);
-                if (conditionGroup.Not)
+                return true;
+            }
+
+            List<bool> matches = new List<bool>();
+            foreach (var condition in Conditions)
+            {
+                bool condMet = condition.IsMet(game);
+                if (condition.Not)
                 {
+#if DEBUG
                     logger.Debug("Not flag set, negating result");
+#endif
                     condMet = !condMet;
                 }
                 matches.Add(condMet);
             }
 
-            bool execute = matches.Count == 0 ? true : matches[0];
+            bool execute = matches[0];
 
             for (int i = 0; i < matches.Count - 1; i++)
             {
-                logger.Debug($"App will launch given matches up to condition group number {i + 1}? {execute}");
-                switch (ConditionGroups[i].Joiner)
+#if DEBUG
+                logger.Debug($"App will launch given matches up to condition numer {i + 1}? {execute}");
+#endif
+                switch (Conditions[i].Joiner)
                 {
                     case JoinType.And:
                         execute &= matches[i + 1];
@@ -116,7 +130,9 @@ namespace LaunchMate.Models
                         break;
                 }
             }
-            logger.Debug($"App will launch given matches up to condition group number {matches.Count}? {execute}");
+#if DEBUG
+            logger.Debug($"App will launch given matches up to condition numer {matches.Count}? {execute}");
+#endif
             return execute;
         }
 
@@ -127,19 +143,19 @@ namespace LaunchMate.Models
         public string ToFilterString { get
             {
                 string filterStr = string.Empty;
-
-                for (int i = 0; i < ConditionGroups.Count; i++)
+                if (Conditions.Count == 0)
                 {
-                    if (ConditionGroups[i].Not)
-                    {
-                        filterStr += ResourceProvider.GetString("LOCLaunchMateNot") + " ";
-                    }
+                    return "No Conditions";
+                }
+                for (int j = 0; j < Conditions.Count; j++)
+                {
+                    var condition = Conditions[j];
                     filterStr += "(";
-                    filterStr += ConditionGroups[i].ToFilterString;
+                    filterStr += $"\"{condition.FilterType}\" {(condition.Not ? (condition.FuzzyMatch ? (ResourceProvider.GetString("LOCLaunchMateNot") + "~") : ResourceProvider.GetString("LOCLaunchMateNot")) : (condition.FuzzyMatch ? "~>" : "->"))} \"{condition.Filter}\"";
                     filterStr += ")";
-                    if (i < ConditionGroups.Count - 1)
+                    if (j < Conditions.Count - 1)
                     {
-                        switch (ConditionGroups[i].Joiner)
+                        switch (condition.Joiner)
                         {
                             case JoinType.And:
                                 filterStr += " " + ResourceProvider.GetString("LOCLaunchMateAnd") + " ";
@@ -157,6 +173,6 @@ namespace LaunchMate.Models
             } }
 
         [DontSerialize]
-        public string TargetDisplayName => LnkName ?? Path.GetFileName(LaunchTargetUri);
+        public string TargetDisplayName => Name;
     }
 }

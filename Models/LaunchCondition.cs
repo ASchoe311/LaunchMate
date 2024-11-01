@@ -1,18 +1,17 @@
-﻿using Microsoft.Win32;
-using Playnite.SDK;
+﻿using Playnite.SDK;
 using Playnite.SDK.Data;
 using Playnite.SDK.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shell32;
-using System.IO;
 using LaunchMate.Enums;
 using LaunchMate.Utilities;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Linq;
+using System.Management;
+using System.IO;
+using System.ServiceProcess;
+using System.Text;
 
 namespace LaunchMate.Models
 {
@@ -23,12 +22,14 @@ namespace LaunchMate.Models
         private bool _fuzzyMatch = false;
         private JoinType _joiner = JoinType.And;
         private bool _not = false;
+        private Guid? _filterId;
 
         public FilterTypes FilterType { get => _filterType; set => SetValue(ref _filterType, value); } 
         public string Filter { get => _condition; set => SetValue(ref _condition, value); }
         public bool FuzzyMatch { get => _fuzzyMatch; set => SetValue(ref _fuzzyMatch, value); }
         public JoinType Joiner { get => _joiner; set => SetValue(ref _joiner, value); }
         public bool Not { get => _not; set => SetValue(ref _not, value); }
+        public Guid? FilterId { get => _filterId; set => SetValue(ref _filterId, value); }
 
 
         [DontSerialize]
@@ -49,14 +50,25 @@ namespace LaunchMate.Models
         [DontSerialize]
         public bool IsMet(Game game)
         {
-            RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant;
-            string pattern = $@"{Filter}";
-            Regex rgx = new Regex(pattern, regexOptions);
+            //RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant;
+            //string pattern = $@"{Filter}";
+            //StringBuilder stringBuilder = new StringBuilder();
+            //foreach (char c in pattern)
+            //{
+            //    if (c == '\\')
+            //    {
+            //        stringBuilder.Append('\\');
+            //    }
+            //    stringBuilder.Append(c);
+            //}
+            //pattern = stringBuilder.ToString();
+            //Regex rgx = new Regex(pattern, regexOptions);
             FilterPresetSettings filterSettings = new FilterPresetSettings()
             {
                 UseAndFilteringStyle = true
             };
-            bool pnMatch, rgxMatch;
+            bool pnMatch;
+            //bool rgxMatch;
             switch (FilterType)
             {
                 case FilterTypes.All:
@@ -64,129 +76,311 @@ namespace LaunchMate.Models
                 case FilterTypes.Name:
                     filterSettings.Name = Filter;
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatch(game.Name);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    ////rgxMatch = rgx.IsMatch(game.Name);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Source:
-                    filterSettings.Source = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Source = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Source = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatch(game.Source.Name);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    ////rgxMatch = rgx.IsMatch(game.Source.Name);
+#if DEBUG 
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif 
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Developers:
-                    filterSettings.Developer = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Developer = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Developer = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatch(game.Name);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    ////rgxMatch = rgx.IsMatch(game.Name);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif 
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Publishers:
-                    filterSettings.Publisher = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Publisher = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Publisher = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Publishers);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Publishers);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Categories:
-                    filterSettings.Category = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Category = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Category = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Categories);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Categories);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     } 
                     break;
                 case FilterTypes.Genres:
-                    filterSettings.Genre = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Genre = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Genre = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Genres);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Genres);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
-                case FilterTypes.GameId:
-                    rgxMatch = rgx.IsMatch(game.GameId);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - N/A  |  Regex Match - {rgxMatch}");
-                    if (rgxMatch)
-                    {
-                        return true;
-                    }
-                    break;
+                //case FilterTypes.GameId:
+                //    //rgxMatch = rgx.IsMatch(game.GameId);
+                //    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - N/A");
+                //    if (game.GameId == Filter)
+                //    {
+                //        return true;
+                //    }
+                //    break;
                 case FilterTypes.InstallDirectory:
-                    rgxMatch = rgx.IsMatch(game.InstallDirectory);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\":\nPlaynite Match - N/A  |  Regex Match - {rgxMatch}");
-                    if (rgxMatch)
+                    //rgxMatch = rgx.IsMatch(game.InstallDirectory);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\":\nPlaynite Match - N/A");
+#endif
+                    if (game.InstallationStatus == InstallationStatus.Installed && Path.GetFullPath(game.InstallDirectory) == Path.GetFullPath(Filter))
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Tags:
-                    filterSettings.Tag = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Tag = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Tag = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Tags);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Tags);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Features:
-                    filterSettings.Feature = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Feature = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Feature = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Features);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Features);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.AgeRatings:
-                    filterSettings.AgeRating = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.AgeRating = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.AgeRating = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.AgeRatings);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.AgeRatings);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Series:
-                    filterSettings.Series = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Series = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Series = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Series);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Series);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
                 case FilterTypes.Platforms:
-                    filterSettings.Platform = new IdItemFilterItemProperties(Filter);
+                    if (FilterId.HasValue)
+                    {
+                        filterSettings.Platform = new IdItemFilterItemProperties(FilterId.Value);
+                    }
+                    else
+                    {
+                        filterSettings.Platform = new IdItemFilterItemProperties(Filter);
+                    }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    rgxMatch = rgx.IsMatchList(game.Platforms);
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}  |  Regex Match - {rgxMatch}");
-                    if (pnMatch || rgxMatch)
+                    //rgxMatch = rgx.IsMatchList(game.Platforms);
+#if DEBUG
+                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+                    if (pnMatch)
                     {
                         return true;
                     }
                     break;
+                case FilterTypes.ExeName:
+
+
+                    // Cache retrieval attempt
+                    bool? isERunning = LaunchMate.Cache.ExeCache.IsRunning(Filter);
+                    if (isERunning.HasValue)
+                    {
+                        return isERunning.Value;
+                    }
+
+                    // Cache miss
+                    var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                    using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                    using (var results = searcher.Get())
+                    {
+                        var query = from p in Process.GetProcesses()
+                                    join mo in results.Cast<ManagementObject>()
+                                    on p.Id equals (int)(uint)mo["ProcessId"]
+                                    select new
+                                    {
+                                        Process = p,
+                                        Path = (string)mo["ExecutablePath"],
+                                        CommandLine = (string)mo["CommandLine"],
+                                    };
+                        foreach (var item in query)
+                        {
+                            if (item.Path != null && item.Path.ToLowerInvariant().MatchesPath(Filter.ToLowerInvariant()))
+                            {
+                                LaunchMate.Cache.ExeCache.SetRunning(Filter, true);
+                                return true;
+                            }
+                        }
+                    }
+                        LaunchMate.Cache.ExeCache.SetRunning(Filter, false);
+                    break;
+                case FilterTypes.Process:
+#if DEBUG
+                    logger.Debug($"Checking processes for {Filter}");
+#endif
+
+                    bool? isPRunning = LaunchMate.Cache.ProcessCache.IsRunning(Filter);
+                    if (isPRunning.HasValue)
+                    {
+                        return isPRunning.Value;
+                    }
+
+                    foreach (var proc in Process.GetProcesses())
+                    {
+                        if (proc.ProcessName.ToLowerInvariant() == Filter.ToLowerInvariant())
+                        {
+#if DEBUG
+                            logger.Debug($"{proc.ProcessName} matches filter {Filter}");
+#endif
+                            LaunchMate.Cache.ProcessCache.SetRunning(Filter, true);
+                            return true;
+                        }
+                    }
+                    LaunchMate.Cache.ProcessCache.SetRunning(Filter, false);
+                    break;
+                case FilterTypes.Service:
+#if DEBUG
+                    logger.Debug($"Checking if service {Filter} is running");
+#endif
+
+                    bool? isSRunning = LaunchMate.Cache.ServiceCache.IsRunning(Filter);
+                    if (isSRunning.HasValue)
+                    {
+                        return isSRunning.Value;
+                    }
+
+                    try
+                    {
+                        var service = new ServiceController(Filter);
+                        bool running = service.Status == ServiceControllerStatus.Running;
+#if DEBUG
+                        logger.Debug($"{Filter} is a real service");
+#endif
+                        LaunchMate.Cache.ServiceCache.SetRunning(Filter, running);
+                        return running;
+                    }
+                    catch
+                    {
+#if DEBUG
+                        logger.Debug($"{Filter} is not a real service");
+#endif
+                        LaunchMate.Cache.ServiceCache.SetRunning(Filter, false);
+                        break;
+                    }
                 default:
                     return false;
             }
@@ -194,4 +388,6 @@ namespace LaunchMate.Models
         }
 
     }
+
+
 }
