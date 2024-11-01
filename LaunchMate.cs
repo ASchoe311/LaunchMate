@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using Playnite.SDK.Models;
 using System.Diagnostics;
+using LaunchMate.Enums;
 
 namespace LaunchMate
 {
@@ -130,11 +131,31 @@ namespace LaunchMate
             {
                 string groupName = $"Unnamed Group ({i})";
 
-                AppAction act = new AppAction
+                ActionBase act = new AppAction
                 {
                     Target = group.LaunchTargetUri,
                     TargetArgs = group.AppExeArgs,
                 };
+                ActionType actType = ActionType.App;
+
+                if (group.LaunchTargetUri.Contains(".bat", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    act = new ScriptAction
+                    {
+                        Target = group.LaunchTargetUri,
+                        TargetArgs = group.AppExeArgs
+                    };
+                    actType = ActionType.Script;
+                }
+                else if (group.LaunchTargetUri.Contains("https://", StringComparison.InvariantCultureIgnoreCase) || group.LaunchTargetUri.Contains("http://", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    act = new WebAction
+                    {
+                        Target = group.LaunchTargetUri,
+                        TargetArgs = group.AppExeArgs
+                    };
+                    actType = ActionType.Web;
+                }
                 
                 ObservableCollection<LaunchCondition> conditions = new ObservableCollection<LaunchCondition>();
 
@@ -167,7 +188,7 @@ namespace LaunchMate
                 {
                     Action = act,
                     Enabled = group.Enabled.HasValue ? group.Enabled.Value : true,
-                    ActionType = Enums.ActionType.App,
+                    ActionType = actType,
                     AutoClose = group.AutoClose.HasValue ? group.AutoClose.Value : true,
                     LaunchDelay = group.LaunchDelay.HasValue ? group.LaunchDelay.Value : 0,
                     Name = groupName,
