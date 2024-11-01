@@ -15,8 +15,8 @@
             <Setter Property="FontSize" Value="20"/>
         </Style>
     </UserControl.Resources>
-    <TabControl Margin="20">
-        <TabItem Header="Launch Groups Editor">
+    <!-- <TabControl Margin="20">
+        <TabItem Header="Launch Groups Editor"> -->
             <DockPanel Margin="5,10,5,5">
                 <GroupBox x:Name="grpBoxGroups" DockPanel.Dock="Left">
                     <GroupBox.Header>
@@ -226,7 +226,7 @@
                     </TextBlock>
                 </StackPanel>
             </DockPanel>
-        </TabItem>
+    <!-- </TabItem>
         <TabItem Header="General Settings">
             <Grid Margin="20">
                 <Grid.RowDefinitions>
@@ -237,8 +237,8 @@
                     <TextBlock Text="Monitor on which to open launched apps and web pages: "/>
                     <ComboBox x:Name="screenSelect" ItemsSource="{Binding GetScreens}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding Settings.OpenOnScreen, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
-                <CheckBox Grid.Row="1" Content="Advanced Mode" IsChecked="{Binding Settings.AdvancedMode}"/>
+                <CheckBox Grid.Row="1" Content="Advanced Mode" IsChecked="{Binding Settings.AdvancedMode}" Visibility="Hidden"/>
             </Grid>
         </TabItem>
-    </TabControl>
+    </TabControl> -->
 </UserControl>
