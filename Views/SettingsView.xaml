@@ -179,7 +179,7 @@
                                                             <ColumnDefinition Width="*"/>
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <TextBlock Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
+                                                        <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" Grid.Column="0" VerticalAlignment="Center"/>
                                                         <Button x:Name="FilterSelectBtn" Click="FilterSelectBtn_Click" Content="&#xec82;" MaxHeight="28" Grid.Column="1" FontFamily="{DynamicResource FontIcoFont}"/>
                                                     </Grid>
                                                     <DataTemplate.Triggers>
