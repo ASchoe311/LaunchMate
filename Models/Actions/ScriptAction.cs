@@ -11,10 +11,9 @@ namespace LaunchMate.Models
 {
     public class ScriptAction : ActionBase
     {
-        private readonly ILogger logger = LogManager.GetLogger();
-
         public override bool Execute(string groupName, Screen screen = null)
         {
+            ILogger logger = LogManager.GetLogger();
             if ((Target ?? "") == string.Empty)
             {
                 return false;

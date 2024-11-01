@@ -167,6 +167,8 @@ namespace LaunchMate
                 i += 1;
             }
 
+            newSettings.ShowFirstRunMessage = false;
+
             settings.Settings = newSettings;
             settings.EndEdit();
         }

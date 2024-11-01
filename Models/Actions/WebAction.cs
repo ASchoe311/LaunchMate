@@ -15,13 +15,12 @@ namespace LaunchMate.Models
 {
     public class WebAction : ActionBase
     {
-        private readonly ILogger logger = LogManager.GetLogger();
-
         [DontSerialize]
         public IWebView WebView { get; set; } = null;
 
         public override bool Execute(string groupName, Screen screen = null)
         {
+            ILogger logger = LogManager.GetLogger();
             if (screen == null)
             {
                 screen = Screen.PrimaryScreen;
@@ -84,6 +83,7 @@ namespace LaunchMate.Models
 
         public override void AutoClose(string groupName)
         {
+            ILogger logger = LogManager.GetLogger();
             logger.Info($"{groupName} - Closing webview for {Target}");
             WebView.Close();
             WebView.Dispose();

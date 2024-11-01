@@ -15,14 +15,13 @@ namespace LaunchMate.Models
 {
     public class AppAction : ActionBase
     {
-        private readonly ILogger logger = LogManager.GetLogger();
-
         //private string _lnkName;
 
         //public string LnkName { get => _lnkName; set => SetValue(ref _lnkName, value); }
 
         public override bool Execute(string groupName, Screen screen = null)
         {
+            ILogger logger = LogManager.GetLogger();
             if (screen == null)
             {
                 screen = Screen.PrimaryScreen;
@@ -63,6 +62,7 @@ namespace LaunchMate.Models
 
         public override void AutoClose(string groupName)
         {
+            ILogger logger = LogManager.GetLogger();
             // Use WMI query to find processes with the same executable path as the app launched by this action
             var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
             using (var searcher = new ManagementObjectSearcher(wmiQueryString))
