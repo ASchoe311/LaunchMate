@@ -167,8 +167,22 @@ namespace LaunchMate
                     {
                         var cond = condGroup.Conditions[j];
                         bool not = cond.Not ^ condGroup.Not;
-                        var joiner = j < condGroup.Conditions.Count - 1 ? cond.Joiner : condGroup.Joiner;
-
+                        JoinType joiner = cond.Joiner;
+                        if (condGroup.Not)
+                        {
+                            if (joiner == JoinType.And)
+                            {
+                                joiner = JoinType.Or;
+                            }
+                            if (joiner == JoinType.Or)
+                            {
+                                joiner = JoinType.And;
+                            }
+                        }
+                        if (j > condGroup.Conditions.Count - 1)
+                        {
+                            joiner = condGroup.Joiner;
+                        }
 
                         conditions.Add(new LaunchCondition
                         {

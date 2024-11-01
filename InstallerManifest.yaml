@@ -1,5 +1,11 @@
 ﻿AddonId: LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8
 Packages:
+  - Version: 2.0.1
+    RequiredApiVersion: 6.2.0
+    ReleaseDate: 2024-11-01
+    PackageUrl: https://github.com/ASchoe311/LaunchMate/releases/download/v2.0.1/LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8_2_0_1.pext
+    Changelog:
+      - Slight improvement to migration of old settings
   - Version: 2.0
     RequiredApiVersion: 6.2.0
     ReleaseDate: 2024-11-01
