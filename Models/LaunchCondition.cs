@@ -159,7 +159,7 @@ namespace LaunchMate.Models
                     if (pnMatch)
                     {
                         return true;
-                    }
+                    } 
                     break;
                 case FilterTypes.Genres:
                     if (FilterId.HasValue)

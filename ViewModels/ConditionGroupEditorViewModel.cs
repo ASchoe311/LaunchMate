@@ -76,7 +76,8 @@ namespace LaunchMate.ViewModels
             { ResourceProvider.GetString("LOCFeatureLabel"), FilterTypes.Features },
             { ResourceProvider.GetString("LOCTagLabel"), FilterTypes.Tags },
             { ResourceProvider.GetString("LOCPlatformTitle"), FilterTypes.Platforms },
-            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series }
+            { ResourceProvider.GetString("LOCSeriesLabel"), FilterTypes.Series },
+            { "Age Rating", FilterTypes.AgeRatings }
         };
 
         /// <summary>

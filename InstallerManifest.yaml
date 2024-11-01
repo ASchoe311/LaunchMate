@@ -14,6 +14,15 @@ Packages:
       - Condition filters now present a search window for more easily defining conditions
       - Playnite conditions now relate to their ID where possible to prevent conditions from breaking when names are changed
       - Conditions can now relate to things outside Playnite, such as if an app, process, or service is running
+  - Version: 1.1.1
+    RequiredApiVersion: 6.2.0
+    ReleaseDate: 2024-10-19
+    PackageUrl: https://github.com/ASchoe311/LaunchMate/releases/download/v1.1.1/LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8_1_1_1.pext
+    Changelog:
+      - Fixed bug causing condition matching to fail when a game lacked values to match against
+      - Added age rating filter type
+      - Should not be able to use batch scripts as launch targets
+      - Major UI overhaul in the works and tons of features planned, keep an eye out!
   - Version: 1.1
     RequiredApiVersion: 6.2.0
     ReleaseDate: 2024-10-16

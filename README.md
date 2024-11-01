@@ -26,7 +26,6 @@ With LaunchMate, you can effortlessly manage your gaming environment. Whether it
 
 Transform your gaming experience with LaunchMate, and focus on what matters most—enjoying your games. 🚀
 
-
 # Installation
 - Method 1: Install directly from within Playnite in the Addon Browser
 - Method 2: Click the download link on Playnite's addon page [here](https://playnite.link/addons.html#LaunchMate_61d7fcec-322d-4eb6-b981-1c8f8122ddc8)
