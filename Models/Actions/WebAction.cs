@@ -29,7 +29,7 @@ namespace LaunchMate.Models
             if ((Target ?? "") == string.Empty) return false;
             try
             {
-                logger.Debug($"{groupName} - Opening webpage \"{Target}\"");
+                logger.Info($"{groupName} - Opening webpage \"{Target}\"");
                 if (!UseWebView)
                 {
                     Process.Start(Target);
@@ -40,7 +40,9 @@ namespace LaunchMate.Models
                 {
                     // Create a web view
                     var windowSize = WindowHelper.GetNearMaxWindow(Target);
+#if DEBUG
                     logger.Debug($"{groupName} - Creating webview to display {Target}");
+#endif
                     var webView = API.Instance.WebViews.CreateView(windowSize.Item1, windowSize.Item2, System.Windows.Media.Colors.Black);
                     webView.Open();
                     webView.Navigate(Target);
@@ -56,7 +58,9 @@ namespace LaunchMate.Models
                         if (pageTitle != null && pageTitle != string.Empty)
                         {
                             // Bring web view to foreground
+#if DEBUG
                             logger.Debug($"{groupName} - Trying to bring webview into foreground");
+#endif
                             //WindowHelper.MoveWindow(pageTitle, screen);
                             WindowHelper.SetForeground(pageTitle);
                         }
@@ -80,7 +84,7 @@ namespace LaunchMate.Models
 
         public override void AutoClose(string groupName)
         {
-            logger.Debug($"{groupName} - Closing webview for {Target}");
+            logger.Info($"{groupName} - Closing webview for {Target}");
             WebView.Close();
             WebView.Dispose();
             WebView = null;

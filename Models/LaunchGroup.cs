@@ -102,7 +102,9 @@ namespace LaunchMate.Models
                 bool condMet = condition.IsMet(game);
                 if (condition.Not)
                 {
+#if DEBUG
                     logger.Debug("Not flag set, negating result");
+#endif
                     condMet = !condMet;
                 }
                 matches.Add(condMet);
@@ -112,7 +114,9 @@ namespace LaunchMate.Models
 
             for (int i = 0; i < matches.Count - 1; i++)
             {
+#if DEBUG
                 logger.Debug($"App will launch given matches up to condition numer {i + 1}? {execute}");
+#endif
                 switch (Conditions[i].Joiner)
                 {
                     case JoinType.And:
@@ -126,7 +130,9 @@ namespace LaunchMate.Models
                         break;
                 }
             }
+#if DEBUG
             logger.Debug($"App will launch given matches up to condition numer {matches.Count}? {execute}");
+#endif
             return execute;
         }
 

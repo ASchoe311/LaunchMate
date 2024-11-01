@@ -28,8 +28,11 @@ namespace LaunchMate.Models
                 screen = Screen.PrimaryScreen;
             }
             // If no target, return
-            if ((Target ?? "") == string.Empty) return false;
-            logger.Debug($"{groupName} - Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
+            if ((Target ?? "") == string.Empty)
+            {
+                return false;
+            }
+            logger.Info($"{groupName} - Launching application \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {
                 API.Instance.Notifications.Remove($"{groupName} - Error: {Target}");
@@ -79,7 +82,7 @@ namespace LaunchMate.Models
                     // Check if the executable path of the process is the launched executable and stop the process
                     if (item.Path != null && item.Path.Contains(Path.GetDirectoryName(Target)))
                     {
-                        logger.Debug($"{groupName} - Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {Target}");
+                        logger.Info($"{groupName} - Stopping process {item.Process.ProcessName}|{item.Process.Id} associated with {Target}");
                         item.Process.Kill();
                     }
                 }

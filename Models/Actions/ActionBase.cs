@@ -30,7 +30,7 @@ namespace LaunchMate.Models
         /// <param name="groupName">The name of the group calling AutoClose</param>
         public virtual void AutoClose(string groupName)
         {
-            logger.Debug($"{groupName} - AutoClose not supported for this action type");
+            logger.Warn($"{groupName} - AutoClose not supported for this action type");
         }
 
     }

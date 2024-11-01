@@ -77,7 +77,9 @@ namespace LaunchMate.Models
                     filterSettings.Name = Filter;
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     ////rgxMatch = rgx.IsMatch(game.Name);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -94,7 +96,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     ////rgxMatch = rgx.IsMatch(game.Source.Name);
+#if DEBUG 
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif 
                     if (pnMatch)
                     {
                         return true;
@@ -111,7 +115,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     ////rgxMatch = rgx.IsMatch(game.Name);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif 
                     if (pnMatch)
                     {
                         return true;
@@ -128,7 +134,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Publishers);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -145,7 +153,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Categories);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -162,7 +172,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Genres);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -178,7 +190,9 @@ namespace LaunchMate.Models
                 //    break;
                 case FilterTypes.InstallDirectory:
                     //rgxMatch = rgx.IsMatch(game.InstallDirectory);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\":\nPlaynite Match - N/A");
+#endif
                     if (game.InstallationStatus == InstallationStatus.Installed && Path.GetFullPath(game.InstallDirectory) == Path.GetFullPath(Filter))
                     {
                         return true;
@@ -195,7 +209,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Tags);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -212,7 +228,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Features);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -229,7 +247,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.AgeRatings);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -246,7 +266,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Series);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -263,7 +285,9 @@ namespace LaunchMate.Models
                     }
                     pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
                     //rgxMatch = rgx.IsMatchList(game.Platforms);
+#if DEBUG
                     logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
                     if (pnMatch)
                     {
                         return true;
@@ -280,36 +304,34 @@ namespace LaunchMate.Models
                     }
 
                     // Cache miss
-                    foreach (var proc in Process.GetProcesses())
+                    var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                    using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                    using (var results = searcher.Get())
                     {
-                        var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
-                        using (var searcher = new ManagementObjectSearcher(wmiQueryString))
-                        using (var results = searcher.Get())
+                        var query = from p in Process.GetProcesses()
+                                    join mo in results.Cast<ManagementObject>()
+                                    on p.Id equals (int)(uint)mo["ProcessId"]
+                                    select new
+                                    {
+                                        Process = p,
+                                        Path = (string)mo["ExecutablePath"],
+                                        CommandLine = (string)mo["CommandLine"],
+                                    };
+                        foreach (var item in query)
                         {
-                            var query = from p in Process.GetProcesses()
-                                        join mo in results.Cast<ManagementObject>()
-                                        on p.Id equals (int)(uint)mo["ProcessId"]
-                                        select new
-                                        {
-                                            Process = p,
-                                            Path = (string)mo["ExecutablePath"],
-                                            CommandLine = (string)mo["CommandLine"],
-                                        };
-                            foreach (var item in query)
+                            if (item.Path != null && item.Path.ToLowerInvariant().MatchesPath(Filter.ToLowerInvariant()))
                             {
-                                if (item.Path != null && item.Path.ToLowerInvariant().MatchesPath(Filter.ToLowerInvariant()))
-                                {
-                                    LaunchMate.Cache.ExeCache.SetRunning(Filter, true);
-                                    return true;
-                                }
+                                LaunchMate.Cache.ExeCache.SetRunning(Filter, true);
+                                return true;
                             }
                         }
-                        LaunchMate.Cache.ExeCache.SetRunning(Filter, false);
-                        return false;
                     }
+                        LaunchMate.Cache.ExeCache.SetRunning(Filter, false);
                     break;
                 case FilterTypes.Process:
+#if DEBUG
                     logger.Debug($"Checking processes for {Filter}");
+#endif
 
                     bool? isPRunning = LaunchMate.Cache.ProcessCache.IsRunning(Filter);
                     if (isPRunning.HasValue)
@@ -321,7 +343,9 @@ namespace LaunchMate.Models
                     {
                         if (proc.ProcessName.ToLowerInvariant() == Filter.ToLowerInvariant())
                         {
+#if DEBUG
                             logger.Debug($"{proc.ProcessName} matches filter {Filter}");
+#endif
                             LaunchMate.Cache.ProcessCache.SetRunning(Filter, true);
                             return true;
                         }
@@ -329,7 +353,9 @@ namespace LaunchMate.Models
                     LaunchMate.Cache.ProcessCache.SetRunning(Filter, false);
                     break;
                 case FilterTypes.Service:
+#if DEBUG
                     logger.Debug($"Checking if service {Filter} is running");
+#endif
 
                     bool? isSRunning = LaunchMate.Cache.ServiceCache.IsRunning(Filter);
                     if (isSRunning.HasValue)
@@ -341,13 +367,17 @@ namespace LaunchMate.Models
                     {
                         var service = new ServiceController(Filter);
                         bool running = service.Status == ServiceControllerStatus.Running;
+#if DEBUG
                         logger.Debug($"{Filter} is a real service");
+#endif
                         LaunchMate.Cache.ServiceCache.SetRunning(Filter, running);
                         return running;
                     }
                     catch
                     {
+#if DEBUG
                         logger.Debug($"{Filter} is not a real service");
+#endif
                         LaunchMate.Cache.ServiceCache.SetRunning(Filter, false);
                         break;
                     }

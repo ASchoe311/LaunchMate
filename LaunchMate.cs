@@ -205,12 +205,11 @@ namespace LaunchMate
         /// <param name="group">The launchgroup to execute</param>
         private void HandleLaunchGroup(OnGameStartingEventArgs args, LaunchGroup group)
         {
-
-            logger.Debug($"Checking launch group conditions for group named {group.Name}");
+            logger.Info($"Checking launch group conditions for group named {group.Name}");
             
             if (group.MeetsConditions(args.Game))
             {
-                logger.Debug($"Conditions passed, waiting {group.LaunchDelay} ms to execute action for group \"{group.Name}\"");
+                logger.Info($"Conditions passed, waiting {group.LaunchDelay} ms to execute action for group \"{group.Name}\"");
                 System.Threading.Thread.Sleep(group.LaunchDelay);
                 
                 if (group.Action.Execute(group.Name) && group.AutoClose){

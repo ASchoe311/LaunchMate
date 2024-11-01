@@ -13,8 +13,10 @@ namespace LaunchMate.Models
     {
         public override bool Execute(string groupName, Screen screen = null)
         {
+            ILogger logger = LogManager.GetLogger();
             try
             {
+                logger.Info($"{groupName} - Trying to stop service {Target}");
                 var svc = new ServiceController(Target);
                 var status = svc.Status;
                 if (status == ServiceControllerStatus.Running && svc.CanStop)
@@ -25,9 +27,8 @@ namespace LaunchMate.Models
             }
             catch (Exception ex)
             {
-                ILogger logger = LogManager.GetLogger();
-                logger.Error(ex, $"{groupName} - Something went wrong trying to stop service with name {Target}");
-                API.Instance.Notifications.Add($"{groupName} - Error: {Target}", $"An error occurred when LaunchMate tried to stop service with name {Target} from group {groupName}, see logs for more info", NotificationType.Error);
+                logger.Error(ex, $"{groupName} - Something went wrong trying to stop service  {Target}");
+                API.Instance.Notifications.Add($"{groupName} - Error: {Target}", $"An error occurred when LaunchMate tried to stop service {Target} from group {groupName}, see logs for more info", NotificationType.Error);
                 return false;
             }
         }

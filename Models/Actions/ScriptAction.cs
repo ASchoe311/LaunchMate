@@ -15,11 +15,13 @@ namespace LaunchMate.Models
 
         public override bool Execute(string groupName, Screen screen = null)
         {
-            if ((Target ?? "") == string.Empty) return false;
-            logger.Debug($"{groupName} - Launching script \"{Target}\" with arguments \"{TargetArgs}\"");
+            if ((Target ?? "") == string.Empty)
+            {
+                return false;
+            }
+            logger.Info($"{groupName} - Trying to run script \"{Target}\" with arguments \"{TargetArgs}\"");
             try
             {
-                API.Instance.Notifications.Remove($"{groupName}  - Error: {Target}");
                 ProcessStartInfo info = new ProcessStartInfo("cmd.exe", "/c " + Target + " " + TargetArgs)
                 {
                     CreateNoWindow = true,
