@@ -18,7 +18,7 @@
     <!-- <TabControl Margin="20">
         <TabItem Header="Launch Groups Editor"> -->
             <DockPanel Margin="5,10,5,5">
-                <GroupBox x:Name="grpBoxGroups" DockPanel.Dock="Left">
+                <GroupBox x:Name="grpBoxGroups" DockPanel.Dock="Left" BorderThickness="2">
                     <GroupBox.Header>
                         <TextBlock Text="Launch Groups" HorizontalAlignment="Center"/>
                     </GroupBox.Header>
@@ -42,7 +42,7 @@
                         </StackPanel>
                     </Grid>
                 </GroupBox>
-                <GroupBox x:Name="groupView">
+                <GroupBox x:Name="groupView" BorderThickness="2">
                     <Grid Margin="10,0,10,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
