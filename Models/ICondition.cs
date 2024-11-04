@@ -12,6 +12,7 @@ namespace LaunchMate.Models
     {
         FilterTypes FilterType { get; set; }
         string Filter { get; set; }
+        Guid? FilterId { get; set; }
         JoinType Joiner { get; set; }
         bool Not {  get; set; }
         bool FuzzyMatch { get; set; }
