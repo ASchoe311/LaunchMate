@@ -33,62 +33,90 @@ Transform your gaming experience with LaunchMate, and focus on what matters most
 
 ## Usage
 
-A full usage example can be seen [here](#example-usage).
+An indepth usage example can be seen [here](#example-usage).
 
-Once installed, LaunchMate's settings can be found within the "Generic" section of Playnite's addon settings menu.
+Once installed, LaunchMate's settings can be found on the left sidebar or within the "Generic" section of Playnite's addon settings menu.
 
-The main settings page displays a table of all Launch Groups you've added. To create a new one, click "Add". This will open the [Launch Group Editor window](#the-launch-group-editor) for a new Launch Group. 
+The main settings page displays a tab view of all Launch Groups you've added. To create a new one, click "Add". This will open the launch group editor on the right side of the settings window.
 
 ### The Launch Group Editor
 
-In this window you can choose the target application or website the group will launch, set the delay timer for application launch, and select the conditions a game must meet to launch the target. To make selecting an application easier, click the button with a file icon next to the input box.
+In this window you can choose the action that will be executed by the launch group, the settings for the launch group, and select the conditions a game must meet to launch the target. 
 
 The table at the bottom of the Launch Group Editor window is where you can set the conditions for your launch group. See ["How to use the conditions section"](#how-to-use-the-conditions-section) to understand how to use this table.
 
-The Launch Group Editor window has a button at the bottom to preview matched games. This button can also be found for each Launch Group on the main settings window.
+The Launch Group Editor window has a button at the bottom to preview matched games.
 
 
 ### How to use the conditions section
 
-The table within the Launch Group Editor display all **Condition Groups** for that Launch Group. Click "Add" to create a new group. See ["Condition Groups Table Reference"](#condition-groups-table-reference)
+In this table you add the conditions that determine if the launch group will execute its action. Click "Add" to add a new condition. 
 
-This will open a new window with a table of conditions for that group. Once again, click "Add" to add a new condition. See ["Condition Table Reference"](#condition-table-reference)
+Choose which type of filter the condition will have using the drop down menu, and then fill in the filter. You can click the search icon next to the filter box for easier filter selection or you can type in the filter yourself.
 
-<br><br>
+Note that when you use the selection box the filter will be associated with the ID of whichever filter you select. This means that if the name of the filtered item changes the filter will still be associated with the renamed value. For example, if you select "Steam" as a source filter and then change the name of the "Steam" source in Playnite to "Steam Games", the filter will still trigger on "Steam Games". This will not happen if you type in the filter yourself.
 
-### Condition Groups Table Reference
-
-| NOT | Conditions | Next Logical Operator |
-| -------- | ------- | -------- |
-| If set, the result of this condition group will be negated | A textual representation of the conditions within the group | The logical operator placed between a condition group and the condition group that follows it |
-| See matching column in ["Condition Table Reference"](#condition-table-reference) for context | -> means "matches" | E.g. if set to AND, the condition groups are true only if both the condition group and the one following it are true |
-| | ~> means "fuzzy matches" | |
-| | NOT means "does not match" | |
-| | NOT~ means "does not fuzzy match" | |
+See ["Condition Table Reference"](#condition-table-reference) for more information on each table column.
 
 <br><br>
 
 ### Condition Table Reference
 
-| NOT | Filter Type | Filter | Fuzzy Match | Next Logical Operator |
+| Exclude | Filter Type | Filter | Fuzzy Match | Next Logical Operator |
 | -------- | ------- | -------- | ------- | ------- |
 | If set, the result of this condition will be negated | The game attribute to check the filter against | The filter with which to check the game attribute | If set, filter matches can be close but not exact | The logical operator placed between a condition and the condition that follows it |
-| E.g. if the condition checks that the game name matches "Stardew" and this is Not is checked, it will be true for any game whose name does not match "Stardew"| If set to "All Games", it will match any game | This filter supports regex or standard strings | | E.g. if set to AND, the conditions are true only if both the condition and the one following it are true |
+| E.g. if the condition checks that the game name matches "Stardew" and Exclude is checked, it will be true for any game whose name does not match "Stardew"| If set to "All Games", it will match any game | Can be typed in or auto-filled using the search box | | E.g. if set to AND, the conditions are true only if both the condition and the one following it are true |
 
 <br><br>
 
 ### Example usage
 
-To launch the application blitz.gg with any game made by Riot Games except for Legends of Runeterra, you have a few options. Two of them would be:
+To launch the application blitz.gg with any game made by Riot Games except for Legends of Runeterra, you could do the following:
 
-1. Set up two condition groups, the first checks that "Source" matches "Riot Games" and the second checks that "Name" does not match "Runeterra". Check "Not" on the second group and set the "Next Logical Operator" of the first group to "AND".
+1. Open the LaunchMate menu
 
-    ![Image showing a condition group setup](https://i.imgur.com/HvROKwx.png)
+    ![Image showing how to open the LaunchMate menu](https://i.imgur.com/kyaEF9O.png)
 
-2. Set up one condition group containing both a check that "Source" matches "Riot Games" and a check that "Name" does not match "Runeterra". Set the "Next Logical Operator" of the first group to "AND".
+2. Click "Add" to create a new launch group
 
-    ![Image showing a condition group setup](https://i.imgur.com/BzMBR14.png)
+    ![Image showing to click Add](https://i.imgur.com/dXV3WC8.png)
 
-Either of these methods results in the following matches:
-    
-![Image showing a condition group setup](https://i.imgur.com/2xVxs6f.png)
+3. Name your launch group whatever you'd like, such as "Launch Blitz.gg"
+
+    ![Image showing to change name](https://i.imgur.com/vuzKUEU.png)
+
+4. Make sure the action type dropdown is set to "Launch an App"
+
+    ![Image showing to change action type](https://i.imgur.com/u5v1oOj.png)
+
+5. Use the file selector button to choose the executable for Blitz.gg
+
+    ![Image showing to choose file](https://i.imgur.com/LaTWXKs.png)
+
+6. Click "Add" under the conditions box to create a condition
+
+    ![Image showing to add condition](https://i.imgur.com/EgHJzy4.png)
+
+7. Set the filter type dropdown to "Source" and then click the search icon next to the filter box
+
+    ![Image showing to add filter](https://i.imgur.com/wgDOE5R.png)
+
+8. Choose "Riot Games" as the source in the search window that opens
+
+    ![Image showing to select source](https://i.imgur.com/8e9W3kk.png)
+
+9. Add two more conditions, one for the game name being "Legends of Runeterra" and another checking if blitz.gg is already running. Check the "Exclude" box for both so that the conditions check if the game name is NOT "Legends of Runeterra" and Blitz.gg is NOT running. Also make sure "Next Logical Operator" is set to "And" for all conditions
+
+    ![Image showing all conditions](https://i.imgur.com/ePDUt09.png)
+
+10. Make sure the launch group settings (enabled, delay, and auto-close) are set as desired
+
+    ![Image showing settings](https://i.imgur.com/KxdZvaf.png)
+
+11. Click "See Matched Games" to make sure the conditions are set properly (IMPORTANT: If no matches show up, make sure the app checked by the last condition is not running in the background already)
+
+    ![Image showing matches](https://i.imgur.com/nQyTiji.png)
+
+12. Click "Save" to save your settings and close the LaunchMate window. Your launch group will now execute its action on any game that matches its conditions.
+
+    ![Image showing save](https://i.imgur.com/95yDjsU.png)
