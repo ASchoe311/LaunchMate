@@ -14,22 +14,28 @@ namespace LaunchMate.Models
         public override bool Execute(string groupName, Screen screen = null)
         {
             ILogger logger = LogManager.GetLogger();
-            try
+            using(var sc = new ServiceController(Target))
             {
-                logger.Info($"{groupName} - Trying to start service {Target}");
-                var svc = new ServiceController(Target);
-                var status = svc.Status;
-                if (status != ServiceControllerStatus.Running)
+                try
                 {
-                    svc.Start();
+                    logger.Info($"{groupName} - Trying to start service {Target}");
+                    var status = sc.Status;
+                    if (status != ServiceControllerStatus.Running)
+                    {
+                        sc.Start();
+                    }
+                    else
+                    {
+                        logger.Info($"{groupName} - Service {Target} already has running status, skipping");
+                    }
+                    return true;
                 }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, $"{groupName} - Something went wrong trying to start service {Target}");
-                API.Instance.Notifications.Add($"{groupName} - Error: {Target}", $"An error occurred when LaunchMate tried to start service {Target} from group {groupName}, see logs for more info", NotificationType.Error);
-                return false;
+                catch (Exception ex)
+                {
+                    logger.Error(ex, $"{groupName} - Something went wrong trying to start service {Target}");
+                    API.Instance.Notifications.Add($"{groupName} - Error: {Target}", $"An error occurred when LaunchMate tried to start service {Target} from group {groupName}, see logs for more info", NotificationType.Error);
+                    return false;
+                }
             }
         }
     }
