@@ -75,15 +75,6 @@ namespace LaunchMate.Models
                     return true;
                 case FilterTypes.Name:
                     filterSettings.Name = Filter;
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    ////rgxMatch = rgx.IsMatch(game.Name);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
-                    }
                     break;
                 case FilterTypes.Source:
                     if (FilterId.HasValue)
@@ -93,15 +84,6 @@ namespace LaunchMate.Models
                     else
                     {
                         filterSettings.Source = new IdItemFilterItemProperties(Filter);
-                    }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    ////rgxMatch = rgx.IsMatch(game.Source.Name);
-#if DEBUG 
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif 
-                    if (pnMatch)
-                    {
-                        return true;
                     }
                     break;
                 case FilterTypes.Developers:
@@ -113,15 +95,6 @@ namespace LaunchMate.Models
                     {
                         filterSettings.Developer = new IdItemFilterItemProperties(Filter);
                     }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    ////rgxMatch = rgx.IsMatch(game.Name);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif 
-                    if (pnMatch)
-                    {
-                        return true;
-                    }
                     break;
                 case FilterTypes.Publishers:
                     if (FilterId.HasValue)
@@ -131,15 +104,6 @@ namespace LaunchMate.Models
                     else
                     {
                         filterSettings.Publisher = new IdItemFilterItemProperties(Filter);
-                    }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Publishers);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
                     }
                     break;
                 case FilterTypes.Categories:
@@ -151,15 +115,6 @@ namespace LaunchMate.Models
                     {
                         filterSettings.Category = new IdItemFilterItemProperties(Filter);
                     }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Categories);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
-                    } 
                     break;
                 case FilterTypes.Genres:
                     if (FilterId.HasValue)
@@ -169,15 +124,6 @@ namespace LaunchMate.Models
                     else
                     {
                         filterSettings.Genre = new IdItemFilterItemProperties(Filter);
-                    }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Genres);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
                     }
                     break;
                 //case FilterTypes.GameId:
@@ -197,7 +143,7 @@ namespace LaunchMate.Models
                     {
                         return true;
                     }
-                    break;
+                    return false;
                 case FilterTypes.Tags:
                     if (FilterId.HasValue)
                     {
@@ -206,15 +152,6 @@ namespace LaunchMate.Models
                     else
                     {
                         filterSettings.Tag = new IdItemFilterItemProperties(Filter);
-                    }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Tags);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
                     }
                     break;
                 case FilterTypes.Features:
@@ -226,15 +163,6 @@ namespace LaunchMate.Models
                     {
                         filterSettings.Feature = new IdItemFilterItemProperties(Filter);
                     }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Features);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
-                    }
                     break;
                 case FilterTypes.AgeRatings:
                     if (FilterId.HasValue)
@@ -244,15 +172,6 @@ namespace LaunchMate.Models
                     else
                     {
                         filterSettings.AgeRating = new IdItemFilterItemProperties(Filter);
-                    }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.AgeRatings);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
                     }
                     break;
                 case FilterTypes.Series:
@@ -264,15 +183,6 @@ namespace LaunchMate.Models
                     {
                         filterSettings.Series = new IdItemFilterItemProperties(Filter);
                     }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Series);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
-                    }
                     break;
                 case FilterTypes.Platforms:
                     if (FilterId.HasValue)
@@ -282,15 +192,6 @@ namespace LaunchMate.Models
                     else
                     {
                         filterSettings.Platform = new IdItemFilterItemProperties(Filter);
-                    }
-                    pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
-                    //rgxMatch = rgx.IsMatchList(game.Platforms);
-#if DEBUG
-                    logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
-#endif
-                    if (pnMatch)
-                    {
-                        return true;
                     }
                     break;
                 case FilterTypes.ExeName:
@@ -327,7 +228,7 @@ namespace LaunchMate.Models
                         }
                     }
                         LaunchMate.Cache.ExeCache.SetRunning(Filter, false);
-                    break;
+                    return false;
                 case FilterTypes.Process:
 #if DEBUG
                     logger.Debug($"Checking processes for {Filter}");
@@ -351,7 +252,7 @@ namespace LaunchMate.Models
                         }
                     }
                     LaunchMate.Cache.ProcessCache.SetRunning(Filter, false);
-                    break;
+                    return false;
                 case FilterTypes.Service:
 #if DEBUG
                     logger.Debug($"Checking if service {Filter} is running");
@@ -363,26 +264,37 @@ namespace LaunchMate.Models
                         return isSRunning.Value;
                     }
 
-                    try
+                    using (var sc = new ServiceController(Filter))
                     {
-                        var service = new ServiceController(Filter);
-                        bool running = service.Status == ServiceControllerStatus.Running;
+                        try
+                        {
+                            bool running = sc.Status == ServiceControllerStatus.Running;
 #if DEBUG
-                        logger.Debug($"{Filter} is a real service");
+                            logger.Debug($"{Filter} is a real service");
 #endif
-                        LaunchMate.Cache.ServiceCache.SetRunning(Filter, running);
-                        return running;
-                    }
-                    catch
-                    {
+                            LaunchMate.Cache.ServiceCache.SetRunning(Filter, running);
+                            return running;
+                        }
+                        catch
+                        {
 #if DEBUG
-                        logger.Debug($"{Filter} is not a real service");
+                            logger.Debug($"{Filter} is not a real service");
 #endif
-                        LaunchMate.Cache.ServiceCache.SetRunning(Filter, false);
-                        break;
+                            LaunchMate.Cache.ServiceCache.SetRunning(Filter, false);
+                            return false;
+                        }
                     }
                 default:
                     return false;
+            }
+            pnMatch = API.Instance.Database.GetGameMatchesFilter(game, filterSettings, FuzzyMatch);
+            //rgxMatch = rgx.IsMatchList(game.Platforms);
+#if DEBUG
+            logger.Debug($"Filter \"{Filter}\" on target \"{Enum.GetName(typeof(FilterTypes), FilterType)}\" for game \"{game.Name}\": Playnite Match - {pnMatch}");
+#endif
+            if (pnMatch)
+            {
+                return true;
             }
             return false;
         }
