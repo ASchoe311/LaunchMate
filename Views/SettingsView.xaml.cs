@@ -482,6 +482,7 @@ namespace LaunchMate.Views
             {
                 items.Add(new GenericItemOption(service.DisplayName, Enum.GetName(typeof(ServiceControllerStatus), service.Status)));
             }
+            items = items.OrderBy(i => i.Name).ToList();
             GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
                             items, (x) => SearchFunction(x, items)
                             );
@@ -511,7 +512,7 @@ namespace LaunchMate.Views
                     continue;
                 }
             }
-            items = items.GroupBy((x) => x.Name).Select((group) => group.First()).ToList();
+            items = items.GroupBy((x) => x.Name).Select((group) => group.First()).OrderBy(i => i.Name).ToList();
             GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
                             items, (x) => SearchFunction(x, items)
                             );
@@ -676,6 +677,7 @@ namespace LaunchMate.Views
                     default:
                         return;
                 }
+                items = items.OrderBy(i => i.Name).ToList();
                 GenericItemOption chosen = API.Instance.Dialogs.ChooseItemWithSearch(
                             items, (x) => SearchFunction(x, items)
                             );
