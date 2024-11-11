@@ -63,7 +63,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="0" Margin="0,10,0,10" HorizontalAlignment="Center">
+                            <Grid Grid.Row="0" Grid.Column="0" Margin="0,10,0,10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
@@ -77,7 +77,7 @@
                           ItemsSource="{Binding DataContext.ActionTypesDict, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             </Grid>
                             <Grid Grid.Row="0" Grid.Column="1" Margin="0,10,0,10">
-                                <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateGroupEnabled}" IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                <CheckBox Margin="200,5,0,0" Content="{DynamicResource LOCLaunchMateGroupEnabled}" IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                             <Grid Grid.Row="1" Grid.Column="0" Margin="0,10,0,10">
                                 <Grid.RowDefinitions>
@@ -100,8 +100,8 @@
                         Margin="5,0,0,0" FontFamily="{DynamicResource FontIcoFont}" MaxHeight="28" VerticalAlignment="Center"/>
                             </Grid>
                             <Grid Grid.Row="2" Grid.Column="1" Margin="0,10,0,10" x:Name="AutoCloseGrid">
-                                <CheckBox Margin="0,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}" 
-                          ToolTip="{DynamicResource LOCLaunchMateAutoCloseExeTooltip}" HorizontalAlignment="Center"/>
+                                <CheckBox Margin="200,5,0,0" Content="{DynamicResource LOCLaunchMateAutoCloseExe}" IsChecked="{Binding AutoClose, UpdateSourceTrigger=PropertyChanged}" 
+                          ToolTip="{DynamicResource LOCLaunchMateAutoCloseExeTooltip}"/>
                             </Grid>
                             <Grid x:Name="r0c1Args" Grid.Row="2" Grid.Column="0" Margin="0,10,0,10" Visibility="Hidden">
                                 <Grid.ColumnDefinitions>
@@ -124,7 +124,7 @@
                                 </Grid.RowDefinitions>
                                 <CheckBox x:Name="webViewCheck" Grid.Column="1" Content="Use Playnite's built-in web view for launched web pages" IsChecked="{Binding Action.UseWebView, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1" Margin="20,10,0,10" HorizontalAlignment="Center">
+                            <Grid Grid.Row="1" Grid.Column="1" Margin="0,10,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
@@ -133,7 +133,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Text="Action Delay: " VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="0" Text="Action Delay: " VerticalAlignment="Center" Margin="200,0,0,0" />
                                 <TextBox Grid.Column="1" Text="{Binding LaunchDelay, UpdateSourceTrigger=PropertyChanged}" Width="Auto" MinWidth="100" MaxHeight="28" />
                                 <TextBlock Grid.Column="2" Text="{DynamicResource LOCLaunchMateMS}" Margin="5,0,0,0" VerticalAlignment="Center" />
                             </Grid>
